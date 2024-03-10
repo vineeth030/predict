@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Game;
+use App\Models\Prediction;
 use Illuminate\Http\Request;
 
-class GameController extends Controller
+class PredictionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return Game::all();
+        //
     }
 
     /**
@@ -34,7 +34,7 @@ class GameController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Game $game)
+    public function show(Prediction $prediction)
     {
         //
     }
@@ -42,7 +42,7 @@ class GameController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Game $game)
+    public function edit(Prediction $prediction)
     {
         //
     }
@@ -50,7 +50,7 @@ class GameController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Game $game)
+    public function update(Request $request, Prediction $prediction)
     {
         //
     }
@@ -58,7 +58,7 @@ class GameController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Game $game)
+    public function destroy(Prediction $prediction)
     {
         //
     }

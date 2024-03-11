@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Dashboard\AuthController;
+use App\Http\Controllers\Dashboard\GameController;
+use App\Http\Controllers\Dashboard\TeamController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +16,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/login', function () {
+    return view('home');
 });
+
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Matches page
+Route::get('/games', [GameController::class, 'index'])->middleware('auth')->name('games');
+Route::post('/games/{id}/update', [GameController::class, 'update'])->name('games.update');
+
+// Standings Page
+Route::get('teams', [TeamController::class, 'index'])->middleware('auth')->name('teams');
+Route::post('teams/{id}/update', [TeamController::class, 'update'])->name('teams.update');

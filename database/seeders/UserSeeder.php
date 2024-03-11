@@ -15,7 +15,8 @@ class UserSeeder extends Seeder
         \App\Models\User::factory()->create([
             'name' => 'Admin',
             'email' => 'admin@predict.com',
-            'password' => 'password'
+            'password' => 'password',
+            'is_admin' => true
         ]);
 
         \App\Models\User::factory(10)->create();

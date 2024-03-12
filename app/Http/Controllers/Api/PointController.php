@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
-use App\Models\Prediction;
+use App\Models\Point;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
-class PredictionController extends Controller
+class PointController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return Point::all();
     }
 
     /**
@@ -34,23 +35,15 @@ class PredictionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Prediction $prediction)
+    public function show(Point $point)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Prediction $prediction)
-    {
-        //
+        return $point->select('game_id', 'points')->where('user_id', auth()->user()->id)->get();
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Prediction $prediction)
+    public function update(Request $request, Point $point)
     {
         //
     }
@@ -58,7 +51,7 @@ class PredictionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Prediction $prediction)
+    public function destroy(Point $point)
     {
         //
     }

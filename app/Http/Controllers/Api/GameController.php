@@ -1,18 +1,27 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
-use App\Models\Point;
+use App\Models\Game;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use GuzzleHttp\Psr7\Response;
 
-class PointController extends Controller
+class GameController extends Controller
 {
+    const HTTP_INTERNAL_SERVER_ERROR = 500;
+    const HTTP_OK = 200;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return Point::all();
+        try {
+            $games = Game::all();
+            return response()->json(['status' => 'success', 'data' => $games], self::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], self::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -34,7 +43,7 @@ class PointController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Point $point)
+    public function show(Game $game)
     {
         //
     }
@@ -42,7 +51,7 @@ class PointController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Point $point)
+    public function edit(Game $game)
     {
         //
     }
@@ -50,7 +59,7 @@ class PointController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Point $point)
+    public function update(Request $request, Game $game)
     {
         //
     }
@@ -58,7 +67,7 @@ class PointController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Point $point)
+    public function destroy(Game $game)
     {
         //
     }

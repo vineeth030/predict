@@ -9,35 +9,78 @@
         </div>
     </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">First</th>
-                <th scope="col">Last</th>
-                <th scope="col">Handle</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-            </tr>
-            <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
-            </tr>
-            <tr>
-                <th scope="row">3</th>
-                <td colspan="2">Larry the Bird</td>
-                <td>@twitter</td>
-            </tr>
-        </tbody>
-    </table>
+    <div>
+
+
+
+    @if ($message = session('success'))
+    <div class="alert alert-success">
+        {{ $message }}
+    </div>
+    @elseif ($message = session('error'))
+    <div class="alert alert-danger">
+        {{ $message }}
+    </div>
+    @endif
+
+    <form action="{{ url('/updateversion') }}" method="POST">
+        @csrf
+        <div class="form-group">
+        <label for="platform">Platform:</label>
+        <select id="platform" class="form-control" name="platform" onchange="updateVersionField()"> 
+            <option value="">Select OS</option>
+            <option value="android">android</option>
+            <option value="ios">ios</option>
+        </select>
+        <br>
+        <label for="code">Version Code:</label>
+        <input type="text" class="form-control" id="code" name="code" required>
+        <br>
+        <label for="name">Version Name:</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+        <br>
+        <label for="is_mandatory">Is Mandatory:</label>
+        <input type="text"  class="form-control" id="is_mandatory" name="is_mandatory" required>
+        <br>
+        <button type="submit" class="btn btn-primary mb-3">Submit</button>
+    </form>
+
+    <body>
+    <script>
+                function updateVersionField() {
+                    var platform = document.getElementById('platform').value;
+                    var code = document.getElementById('code');
+                    var name = document.getElementById('name');
+                    var isMandatory = document.getElementById('is_mandatory');
+
+                    var androidVersion = "{{ $androidVersion }}";
+                    var iosVersion = "{{ $iosVersion }}";
+
+                    var androidName = "{{ $androidName }}";
+                    var iosName = "{{ $iosName }}";
+
+                    var androidIsMandatory  = "{{ $androidIsMandatory }}";
+                    var iosIsMandatory = "{{ $iosIsMandatory }}";
+
+
+
+                    if (platform === 'android') {
+                        code.value = androidVersion;
+                        name.value = androidName;
+                        isMandatory.value = androidIsMandatory;
+                    } else if (platform === 'ios') {
+                        code.value = iosVersion;
+                        name.value = iosName;
+                        isMandatory.value = iosIsMandatory;
+                    } else {
+                        code.value = '';
+                        name.value = '';
+                        isMandatory.value - '';
+                    }
+                }
+            </script>
+      
+    </body>
 
 </main>
 

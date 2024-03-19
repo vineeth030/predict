@@ -7,5 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Team extends Model
 {
-    use HasFactory;
+    public $table = "teams";
+    protected $primaryKey = 'id';
+    protected $fillable = [
+        'points', 'games_played', 'wins', 'draws', 'losses'
+        // Add other match properties as needed
+    ];
 }

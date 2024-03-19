@@ -41,4 +41,6 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::get('/versions', [VersionController::class, 'index']);
 
     Route::get('/teams', [TeamController::class, 'index']);
+
+    Route::get('/user-points/{userId}/total', [PointController::class, 'getTotalPointsForUser']);
 });

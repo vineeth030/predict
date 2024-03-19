@@ -3,41 +3,47 @@
 @section('content')
 
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Teams</h1>
-    <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Teams</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+        </div>
     </div>
-  </div>
 
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">First</th>
-        <th scope="col">Last</th>
-        <th scope="col">Handle</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <th scope="row">1</th>
-        <td>Mark</td>
-        <td>Otto</td>
-        <td>@mdo</td>
-      </tr>
-      <tr>
-        <th scope="row">2</th>
-        <td>Jacob</td>
-        <td>Thornton</td>
-        <td>@fat</td>
-      </tr>
-      <tr>
-        <th scope="row">3</th>
-        <td colspan="2">Larry the Bird</td>
-        <td>@twitter</td>
-      </tr>
-    </tbody>
-  </table>
+    <form method="POST" action="{{ route('teams.update') }}">
+    @method('PUT')
+                        @csrf
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Team Name</th>
+                    <th>Group</th>
+                    <th>Total Points</th>
+                    <th>MGames Played</th>
+                    <th>Wins</th>
+                    <th>Draws</th>
+                    <th>Losses</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($teams as $team)
+                <tr>
+                    <td>{{ $team->id}}</td>
+                    <td>{{ $team->name}}</td>
+                    <td>{{ $team->group_id}}</td>
+                    <td><input type="number" name="teams[{{ $team->id }}][points]" value="{{ $team->points ?? 0 }}"></td>
+                    <td><input type="number" name="teams[{{ $team->id }}][matches_played]" value="{{ $team->matches_played ?? 0 }}"></td>
+                    <td><input type="number" name="teams[{{ $team->id }}][wins]" value="{{ $team->wins ?? 0 }}"></td>
+                    <td><input type="number" name="teams[{{ $team->id }}][draws]" value="{{ $team->draws ?? 0 }}"></td>
+                    <td><input type="number" name="teams[{{ $team->id }}][losses]" value="{{ $team->losses ?? 0 }}"></td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
 
 </main>
 @endsection

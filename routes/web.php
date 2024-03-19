@@ -26,10 +26,12 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Matches page
 Route::get('/games', [GameController::class, 'index'])->middleware('auth')->name('games');
-Route::post('/games/{id}/update', [GameController::class, 'update'])->name('games.update');
+Route::put('/games/{id}/update', [GameController::class, 'update'])->middleware('auth')->name('games.update');
 
 // Standings Page
-Route::get('/teams', [TeamController::class, 'index'])->middleware('auth')->name('teams');
-Route::post('/teams/{id}/update', [TeamController::class, 'update'])->name('teams.update');
+Route::get('/teams', [TeamController::class, 'index'])->middleware('auth')->name('teams.index');
+Route::put('/teams/update', [TeamController::class, 'update'])->middleware('auth')->name('teams.update');
+
 
 Route::get('/versions', [VersionController::class, 'index'])->middleware('auth')->name('versions');
+Route::post('/updateversion', [VersionController::class, 'updateversion'])->middleware('auth')->name('updateversion');

@@ -7,5 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Point extends Model
 {
-    use HasFactory;
+    protected $primaryKey = 'id';
+    public $table = "points";
+  
+      protected $fillable = [
+          'user_id', 'game_id', 'points'
+         
+      ];
 }

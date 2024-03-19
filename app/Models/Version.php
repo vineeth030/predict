@@ -7,5 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Version extends Model
 {
-    use HasFactory;
+      // protected $primaryKey = 'UserPointsID';
+      public $table = "versions";
+
+      protected $fillable = [
+        'code', 'name', 'is_mandatory'
+      ];
+  
+      // Example relationships: a user points entry belongs to a user and a match
 }

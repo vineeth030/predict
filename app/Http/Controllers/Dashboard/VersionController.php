@@ -4,13 +4,59 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Version;
 
 class VersionController extends Controller
 {
-    public function index() {
-        
+    public function index()
+    {
+
+        $androidVersion = Version::where('platform', 'android')->first();
+        $iosVersion = Version::where('platform', 'ios')->first();
+
+        $androidName = Version::where('platform', 'android')->first();
+        $iosName = Version::where('platform', 'ios')->first();
+
+        $androidIsMandatory = Version::where('platform', 'android')->first();
+        $iosIsMandatory = Version::where('platform', 'ios')->first();
+
+        $versions = Version::all();
         return view('versions', [
-            'versions' => \App\Models\Version::all()
+            'androidVersion' => $androidVersion ? $androidVersion->code : 'N/A',
+            'iosVersion' => $iosVersion ? $iosVersion->code : 'N/A',
+
+            'androidName' => $androidName ? $androidName->name : 'N/A',
+            'iosName' => $iosName ? $iosName->name : 'N/A',
+
+            'androidIsMandatory' => $androidIsMandatory ? $androidIsMandatory->is_mandatory : 'N/A',
+            'iosIsMandatory' => $iosIsMandatory ? $iosIsMandatory->is_mandatory : 'N/A',
+
         ]);
+    }
+
+    public function updateversion(Request $request)
+    {
+
+        $validated = $request->validate([
+            'platform' => 'required|in:android,ios',
+            'code' => 'required|string',
+            'name' => 'required|string',
+            'is_mandatory' => 'required|string',
+        ]);
+
+        //dd( $validated);
+
+        // Update the version in the database, creating a new row if it does not exist
+        Version::where('platform', $request->get('platform'))->update(
+
+            [
+                'code' => $validated['code'], // Values to update or insert
+                'name' => $validated['name'], // Values to update or insert
+                'is_mandatory' => $validated['is_mandatory']
+            ] // Values to update or insert
+        );
+
+        // Redirect back with a success message
+        return back()->with('success', 'Version updated successfully.');
     }
 }

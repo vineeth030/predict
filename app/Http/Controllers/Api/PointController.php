@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Point;
+use App\Models\Game;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 
 class PointController extends Controller
@@ -54,5 +56,31 @@ class PointController extends Controller
     public function destroy(Point $point)
     {
         //
+    }
+
+    public function getTotalPointsForUser($userId)
+    {
+
+     
+        try {
+            // Total points earned by the user
+            $totalPoints = Point::where('user_id', $userId)->sum('points');
+         //   dd($totalPoints);
+            // Total matches played by the user
+            $totalMatches = Game::whereHas('predictions', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })->count();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'UserID' => $userId,
+                    'TotalPoints' => $totalPoints,
+                  'TotalMatchesPlayed' => $totalMatches
+                ]
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

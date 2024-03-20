@@ -11,7 +11,7 @@ class Prediction extends Model
     public $table = "predictions";
   
       protected $fillable = [
-          'user_id', 'game_id', 'team_one_goals', 'team_two_goals', 'winning_team_id'
+          'user_id', 'game_id', 'team_one_goals', 'team_two_goals', 'winning_team_id','first_goal_team_id'
         
       ];
 }

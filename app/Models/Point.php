@@ -11,7 +11,7 @@ class Point extends Model
     public $table = "points";
   
       protected $fillable = [
-          'user_id', 'game_id', 'points'
+          'user_id', 'game_id', 'points','win_prediction','goal_prediction','first_goal_prediction'
          
       ];
 }

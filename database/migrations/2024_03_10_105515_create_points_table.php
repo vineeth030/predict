@@ -16,6 +16,9 @@ return new class extends Migration
             $table->integer('user_id');
             $table->integer('game_id');
             $table->integer('points');
+            $table->integer('win_prediction');
+            $table->integer('goal_prediction');
+            $table->integer('first_goal_prediction');
             $table->timestamps();
         });
     }

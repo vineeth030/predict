@@ -76,6 +76,7 @@ class PredictionController extends Controller
                     'winning_team_id' => $request->input('winning_team_id'),
                     'team_one_goals' => $request->input('team_one_goals'),
                     'team_two_goals' => $request->input('team_two_goals'),
+                    'first_goal_team_id' => $request->input('first_goal_team_id'),
                 ]);
             } else {
                 // Prediction does not exist, create a new prediction
@@ -85,6 +86,7 @@ class PredictionController extends Controller
                     'winning_team_id' => $request->input('winning_team_id'),
                     'team_one_goals' => $request->input('team_one_goals'),
                     'team_two_goals' => $request->input('team_two_goals'),
+                    'first_goal_team_id' => $request->input('first_goal_team_id'),
                 ]);
             }
 

@@ -38,6 +38,9 @@
                         <label for="Team2Goals">Team 2 Goals:</label>
                         <input type="number" name="team_two_goals" value="{{ $game->team_two_goals }}" min="0">
 
+                        <label for="First Goal Team">First Goal Team</label>
+                        <input type="number" name="first_goal_team_id" value="{{ $game->first_goal_team_id }}" min="0">
+
                         <button type="submit" class="btn btn-primary btn-sm">Submit</button>
                     </form>
                 </td>

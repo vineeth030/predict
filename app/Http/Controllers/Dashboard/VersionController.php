@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Version;
+use Carbon\Carbon;
 
 class VersionController extends Controller
 {
@@ -36,6 +37,15 @@ class VersionController extends Controller
 
     public function updateversion(Request $request)
     {
+
+       // $kickoff_time = $request->input('kickoff_time');
+        $kickoff_time = "2024-06-14 21:00";
+       // dd($kickoff_time);
+        $carbonDatetime = Carbon::parse($kickoff_time);
+    
+       // $utcDatetime = $carbonDatetime->utc();
+        $milliseconds = $carbonDatetime->timestamp * 1000;
+        dd($milliseconds);
 
         $validated = $request->validate([
             'platform' => 'required|in:android,ios',

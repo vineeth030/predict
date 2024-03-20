@@ -42,6 +42,9 @@
         <label for="is_mandatory">Is Mandatory:</label>
         <input type="text"  class="form-control" id="is_mandatory" name="is_mandatory" required>
         <br>
+        <label for="kickoff_time">Kickoff Time:</label>
+        <input type="datetime-local"  class="form-control" id="kickoff_time" name="kickoff_time" required>
+        <br>
         <button type="submit" class="btn btn-primary mb-3">Submit</button>
     </form>
 
@@ -78,6 +81,10 @@
                         isMandatory.value - '';
                     }
                 }
+
+
+
+                
             </script>
       
     </body>

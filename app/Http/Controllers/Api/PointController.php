@@ -61,11 +61,15 @@ class PointController extends Controller
     public function getTotalPointsForUser($userId)
     {
 
-     
+
         try {
             // Total points earned by the user
             $totalPoints = Point::where('user_id', $userId)->sum('points');
-         //   dd($totalPoints);
+            $totalWinspredicted = Point::where('user_id',$userId)->where('win_prediction', 1)->count();
+            $totalGoalspredicted = Point::where('user_id',$userId)->where('goal_prediction', 3)->count();
+
+
+            //   dd($totalPoints);
             // Total matches played by the user
             $totalMatches = Game::whereHas('predictions', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
@@ -76,7 +80,9 @@ class PointController extends Controller
                 'data' => [
                     'UserID' => $userId,
                     'TotalPoints' => $totalPoints,
-                  'TotalMatchesPlayed' => $totalMatches
+                    'TotalMatchesPlayed' => $totalMatches,
+                    'Win_prediction' => $totalWinspredicted,
+                    'Goal_prediction' => $totalGoalspredicted,
                 ]
             ], Response::HTTP_OK);
         } catch (\Exception $e) {

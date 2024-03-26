@@ -14,4 +14,9 @@ class Prediction extends Model
           'user_id', 'game_id', 'team_one_goals', 'team_two_goals', 'winning_team_id','first_goal_team_id'
         
       ];
+
+      public function game()
+    {
+        return $this->belongsTo(Game::class);
+    }
 }

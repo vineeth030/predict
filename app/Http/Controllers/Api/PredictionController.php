@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Prediction;
+use Illuminate\Support\Facades\DB;
+use App\Models\Game;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -103,4 +105,34 @@ class PredictionController extends Controller
     {
         //
     }
+
+    public function getTop3PredictionsForMatch($gameId)
+    {
+       
+        $game = Game::find($gameId);
+
+    if (!$game) {
+        return response()->json(['error' => 'Match not found'], 404);
+    }
+
+    $totalPredictions = DB::table('predictions')
+        ->where('game_id', $gameId)
+        ->count();
+
+    $topPredictions = DB::table('predictions')
+        ->select(
+            'team_one_goals',
+            'team_two_goals',
+            DB::raw('COUNT(*) as prediction_count'),
+            DB::raw('(COUNT(*) / '.$totalPredictions.') * 100 as percentage')
+        )
+        ->where('game_id', $gameId)
+        ->groupBy('team_one_goals', 'team_two_goals')
+        ->orderByDesc('prediction_count')
+        ->take(4)
+        ->get();
+
+    return response()->json(['top_predictions' => $topPredictions]);
+    }
+    
 }

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Prediction extends Model
 {
+    use HasFactory;
+    
     protected $primaryKey = 'id';
     public $table = "predictions";
   

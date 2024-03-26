@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Point extends Model
 {
+    use HasFactory;
+    
     protected $primaryKey = 'id';
     public $table = "points";
   

@@ -12,6 +12,11 @@ class VersionSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        \App\Models\Version::factory()->create();
+
+        \App\Models\Version::factory()->create([
+            'platform' => 'ios',
+            'name' => 'version 2.0.0',
+        ]);
     }
 }

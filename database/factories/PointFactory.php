@@ -19,7 +19,10 @@ class PointFactory extends Factory
         return [
             'user_id' => rand(1,12),
             'game_id' => rand(1,20),
-            'points' => rand(0,5)
+            'points' => rand(0,5),
+            'win_prediction' => rand(2,6),
+            'goal_prediction' => rand(2,6),
+            'first_goal_prediction' => rand(2,6),
         ];
     }
 }

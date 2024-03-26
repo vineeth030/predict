@@ -17,7 +17,11 @@ class VersionFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'platform'  =>  'android',
+            'code'  =>  '1.0.0',
+            'name'  =>  'version 1.0.0',
+            'is_mandatory'  =>  'yes',
+            'is_quarter_started' => 'yes'
         ];
     }
 }

@@ -21,6 +21,9 @@ class VersionController extends Controller
         $androidIsMandatory = Version::where('platform', 'android')->first();
         $iosIsMandatory = Version::where('platform', 'ios')->first();
 
+        $androdIsQuarterStarted = Version::where('platform', 'android')->first();
+        $iosIsQuarterStarted = Version::where('platform', 'ios')->first();
+
         $versions = Version::all();
         return view('versions', [
             'androidVersion' => $androidVersion ? $androidVersion->code : 'N/A',
@@ -31,6 +34,9 @@ class VersionController extends Controller
 
             'androidIsMandatory' => $androidIsMandatory ? $androidIsMandatory->is_mandatory : 'N/A',
             'iosIsMandatory' => $iosIsMandatory ? $iosIsMandatory->is_mandatory : 'N/A',
+
+            'androdIsQuarterStarted' =>  $androdIsQuarterStarted ? $androdIsQuarterStarted->is_quarter_started : 'N/A',
+            'iosIsQuarterStarted' => $iosIsQuarterStarted ? $iosIsQuarterStarted->is_quarter_started : 'N/A',
 
         ]);
     }

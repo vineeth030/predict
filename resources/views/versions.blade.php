@@ -42,6 +42,9 @@
         <label for="is_mandatory">Is Mandatory:</label>
         <input type="text"  class="form-control" id="is_mandatory" name="is_mandatory" required>
         <br>
+        <label for="is_quarter_started">Is Quarter Started:</label>
+        <input type="text"  class="form-control" id="is_quarter_started" name="is_quarter_started" required>
+        <br>
         <label for="kickoff_time">Kickoff Time:</label>
         <input type="datetime-local"  class="form-control" id="kickoff_time" name="kickoff_time" required>
         <br>
@@ -55,6 +58,7 @@
                     var code = document.getElementById('code');
                     var name = document.getElementById('name');
                     var isMandatory = document.getElementById('is_mandatory');
+                    var isQuarterStarted = document.getElementById('is_quarter_started');
 
                     var androidVersion = "{{ $androidVersion }}";
                     var iosVersion = "{{ $iosVersion }}";
@@ -65,20 +69,26 @@
                     var androidIsMandatory  = "{{ $androidIsMandatory }}";
                     var iosIsMandatory = "{{ $iosIsMandatory }}";
 
+                    var androdIsQuarterStarted  = "{{ $androdIsQuarterStarted }}";
+                    var iosIsQuarterStarted = "{{ $iosIsQuarterStarted }}";
+
 
 
                     if (platform === 'android') {
                         code.value = androidVersion;
                         name.value = androidName;
                         isMandatory.value = androidIsMandatory;
+                        isQuarterStarted.value=androdIsQuarterStarted;
                     } else if (platform === 'ios') {
                         code.value = iosVersion;
                         name.value = iosName;
                         isMandatory.value = iosIsMandatory;
+                        isQuarterStarted.value=iosIsQuarterStarted;
                     } else {
                         code.value = '';
                         name.value = '';
-                        isMandatory.value - '';
+                        isMandatory.value = '';
+                        isQuarterStarted.value ='';
                     }
                 }
 

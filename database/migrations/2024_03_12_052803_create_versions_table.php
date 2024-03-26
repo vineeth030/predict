@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('code');
             $table->string('name');
             $table->string('is_mandatory');
+            $table->string('is_mandatory');
+            $table->string('is_quarter_started');
             $table->timestamps();
         });
     }

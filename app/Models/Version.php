@@ -11,7 +11,7 @@ class Version extends Model
       public $table = "versions";
 
       protected $fillable = [
-        'code', 'name', 'is_mandatory'
+        'code', 'name', 'is_mandatory','is_quarter_started'
       ];
   
       // Example relationships: a user points entry belongs to a user and a match

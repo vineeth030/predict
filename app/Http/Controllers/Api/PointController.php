@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Point;
+use App\Models\User;
 use App\Models\Game;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -65,8 +66,8 @@ class PointController extends Controller
         try {
             // Total points earned by the user
             $totalPoints = Point::where('user_id', $userId)->sum('points');
-            $totalWinspredicted = Point::where('user_id',$userId)->where('win_prediction', 1)->count();
-            $totalGoalspredicted = Point::where('user_id',$userId)->where('goal_prediction', 3)->count();
+            $totalWinspredicted = Point::where('user_id', $userId)->where('win_prediction', 1)->count();
+            $totalGoalspredicted = Point::where('user_id', $userId)->where('goal_prediction', 3)->count();
 
 
             //   dd($totalPoints);
@@ -84,6 +85,59 @@ class PointController extends Controller
                     'Win_prediction' => $totalWinspredicted,
                     'Goal_prediction' => $totalGoalspredicted,
                 ]
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /*   public function headtoHead(Request $request)
+    {
+        $userId1 = $request->userId1;
+        $userId2 = $request->userId2;
+
+        $response = [
+            'user1' => [
+
+                'matches_played' =>  Game::whereHas('predictions', function ($query) use ($userId1) {
+                    $query->where('user_id', $userId1);
+                })->count(),
+                'points' => Point::where('user_id', $request->userId1)->sum('points'),
+                'wins'  => Point::where('user_id', $userId1)->where('win_prediction', 1)->count(),
+            ],
+            'user2' => [
+
+                'matches_played' =>  Game::whereHas('predictions', function ($query) use ($userId2) {
+                    $query->where('user_id', $userId2);
+                })->count(),
+                'points' => Point::where('user_id', $userId1)->sum('points'),
+
+                'wins'  => Point::where('user_id', $userId2)->where('win_prediction', 1)->count(),
+            ],
+        ];
+        return response()->json($response);
+    } */
+
+
+    public function headtoHead(Request $request)
+    {
+
+
+        try {
+            $userId1 = $request->userId1;
+            $userId2 = $request->userId2;
+            return response()->json([
+                'status' => 'success',
+                'user1' => [
+                    'matches_played' => Point::where('user_id',  $userId1)->count(),
+                    'points' => Point::where('user_id', $request->userId1)->sum('points'),
+                    'wins'  =>   Point::where('user_id', $userId1)->where('goal_prediction', 3)->count(),
+                ],
+                'user2' => [
+                    'matches_played' => Point::where('user_id',  $userId2)->count(),
+                    'points' => Point::where('user_id', $userId2)->sum('points'),
+                    'wins'  =>   Point::where('user_id', $userId2)->where('goal_prediction', 3)->count(),
+                ],
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);

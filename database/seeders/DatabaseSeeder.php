@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Database\Seeders\PredictionSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,7 +17,9 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             TeamSeeder::class,
             GameSeeder::class,
-            PointSeeder::class
+            PointSeeder::class,
+            PredictionSeeder::class,
+            VersionSeeder::class
         ]);
     }
 }

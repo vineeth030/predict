@@ -2,12 +2,13 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\LabController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\GameController;
-use App\Http\Controllers\Api\PointController;
-use App\Http\Controllers\Api\PredictionController;
 use App\Http\Controllers\Api\TeamController;
+use App\Http\Controllers\Api\PointController;
 use App\Http\Controllers\Api\VersionController;
+use App\Http\Controllers\Api\PredictionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,8 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('/auth-lab', [LabController::class, 'sendRequest'])->name('auth-lab.sendRequest');
 
 Route::group(['middleware' => 'auth:sanctum'], function(){
 

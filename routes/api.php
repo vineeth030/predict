@@ -47,4 +47,5 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 
     Route::get('/user-points/{userId}/total', [PointController::class, 'getTotalPointsForUser']);
     Route::get('/head-to-head/', [PointController::class, 'headtoHead']);
+    Route::get('/matches/{matchId}/top-predictions', [PredictionController::class, 'getTop3PredictionsForMatch']);
 });

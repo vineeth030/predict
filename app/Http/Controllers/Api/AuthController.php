@@ -37,12 +37,14 @@ class AuthController extends Controller
         // 5. If success, Use sessionToken, userIdCode and send request to userInfo api and get user details.
         // 6. Store user details in users table.
 
+        //return response()->json($request->all());
+
         $request->validate([
-            'email' => 'email|required',
+            'username' => 'required',
             'password' => 'required'
         ]);
 
-        $credentials = request(['email', 'password']);
+        $credentials = request(['username', 'password']);
 
         if (!auth()->attempt($credentials)) {
             return response()->json([
@@ -55,7 +57,7 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('username', $request->username)->first();
 
         $authToken = $user->createToken('auth-token')->plainTextToken;
 

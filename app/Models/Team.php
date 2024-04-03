@@ -11,7 +11,7 @@ class Team extends Model
     public $table = "teams";
     protected $primaryKey = 'id';
     protected $fillable = [
-        'points', 'games_played', 'wins', 'draws', 'losses'
+        'points', 'games_played', 'wins', 'draws', 'losses','flag'
         // Add other match properties as needed
     ];
 }

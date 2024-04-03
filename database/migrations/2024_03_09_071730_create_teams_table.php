@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('short_name');
             $table->integer('group_id');
+            $table->String('flag');
             $table->integer('points')->nullable();
             $table->integer('games_played')->nullable();
             $table->integer('wins')->nullable();

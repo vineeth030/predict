@@ -8,6 +8,7 @@ use App\Models\Game;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 class PointController extends Controller
 {
@@ -69,7 +70,6 @@ class PointController extends Controller
             $totalWinspredicted = Point::where('user_id', $userId)->where('win_prediction', 1)->count();
             $totalGoalspredicted = Point::where('user_id', $userId)->where('goal_prediction', 3)->count();
 
-
             //   dd($totalPoints);
             // Total matches played by the user
             $totalMatches = Game::whereHas('predictions', function ($query) use ($userId) {
@@ -91,37 +91,9 @@ class PointController extends Controller
         }
     }
 
-    /*   public function headtoHead(Request $request)
-    {
-        $userId1 = $request->userId1;
-        $userId2 = $request->userId2;
-
-        $response = [
-            'user1' => [
-
-                'matches_played' =>  Game::whereHas('predictions', function ($query) use ($userId1) {
-                    $query->where('user_id', $userId1);
-                })->count(),
-                'points' => Point::where('user_id', $request->userId1)->sum('points'),
-                'wins'  => Point::where('user_id', $userId1)->where('win_prediction', 1)->count(),
-            ],
-            'user2' => [
-
-                'matches_played' =>  Game::whereHas('predictions', function ($query) use ($userId2) {
-                    $query->where('user_id', $userId2);
-                })->count(),
-                'points' => Point::where('user_id', $userId1)->sum('points'),
-
-                'wins'  => Point::where('user_id', $userId2)->where('win_prediction', 1)->count(),
-            ],
-        ];
-        return response()->json($response);
-    } */
-
 
     public function headtoHead(Request $request)
     {
-
 
         try {
             $userId1 = $request->userId1;
@@ -142,5 +114,38 @@ class PointController extends Controller
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public function allUserPoints()
+    {
+       // Calculate the sum of points for each user ID
+        $userPoints = Point::select('user_id', DB::raw('SUM(points) as total_points'))
+            ->groupBy('user_id')
+            ->orderBy('total_points', 'desc')
+            ->get();
+
+        // Assign ranks based on the order of users' total points
+        // $rank = 1;
+        // foreach ($userPoints as $userPoint) {
+        //     $user = User::find($userPoint->user_id);
+        //     $user->old_rank = $user->new_rank; // Save the old rank
+        //     $user->new_rank = $rank++;
+        //     $user->save();
+        // }
+
+        $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
+        ->select('users.id', 'users.name', 
+            DB::raw('SUM(points.points) as total_points'), 
+            'users.old_rank', 'users.new_rank')
+        ->groupBy('users.id', 'users.name', 'users.old_rank', 'users.new_rank')
+        ->get();
+
+        foreach ($users as $user) {
+            $rankChange = $user->new_rank - $user->old_rank;
+            $user->rank_change = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
+        }
+
+
+        return response()->json(['status' => 'success', 'data' => $users]);
     }
 }

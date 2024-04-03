@@ -29,7 +29,7 @@
                     <form method="POST" action="{{ route('games.update', ['id' => $game->id]) }}">
                         @method('PUT')
                         @csrf
-                        <label for="Result">Result</label>
+                        <label for="WinningTeam">Winning Team</label>
                         <input type="text" name="winning_team_id" value="{{ $game->winning_team_id }}" min="0">
 
                         <label for="Team1Goals">Team 1 Goals:</label>

@@ -22,4 +22,22 @@ class Game extends Model
           return $this->hasMany(Prediction::class);
       }
 
+      public function teamOne()
+      {
+          return $this->belongsTo(Team::class, 'team_one_id');
+      }
+  
+      public function teamTwo()
+      {
+          return $this->belongsTo(Team::class, 'team_two_id');
+      }
+      public function winningTeam()
+      {
+          return $this->belongsTo(Team::class, 'winning_team_id');
+      }
+      public function firstGoalTeam()
+      {
+          return $this->belongsTo(Team::class, 'first_goal_team_id');
+      }
+
 }

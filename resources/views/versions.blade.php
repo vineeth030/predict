@@ -46,7 +46,7 @@
         <input type="text"  class="form-control" id="is_quarter_started" name="is_quarter_started" required>
         <br>
         <label for="kickoff_time">Kickoff Time:</label>
-        <input type="datetime-local"  class="form-control" id="kickoff_time" name="kickoff_time" required>
+        <input type="datetime-local"  class="form-control" id="kickoff_time" name="kickoff_time" >
         <br>
         <button type="submit" class="btn btn-primary mb-3">Submit</button>
     </form>

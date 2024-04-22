@@ -2,28 +2,37 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Models\User;
 use Exception;
-use Illuminate\Http\Client\Response;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AuthController extends Controller
 {
     public function register(Request $request) : JsonResponse {
         
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'email' => 'required',
-            'password' => 'required|min:6'
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6',
+            'company_group_id' => 'required'
         ]);
+    
+        // Check if the validation fails
+        if ($validator->fails()) {
+            // Return validation errors as JSON response
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'company_group_id' => $request->company_group_id,
             'password' => bcrypt($request->password)
         ]);
 

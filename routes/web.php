@@ -18,11 +18,6 @@ use App\Http\Controllers\LabController;
 |
 */
 
-Route::get('/login', function () {
-    dd(url('/'));
-    return view('home');
-});
-
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 

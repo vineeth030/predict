@@ -19,6 +19,7 @@ use App\Http\Controllers\LabController;
 */
 
 Route::get('/login', function () {
+    dd(url('/'));
     return view('home');
 });
 

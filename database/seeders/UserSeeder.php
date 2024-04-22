@@ -13,9 +13,12 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         \App\Models\User::factory()->create([
-            'name' => 'Admin',
-            'username' => 'admin',
+            'name' => 'Admin Predict',
+            'designation' => 'Web Developer',
             'email' => 'admin@predict.com',
+            'employee_id' => 28,
+            'image' => '28_photo.jpg',
+            'company_group_id' => 2,
             'password' => 'password',
             'is_admin' => true
         ]);

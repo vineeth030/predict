@@ -29,6 +29,10 @@ class User extends Authenticatable
         'password',
         'old_rank',
         'new_rank',
+        'company_group_id',
+        'otp',
+        'verified'
+
     ];
 
     /**

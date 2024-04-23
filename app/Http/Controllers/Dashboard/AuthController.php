@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Redirect;
 class AuthController extends Controller
 {
     public function login(Request $request) : RedirectResponse {
+       // dd("inside login");
 
         $request->validate([
             'email' => 'email|required',

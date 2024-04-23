@@ -118,8 +118,12 @@ class PointController extends Controller
 
     public function allUserPoints()
     {
+        $companyGroupId = auth()->user()->company_group_id;
+       // dd($companyGroupId);
        // Calculate the sum of points for each user ID
         $userPoints = Point::select('user_id', DB::raw('SUM(points) as total_points'))
+            ->join('users', 'points.user_id', '=', 'users.id')
+            ->where('users.company_group_id', $companyGroupId)
             ->groupBy('user_id')
             ->orderBy('total_points', 'desc')
             ->get();
@@ -137,6 +141,7 @@ class PointController extends Controller
         ->select('users.id', 'users.name', 
             DB::raw('SUM(points.points) as total_points'), 
             'users.old_rank', 'users.new_rank')
+            ->where('users.company_group_id', $companyGroupId)
         ->groupBy('users.id', 'users.name', 'users.old_rank', 'users.new_rank')
         ->get();
 

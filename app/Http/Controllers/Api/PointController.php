@@ -124,6 +124,7 @@ class PointController extends Controller
         $userPoints = Point::select('user_id', DB::raw('SUM(points) as total_points'))
             ->join('users', 'points.user_id', '=', 'users.id')
             ->where('users.company_group_id', $companyGroupId)
+            ->where('users.verified', 1)
             ->groupBy('user_id')
             ->orderBy('total_points', 'desc')
             ->get();
@@ -142,6 +143,7 @@ class PointController extends Controller
             DB::raw('SUM(points.points) as total_points'), 
             'users.old_rank', 'users.new_rank')
             ->where('users.company_group_id', $companyGroupId)
+            ->where('users.verified', 1)
         ->groupBy('users.id', 'users.name', 'users.old_rank', 'users.new_rank')
         ->get();
 

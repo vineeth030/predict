@@ -91,7 +91,7 @@ class AuthController extends Controller
                     $authToken = $user->createToken('auth-token')->plainTextToken;
 
                     // Return the access token in the response
-                    return response()->json(['access_token' => $authToken], 200);
+                    return response()->json(['access_token' => $authToken, 'status_code' => 200, 'user_id' => $user->id, 'result' => "Login Success",]);
                 } else {
                     // Log out the user if email is not verified
                     auth()->logout();
@@ -103,7 +103,7 @@ class AuthController extends Controller
             }
         } catch (ValidationException $e) {
             // Return the error response with custom error messages and status code
-            return response()->json(['errors' => $e->errors(), 'code' => $e->status], $e->status);
+            return response()->json(['errors' => $e->errors(), 'status' => $e->status], $e->status);
         }
     }
 

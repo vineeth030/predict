@@ -14,7 +14,7 @@ class VersionController extends Controller
         
         try {
             $versions = Version::all();
-            return response()->json(['status' => 'success', 'data' => $versions], self::HTTP_OK);
+            return response()->json(['status' => 'success', 'status_code' => 200,'data' => $versions], self::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], self::HTTP_INTERNAL_SERVER_ERROR);
         }

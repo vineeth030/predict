@@ -64,7 +64,7 @@ class GameController extends Controller
 
 
 
-            return response()->json(['status' => 'success', 'data' => $games], self::HTTP_OK);
+            return response()->json(['status' => 'success','status_code' => 200, 'data' => $games], self::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], self::HTTP_INTERNAL_SERVER_ERROR);
         }

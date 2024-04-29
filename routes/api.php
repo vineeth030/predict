@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\PointController;
 use App\Http\Controllers\Api\VersionController;
 use App\Http\Controllers\Api\PredictionController;
+use App\Http\Controllers\Api\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,10 +25,14 @@ use App\Http\Controllers\Api\PredictionController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
+Route::post('/resend-otp', [AuthController::class, 'resendOtp']);
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::middleware('auth:sanctum')->get('/user/profile', [ProfileController::class, 'profile']);
 
 Route::post('/auth-lab', [LabController::class, 'sendRequest'])->name('auth-lab.sendRequest');
 
@@ -50,4 +55,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/head-to-head/', [PointController::class, 'headtoHead']);
     Route::get('/matches/{matchId}/top-predictions', [PredictionController::class, 'getTop3PredictionsForMatch']);
     Route::get('/users/allUserPoints', [PointController::class, 'allUserPoints']);
+   Route::post('/profile', [ProfileController::class, 'update']);
+  //  Route::put('profile', 'ProfileController@update');
+
+
 });

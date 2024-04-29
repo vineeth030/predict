@@ -31,7 +31,8 @@ class User extends Authenticatable
         'new_rank',
         'company_group_id',
         'otp',
-        'verified'
+        'verified',
+        'image'
 
     ];
 

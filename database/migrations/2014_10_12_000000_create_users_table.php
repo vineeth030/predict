@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email');
             $table->string('otp');
             $table->string('verified');
+            $table->string('image');
             $table->string('company_group_id');
             $table->string('designation')->nullable();
             $table->string('employee_id')->nullable();

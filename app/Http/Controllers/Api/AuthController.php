@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\VerifyEmail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Arr;
 
 
 class AuthController extends Controller
@@ -60,10 +61,23 @@ class AuthController extends Controller
             Mail::to($request->email)->send(new VerifyEmail($otp));
 
             // Return a JSON response indicating success
-            return response()->json(['message' => 'OTP sent to your email'], 200);
+            return response()->json(['message' => 'OTP sent to your email','status'=>200]);
         } catch (ValidationException $e) {
             // Return the error response with custom error code
-            return response()->json(['errors' => $e->errors(), 'code' => $e->status], $e->status);
+            // return response()->json(['errors' => $e->errors(), 'code' => $e->status], $e->status);
+            // Get the validation errors from the exception
+            $errors = $e->validator->errors()->toArray();
+            // dd($errors);
+
+            // Get the first error message
+            $errorMessage = Arr::first($errors);
+
+            // Return the error response with custom error code
+            $response = [
+                'error' => $errorMessage[0],
+                'code' => $e->status,
+            ];
+            return response()->json($response, $e->status);
         }
     }
 
@@ -95,11 +109,11 @@ class AuthController extends Controller
                 } else {
                     // Log out the user if email is not verified
                     auth()->logout();
-                    return response()->json(['error' => 'Email not verified'], 401);
+                    return response()->json(['error' => 'Email not verified','status'=>401]);
                 }
             } else {
                 // Return an error response if authentication fails
-                throw ValidationException::withMessages(['password' => 'The provided password is incorrect.'])->status(422);
+                throw ValidationException::withMessages(['password' => 'The provided password is incorrect.','status'=>200]);
             }
         } catch (ValidationException $e) {
             // Return the error response with custom error messages and status code
@@ -135,5 +149,59 @@ class AuthController extends Controller
 
         // Return an error response if user with the given email and OTP is not found
         return response()->json(['error' => 'Invalid OTP'], 400);
+    }
+
+
+    public function resendOtp(Request $request): JsonResponse
+    {
+        try {
+
+          // dd("inside resend otp");
+            // Validate the request data
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email',
+            ]);
+
+            // Check if the validation fails
+            if ($validator->fails()) {
+                // Throw a ValidationException with custom error code
+                throw ValidationException::withMessages($validator->errors()->toArray())->status(422);
+            }
+
+            // Find the user by email
+            $user = User::where('email', $request->email)->first();
+
+            // If user not found, return error response
+            if (!$user) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
+
+            // Generate a new OTP
+            $otp = mt_rand(100000, 999999);
+
+            // Update user's OTP
+            $user->otp = $otp;
+            $user->save();
+
+            // Send OTP to the user's email
+            Mail::to($user->email)->send(new VerifyEmail($otp));
+
+            // Return success response
+            return response()->json(['message' => 'OTP sent to your email'], 200);
+        } catch (ValidationException $e) {
+            // Return the error response with custom error code
+            $errors = $e->validator->errors()->toArray();
+            // dd($errors);
+
+            // Get the first error message
+            $errorMessage = Arr::first($errors);
+
+            // Return the error response with custom error code
+            $response = [
+                'error' => $errorMessage[0],
+                'code' => $e->status,
+            ];
+            return response()->json($response, $e->status);
+        }
     }
 }

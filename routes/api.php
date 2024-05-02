@@ -32,10 +32,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('auth:sanctum')->get('/user/profile', [ProfileController::class, 'profile']);
+
 
 Route::post('/auth-lab', [LabController::class, 'sendRequest'])->name('auth-lab.sendRequest');
-
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::get('/games', [GameController::class, 'index']);
@@ -52,11 +51,11 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/teams', [TeamController::class, 'index']);
 
     Route::get('/user-points/{userId}/total', [PointController::class, 'getTotalPointsForUser']);
-    Route::get('/head-to-head/', [PointController::class, 'headtoHead']);
+    Route::get('/head-to-head', [PointController::class, 'headtoHead']);
     Route::get('/matches/{matchId}/top-predictions', [PredictionController::class, 'getTop3PredictionsForMatch']);
     Route::get('/users/allUserPoints', [PointController::class, 'allUserPoints']);
-   Route::post('/profile', [ProfileController::class, 'update']);
-  //  Route::put('profile', 'ProfileController@update');
+    Route::post('/edit-profile', [ProfileController::class, 'update']);
+    Route::get('/user/profile', [ProfileController::class, 'profile']);
 
 
 });

@@ -74,8 +74,8 @@ class AuthController extends Controller
 
             // Return the error response with custom error code
             $response = [
-                'error' => $errorMessage[0],
-                'code' => $e->status,
+                'message' => $errorMessage[0],
+                'status' => $e->status,
             ];
             return response()->json($response, $e->status);
         }
@@ -148,7 +148,7 @@ class AuthController extends Controller
         }
 
         // Return an error response if user with the given email and OTP is not found
-        return response()->json(['error' => 'Invalid OTP'], 400);
+        return response()->json(['message' => 'Invalid OTP'], 400);
     }
 
 
@@ -173,7 +173,7 @@ class AuthController extends Controller
 
             // If user not found, return error response
             if (!$user) {
-                return response()->json(['error' => 'User not found'], 404);
+                return response()->json(['message' => 'User not found'], 404);
             }
 
             // Generate a new OTP
@@ -198,8 +198,8 @@ class AuthController extends Controller
 
             // Return the error response with custom error code
             $response = [
-                'error' => $errorMessage[0],
-                'code' => $e->status,
+                'message' => $errorMessage[0],
+                'status' => $e->status,
             ];
             return response()->json($response, $e->status);
         }

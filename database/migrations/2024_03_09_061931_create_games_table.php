@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('team_one_id');
             $table->integer('team_two_id');
+            $table->string('game_type');
             $table->integer('team_one_goals')->nullable();
             $table->integer('team_two_goals')->nullable();
             $table->integer('winning_team_id')->nullable();

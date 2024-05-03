@@ -20,7 +20,7 @@ class GameController extends Controller
 
 
 
-            $games = Game::all('id', 'team_one_id', 'team_two_id', 'team_one_goals', 'team_two_goals', 'winning_team_id', 'kick_off_time', 'first_goal_team_id');
+            $games = Game::all('id', 'team_one_id', 'team_two_id', 'team_one_goals', 'team_two_goals', 'winning_team_id', 'kick_off_time', 'first_goal_team_id','game_type');
 
 
 
@@ -28,7 +28,7 @@ class GameController extends Controller
                 $gameId = $game->id;
 
 
-                $game->team_one_name = $game->teamOne->name ? $game->teamOne->name : null;
+                $game->team_one_name = $game->teamOne->name ? $game->teamOne->name : null;            
                 $game->team_one_flag = $game->teamOne->flag? 'storage/' . $game->teamOne->flag : null;
                 $game->team_two_name = $game->teamTwo->name ? $game->teamTwo->name : null;
                 $game->team_two_flag = $game->teamTwo->flag ? 'storage/' . $game->teamTwo->flag : null;

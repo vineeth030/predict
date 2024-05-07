@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Mail\ForgotPasswordEmail;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Illuminate\Support\Facades\Mail;
@@ -13,6 +14,8 @@ use App\Mail\VerifyEmail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Hash;
 
 
 class AuthController extends Controller
@@ -61,7 +64,7 @@ class AuthController extends Controller
             Mail::to($request->email)->send(new VerifyEmail($otp));
 
             // Return a JSON response indicating success
-            return response()->json(['message' => 'OTP sent to your email','status'=>200]);
+            return response()->json(['message' => 'OTP sent to your email', 'status' => 200]);
         } catch (ValidationException $e) {
             // Return the error response with custom error code
             // return response()->json(['errors' => $e->errors(), 'code' => $e->status], $e->status);
@@ -109,15 +112,25 @@ class AuthController extends Controller
                 } else {
                     // Log out the user if email is not verified
                     auth()->logout();
-                    return response()->json(['error' => 'Email not verified','status'=>401]);
+                    return response()->json(['error' => 'Email not verified', 'status' => 401]);
                 }
             } else {
                 // Return an error response if authentication fails
-                throw ValidationException::withMessages(['password' => 'The provided password is incorrect.','status'=>200]);
+                throw ValidationException::withMessages(['password' => 'The provided password is incorrect.', 'status' => 422]);
             }
-        } catch (ValidationException $e) {
+        } /* catch (ValidationException $e) {
             // Return the error response with custom error messages and status code
-            return response()->json(['errors' => $e->errors(), 'status' => $e->status], $e->status);
+            $responseData = [
+                'errors' => $e->errors(),
+                'status' => $e->status
+            ];
+            return response()->json($responseData, $e->status);
+        } */
+        catch (ValidationException $e) {
+            // Return the error response with custom error messages and status code
+            $errorMessage = $e->errors()['password'][0];
+            $statusCode = $e->status;
+            return response()->json(['message' => $errorMessage, 'status' => $statusCode], $statusCode);
         }
     }
 
@@ -142,13 +155,14 @@ class AuthController extends Controller
         if ($user) {
             // Update user status or perform any other actions as needed
             $user->update(['verified' => true]); // Example: Mark user as verified
+            
 
             // Return a success response
-            return response()->json(['message' => 'OTP verified successfully'], 200);
+            return response()->json(['message' => 'OTP verified successfully','status' => 200], 200);
         }
 
         // Return an error response if user with the given email and OTP is not found
-        return response()->json(['message' => 'Invalid OTP'], 400);
+        return response()->json(['message' => 'Invalid OTP','status' => 400], 400);
     }
 
 
@@ -156,7 +170,7 @@ class AuthController extends Controller
     {
         try {
 
-          // dd("inside resend otp");
+            // dd("inside resend otp");
             // Validate the request data
             $validator = Validator::make($request->all(), [
                 'email' => 'required|email',
@@ -173,7 +187,7 @@ class AuthController extends Controller
 
             // If user not found, return error response
             if (!$user) {
-                return response()->json(['message' => 'User not found'], 404);
+                return response()->json(['message' => 'User not found','status' => 404]);
             }
 
             // Generate a new OTP
@@ -187,7 +201,7 @@ class AuthController extends Controller
             Mail::to($user->email)->send(new VerifyEmail($otp));
 
             // Return success response
-            return response()->json(['message' => 'OTP sent to your email'], 200);
+            return response()->json(['message' => 'OTP sent to your email','status' => 200], 200);
         } catch (ValidationException $e) {
             // Return the error response with custom error code
             $errors = $e->validator->errors()->toArray();
@@ -203,5 +217,65 @@ class AuthController extends Controller
             ];
             return response()->json($response, $e->status);
         }
+    }
+
+
+    public function forgotPassword(Request $request)
+    {
+        try {
+            $request->validate(['email' => 'required|email']);
+    
+            // Check if the email exists in the database
+            $user = User::where('email', $request->email)->first();
+            if (!$user) {
+                throw ValidationException::withMessages(['email' => 'This email does not exist in our records.']);
+            }
+    
+            // Generate OTP
+            $otp = rand(100000, 999999);
+    
+            // Store the OTP in the database
+            $user->password_reset_otp = $otp;
+            $user->save();
+    
+            // Send the OTP to the user's email
+            Mail::to($request->email)->send(new ForgotPasswordEmail($otp));
+    
+            // Return a response indicating success
+            return response()->json(['message' => 'OTP sent to your email','status' => 200], 200);
+        } catch (\Exception $e) {
+            // Handle any exceptions, such as mail sending failures
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function resetPassword(Request $request)
+    {
+
+        $request->validate([
+            'email' => 'required|email',
+            'otp' => 'required|digits:6',
+            'password' => 'required|min:6',
+        ]);
+
+        // Check if the OTP matches the one stored in the database
+        $user = User::where('email', $request->email)
+            ->where('password_reset_otp', $request->otp)
+            ->first();
+
+        if (!$user) {
+            return response()->json(['error' => 'Invalid OTP','status' => 422], 422);
+        }
+
+        // Update the user's password
+        $user->password = bcrypt($request->password);
+        $user->save();
+
+        // Clear the OTP
+        $user->password_reset_otp = null;
+        $user->save();
+
+        // Return a response indicating success
+        return response()->json(['message' => 'Password reset successfully','status' => 200], 200);
     }
 }

@@ -29,13 +29,14 @@ class GameController extends Controller
 
 
                 $game->team_one_name = $game->teamOne->name ? $game->teamOne->name : null;            
-                $game->team_one_flag = $game->teamOne->flag? 'storage/' . $game->teamOne->flag : null;
+             //   $game->team_one_flag = $game->teamOne->flag? 'storage/' . $game->teamOne->flag : null;
+                $game->team_one_flag = $game->teamOne->flag ? asset('storage/' . $game->teamOne->flag) : null;
                 $game->team_two_name = $game->teamTwo->name ? $game->teamTwo->name : null;
-                $game->team_two_flag = $game->teamTwo->flag ? 'storage/' . $game->teamTwo->flag : null;
+                $game->team_two_flag = $game->teamTwo->flag ? asset('storage/' . $game->teamTwo->flag) : null;
                 $game->winning_team_name = $game->winningTeam->name ? $game->winningTeam->name : null;
-                $game->winning_team_flag = $game->winningTeam->flag ? 'storage/' .  $game->winningTeam->flag : null;
+                $game->winning_team_flag = $game->winningTeam->flag ? asset('storage/' . $game->winningTeam->flag) : null;
                 $game->firstgoal_team_name = $game->firstGoalTeam->name ? $game->firstGoalTeam->name : null;
-                $game->first_goal_team_flag = $game->firstGoalTeam->flag ? 'storage/' .  $game->firstGoalTeam->flag : null;
+                $game->first_goal_team_flag = $game->firstGoalTeam->flag ?  asset('storage/' . $game->firstGoalTeam->flag) : null;
 
            // dd($game->firstGoalTeam->name ? $game->firstGoalTeam->name : null);
                 unset($game->teamOne, $game->teamTwo, $game->winningTeam , $game->firstGoalTeam);
@@ -115,6 +116,6 @@ class GameController extends Controller
      */
     public function destroy(Game $game)
     {
-        //
+        //  
     }
 }

@@ -32,7 +32,8 @@ class User extends Authenticatable
         'company_group_id',
         'otp',
         'verified',
-        'image'
+        'image',
+        'password_reset_otp'
 
     ];
 

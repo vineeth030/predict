@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email');
             $table->string('otp');
+            $table->string('password_reset_otp');
             $table->string('verified');
             $table->string('image');
             $table->string('company_group_id');

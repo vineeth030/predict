@@ -64,6 +64,9 @@ class PredictionController extends Controller
     public function update(Request $request, Prediction $prediction)
     {
         try {
+
+
+            
             $userId = auth()->user()->id;
             $gameId = $request->input('game_id');
 

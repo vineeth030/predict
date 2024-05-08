@@ -20,7 +20,8 @@ return new class extends Migration
             $table->integer('team_two_goals')->nullable();
             $table->integer('winning_team_id')->nullable();
             $table->integer('first_goal_team_id')->nullable();
-            $table->timestamp('kick_off_time')->nullable();
+            $table->string('kick_off_time');
+          //  $table->timestamp('kick_off_time')->nullable();
             $table->timestamps();
         });
     }

@@ -16,14 +16,16 @@ class CheckKickoffTime
      */
     public function handle($request, Closure $next)
     {
-        $gameId = $request->route('game_id'); // Adjust this based on your route parameter name
 
+       
+        $gameId = $request->get('game_id'); // Adjust this based on your route parameter name
+        // dd($gameId);
         // Retrieve the game from the database
         $game = Game::findOrFail($gameId);
 
         // Check if kickoff time has passed or if it's null
         if ($game->kick_off_time === null || now()->gt($game->kick_off_time)) {
-            return response()->json(['error' => 'Kickoff time has passed or not set yet'], 403);
+            return response()->json(['error' => 'Kickoff time has passed or not set yet','code' =>'403']);
         }
 
         // Allow the request to proceed

@@ -26,7 +26,9 @@ class UserFactory extends Factory
         return [
             'name' => fake()->firstName() . ' ' . fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
+            'otp' => rand(1000, 9999),
             'designation' => fake()->jobTitle(),
+            'verified' => 1,
             'employee_id' => rand(10, 500),
             'image' => rand(10, 200) . '_photo.jpg',
             'company_group_id' => rand(1,2),

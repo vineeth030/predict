@@ -59,7 +59,15 @@ class ProfileController extends Controller
 
         $user = $request->user(); // Retrieve the authenticated user
 
+      $imageUrl = $user->image ? asset('storage/' . $user->image) : null;
+
+      // Append the image URL to the user data
+      $userData = $user->toArray();
+      $userData['image_url'] = $imageUrl;
+
+      return response()->json(['status' => 'success', 'data' => $userData]);
+
         // Return the user's profile as a JSON response
-        return response()->json(['profile' => $user]);
+       // return response()->json(['profile' => $user]);
     }
 }

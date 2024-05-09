@@ -18,27 +18,34 @@ class GameController extends Controller
     {
         try {
 
+            $currentTime = now()->timestamp * 1000;
 
 
-            $games = Game::all('id', 'team_one_id', 'team_two_id', 'team_one_goals', 'team_two_goals', 'winning_team_id', 'kick_off_time', 'first_goal_team_id','game_type');
+            $games = Game::all('id', 'team_one_id', 'team_two_id', 'team_one_goals', 'team_two_goals', 'winning_team_id', 'kick_off_time', 'first_goal_team_id', 'game_type');
 
 
 
             foreach ($games as $game) {
+
+
+                $isStarted = $game->kick_off_time <= $currentTime;
+
                 $gameId = $game->id;
 
 
-                $game->team_one_name = $game->teamOne->name ? $game->teamOne->name : null;            
-                $game->team_one_flag = $game->teamOne->flag? 'storage/' . $game->teamOne->flag : null;
+                $game->team_one_name = $game->teamOne->name ? $game->teamOne->name : null;
+                //   $game->team_one_flag = $game->teamOne->flag? 'storage/' . $game->teamOne->flag : null;
+                $game->team_one_flag = $game->teamOne->flag ? asset('storage/' . $game->teamOne->flag) : null;
                 $game->team_two_name = $game->teamTwo->name ? $game->teamTwo->name : null;
-                $game->team_two_flag = $game->teamTwo->flag ? 'storage/' . $game->teamTwo->flag : null;
+                $game->team_two_flag = $game->teamTwo->flag ? asset('storage/' . $game->teamTwo->flag) : null;
                 $game->winning_team_name = $game->winningTeam->name ? $game->winningTeam->name : null;
-                $game->winning_team_flag = $game->winningTeam->flag ? 'storage/' .  $game->winningTeam->flag : null;
+                $game->winning_team_flag = $game->winningTeam->flag ? asset('storage/' . $game->winningTeam->flag) : null;
                 $game->firstgoal_team_name = $game->firstGoalTeam->name ? $game->firstGoalTeam->name : null;
-                $game->first_goal_team_flag = $game->firstGoalTeam->flag ? 'storage/' .  $game->firstGoalTeam->flag : null;
+                $game->first_goal_team_flag = $game->firstGoalTeam->flag ?  asset('storage/' . $game->firstGoalTeam->flag) : null;
+                $game->isStarted = $isStarted;
 
-           // dd($game->firstGoalTeam->name ? $game->firstGoalTeam->name : null);
-                unset($game->teamOne, $game->teamTwo, $game->winningTeam , $game->firstGoalTeam);
+                // dd($game->firstGoalTeam->name ? $game->firstGoalTeam->name : null);
+                unset($game->teamOne, $game->teamTwo, $game->winningTeam, $game->firstGoalTeam);
 
                 // Retrieve top 3 predictions for the current match
                 $totalPredictions = DB::table('predictions')
@@ -64,7 +71,7 @@ class GameController extends Controller
 
 
 
-            return response()->json(['status' => 'success','status_code' => 200, 'data' => $games], self::HTTP_OK);
+            return response()->json(['status' => 'success', 'status_code' => 200, 'data' => $games], self::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], self::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -115,6 +122,6 @@ class GameController extends Controller
      */
     public function destroy(Game $game)
     {
-        //
+        //  
     }
 }

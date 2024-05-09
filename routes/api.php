@@ -37,24 +37,20 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-//Route::middleware(['auth:sanctum', 'check_kickoff_time'])->post('/predictions/update', [PredictionController::class, 'update']);
+Route::middleware(['auth:sanctum', 'check_kickoff_time'])->post('/predictions/update', [PredictionController::class, 'update']);
 
 Route::post('/auth-lab', [LabController::class, 'sendRequest'])->name('auth-lab.sendRequest');
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::get('/games', [GameController::class, 'index']);
-
     Route::get('/points', [PointController::class, 'index']);
     Route::get('/points/user/show', [PointController::class, 'show']);
-
     Route::get('/predictions', [PredictionController::class, 'index']);
-    Route::get('/predictions/user/show', [PredictionController::class, 'show']);
+   // Route::get('/predictions/user/show', [PredictionController::class, 'show']);
+
     Route::post('/predictions/update', [PredictionController::class, 'update']);
-
     Route::get('/versions', [VersionController::class, 'index']);
-
     Route::get('/teams', [TeamController::class, 'index']);
-
     Route::get('/user-points/{userId}/total', [PointController::class, 'getTotalPointsForUser']);
     Route::get('/head-to-head', [PointController::class, 'headtoHead']);
     Route::get('/matches/{matchId}/top-predictions', [PredictionController::class, 'getTop3PredictionsForMatch']);

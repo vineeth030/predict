@@ -31,6 +31,9 @@ class TeamController extends Controller
                 'teams.*.wins' => 'integer',
                 'teams.*.draws' => 'integer',
                 'teams.*.losses' => 'integer',
+                'teams.*.GF' => 'integer',
+                'teams.*.GD' => 'integer',
+                'teams.*.GA' => 'integer',
             ]);
 
             // Update standings data based on form input

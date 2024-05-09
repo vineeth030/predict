@@ -21,4 +21,29 @@ class Prediction extends Model
     {
         return $this->belongsTo(Game::class);
     }
+
+ /*public function teamOne()
+    {
+        return $this->belongsTo(Team::class, 'team_one_id');
+    }
+
+    // Define the relationship with the team for team two
+    public function teamTwo()
+    {
+        return $this->belongsTo(Team::class, 'team_two_id');
+    }
+
+    // Define the relationship with the winning team
+    public function winningTeam()
+    {
+        return $this->belongsTo(Team::class, 'winning_team_id');
+    }
+
+    // Define the relationship with the first goal team
+    public function firstGoalTeam()
+    {
+        return $this->belongsTo(Team::class, 'first_goal_team_id');
+    }
+*/
+
 }

@@ -14,7 +14,9 @@
             <tr>
                 <th>ID</th>
                 <th>Team1 ID</th>
+                <th>Team1 Name</th>
                 <th>Team2 ID</th>
+                <th>Team2 Name</th>
 
             </tr>
         </thead>
@@ -23,13 +25,15 @@
             <tr>
                 <td>{{ $game->id }}</td>
                 <td>{{ $game->team_one_id }}</td>
+                <td>{{ $game->teamOne->name ? $game->teamOne->name : null;}}</td>
                 <td>{{ $game->team_two_id}}</td>
+                <td>{{ $game->teamTwo->name ? $game->teamTwo->name : null;}}</td>
                 <td>{{ $game->result }}</td>
                 <td>
                     <form method="POST" action="{{ route('games.update', ['id' => $game->id]) }}">
                         @method('PUT')
                         @csrf
-                        <label for="WinningTeam">Winning Team</label>
+                        <label for="WinningTeam">Winning Team ID</label>
                         <input type="text" name="winning_team_id" value="{{ $game->winning_team_id }}" min="0">
 
                         <label for="Team1Goals">Team 1 Goals:</label>
@@ -38,7 +42,7 @@
                         <label for="Team2Goals">Team 2 Goals:</label>
                         <input type="number" name="team_two_goals" value="{{ $game->team_two_goals }}" min="0">
 
-                        <label for="First Goal Team">First Goal Team</label>
+                        <label for="First Goal Team">First Goal Team ID</label>
                         <input type="number" name="first_goal_team_id" value="{{ $game->first_goal_team_id }}" min="0">
 
                         <button type="submit" class="btn btn-primary btn-sm">Submit</button>

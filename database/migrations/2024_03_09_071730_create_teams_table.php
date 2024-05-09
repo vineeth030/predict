@@ -15,13 +15,16 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('short_name');
-            $table->integer('group_id');
+            $table->string('group_id');
             $table->string('flag')->nullable();
             $table->integer('points')->nullable();
             $table->integer('games_played')->nullable();
             $table->integer('wins')->nullable();
             $table->integer('draws')->nullable();
             $table->integer('losses')->nullable();
+            $table->integer('GF')->nullable();
+            $table->integer('GA')->nullable();
+            $table->integer('GD')->nullable();
             $table->timestamps();
         });
     }

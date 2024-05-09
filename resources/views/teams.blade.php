@@ -19,11 +19,15 @@
                     <th>ID</th>
                     <th>Team Name</th>
                     <th>Group</th>
-                    <th>Total Points</th>
+                   
                     <th>MGames Played</th>
                     <th>Wins</th>
                     <th>Draws</th>
                     <th>Losses</th>
+                    <th>GF</th>
+                    <th>GD</th>
+                    <th>GA</th>
+                    <th>Total Points</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,11 +36,15 @@
                     <td>{{ $team->id}}</td>
                     <td>{{ $team->name}}</td>
                     <td>{{ $team->group_id}}</td>
-                    <td><input type="number" name="teams[{{ $team->id }}][points]" value="{{ $team->points ?? 0 }}"></td>
+                  
                     <td><input type="number" name="teams[{{ $team->id }}][matches_played]" value="{{ $team->matches_played ?? 0 }}"></td>
                     <td><input type="number" name="teams[{{ $team->id }}][wins]" value="{{ $team->wins ?? 0 }}"></td>
                     <td><input type="number" name="teams[{{ $team->id }}][draws]" value="{{ $team->draws ?? 0 }}"></td>
                     <td><input type="number" name="teams[{{ $team->id }}][losses]" value="{{ $team->losses ?? 0 }}"></td>
+                    <td><input type="number" name="teams[{{ $team->id }}][GF]" value="{{ $team->GF ?? 0 }}"></td>
+                    <td><input type="number" name="teams[{{ $team->id }}][GD]" value="{{ $team->GD ?? 0 }}"></td>
+                    <td><input type="number" name="teams[{{ $team->id }}][GA]" value="{{ $team->GA ?? 0 }}"></td>
+                    <td><input type="number" name="teams[{{ $team->id }}][points]" value="{{ $team->points ?? 0 }}"></td>
                 </tr>
                 @endforeach
             </tbody>

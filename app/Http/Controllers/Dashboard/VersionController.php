@@ -58,6 +58,7 @@ class VersionController extends Controller
             'code' => 'required|string',
             'name' => 'required|string',
             'is_mandatory' => 'required|string',
+          
         ]);
 
         //dd( $validated);
@@ -68,7 +69,8 @@ class VersionController extends Controller
             [
                 'code' => $validated['code'], // Values to update or insert
                 'name' => $validated['name'], // Values to update or insert
-                'is_mandatory' => $validated['is_mandatory']
+                'is_mandatory' => $validated['is_mandatory'],
+                'countdown_timer' => $milliseconds
             ] // Values to update or insert
         );
 

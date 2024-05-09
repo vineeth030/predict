@@ -13,7 +13,7 @@ class Game extends Model
     public $table = "games";
   
       protected $fillable = [
-          'team_one_id', 'team_two_id', 'kick_off_time', 'winning_team_id', 'team_one_goals', 'team_two_goals','first_goal_team_id','game_type'
+          'team_one_id', 'team_two_id', 'kick_off_time', 'winning_team_id', 'team_one_goals', 'team_two_goals','first_goal_team_id','game_type','match_status'
           // Add other match properties as needed
       ];
 

@@ -12,20 +12,20 @@ class TeamController extends Controller
     public function index(){
         
         try {
-            // $result = [
-            //     "status" =>  200,
-            //     "message" => "Success",
-            //     "standings" => [],
-            //     'testKey' => 'arsnteio12345'
-            // ];
+            $result = [
+                "status" =>  200,
+                "message" => "Success",
+                "standings" => [],
+                'testKey' => 'arsnteio12345'
+            ];
 
             $teams = DB::table('teams')->orderBy('points', 'desc')->get()->groupBy('group_id');
            
-            // foreach ($standings as $key => $standing) {
-            //     $result["standings"][] = ['group_id' => $key, 'table' => $standing];
-            // }
+            foreach ($teams as $key => $team) {
+                $result["standings"][] = ['group_id' => $key, 'table' => $team];
+            }
 
-            return response()->json($teams, 200);
+            return response()->json($result, 200);
 
         } catch (\Exception $e) {
 

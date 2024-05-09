@@ -25,6 +25,7 @@ class GameController extends Controller
             $game = Game::findOrFail($id);
             // dd($game);
             $game->update($request->only(['winning_team_id', 'team_one_goals', 'team_two_goals', 'first_goal_team_id']));
+            $game->update(['match_status' => 'completed']);
             $this->calculateUserPoints($game);
 
             return redirect()->back()->with('success', 'Match result updated successfully');
@@ -59,6 +60,9 @@ class GameController extends Controller
                     $firstGoalprediction += 1;
                 }
             }
+
+         
+            
             // Find existing user points or create new if not exist
             $userPoint = Point::where('user_id', $prediction->user_id)
                 ->where('game_id', $game->id)

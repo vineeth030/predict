@@ -19,30 +19,32 @@ class GameController extends Controller
     {
         try {
             $currentTime = now()->timestamp * 1000;
-    
+
+           
+
             // Fetch all games
-            $games = Game::with('predictions') 
-                        ->get(['id', 'game_type', 'team_one_id', 'team_two_id', 'team_one_goals', 'team_two_goals', 'winning_team_id', 'first_goal_team_id', 'kick_off_time','match_status']);
-    
+            $games = Game::with('predictions')
+                ->get(['id', 'game_type', 'team_one_id', 'team_two_id', 'team_one_goals', 'team_two_goals', 'winning_team_id', 'first_goal_team_id', 'kick_off_time', 'match_status']);
+
             $upcomingGames = [];
             $completedGames = [];
             $ongoingGames = [];
-    
+
             foreach ($games as $game) {
-               
-                if ( $game->match_status !== 'completed') {
+
+                if ($game->match_status !== 'completed') {
                     $upcomingGames[] = $this->prepareGameData($game, $currentTime);
-                }
-              
-                elseif ($game->match_status === 'completed') {
+                } elseif ($game->match_status === 'completed') {
                     $completedGames[] = $this->prepareGameData($game, $currentTime);
-                }
-              
-                elseif ($game->kick_off_time <= $currentTime && $game->match_status !== 'completed') {
+
+                 //   $completedMatchPredictions[$game->id] = $game->predictions;
+
+                  //  dd($game->predictions);
+                } elseif ($game->kick_off_time <= $currentTime && $game->match_status !== 'completed') {
                     $ongoingGames[] = $this->prepareGameData($game, $currentTime);
                 }
             }
-    
+
             return response()->json([
                 'status' => 'success',
                 'status_code' => 200,
@@ -54,57 +56,65 @@ class GameController extends Controller
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], self::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     private function prepareGameData($game, $currentTime)
     {
         $predictions = $game->predictions;
         $isStarted = $game->kick_off_time <= $currentTime;
-      
     
-       
-        $game->team_one_name = $game->teamOne->name ?? null;
-        $game->team_one_flag = $game->teamOne->flag ? asset('storage/' . $game->teamOne->flag) : null;
-        $game->team_two_name = $game->teamTwo->name ?? null;
-        $game->team_two_flag = $game->teamTwo->flag ? asset('storage/' . $game->teamTwo->flag) : null;
-        $game->winning_team_name = $game->winningTeam->name ?? null;
-        $game->winning_team_flag = $game->winningTeam->flag ? asset('storage/' . $game->winningTeam->flag) : null;
-        $game->firstgoal_team_name = $game->firstGoalTeam->name ?? null;
-        $game->first_goal_team_flag = $game->firstGoalTeam->flag ? asset('storage/' . $game->firstGoalTeam->flag) : null;
+        $game->team_one_name = $game->teamOne ? $game->teamOne->name : null;
+        $game->team_two_name = $game->teamTwo ? $game->teamTwo->name : null;
+        $game->winning_team_name = $game->winningTeam ? $game->winningTeam->name : null;
+        $game->firstgoal_team_name = $game->firstGoalTeam ? $game->firstGoalTeam->name : null;
+       // $game->team_one_flag = $game->teamOne ? asset('storage/' . $game->teamOne->flag) : null;    
+      //  $game->team_two_flag = $game->teamTwo ? asset('storage/' . $game->teamTwo->flag) : null;      
+       // $game->winning_team_flag = $game->winningTeam ? asset('storage/' . $game->winningTeam->flag) : null;    
+       // $game->first_goal_team_flag = $game->firstGoalTeam ? asset('storage/' . $game->firstGoalTeam->flag) : null;
         $game->isStarted = $isStarted;
-       
-        foreach ($predictions as $prediction) {
-            // $predictedTeamOne = Team::find($prediction->team_one_id);
-            // $predictedTeamTwo = Team::find($prediction->team_two_id);
-            // $predictedWinningTeam = Team::find($prediction->winning_team_id);
-            // $predictedFirstGoalTeam = Team::find($prediction->first_goal_team_id);
-                
-            $game->predicted_team_one_goals = $prediction->team_one_goals;
-          //  $game->predicted_team_one_name = $predictedTeamOne ? $predictedTeamOne->name : null;
-            $game->predicted_team_two_goals = $prediction->team_two_goals;
-          //  $game->predicted_team_two_name = null ;
-            $game->predicted_winning_team_id = $prediction->winning_team_id;
-           // $game->predicted_winning_team_name = null ;
-            $game->predicted_first_goal_id = $prediction->first_goal_team_id;
-          //  $game->predicted_first_goal_name = null ;
-            $game->is_score_predicted = !is_null($prediction->team_one_goals && $prediction->team_two_goals);
-            $game->is_first_goal_predicted = !is_null($prediction->winning_team_id);            
 
-            }
-        $game->top_predictions = $this->getTopPredictions($game->id);
+        $game->team_one_flag = $game->teamOne ? $game->teamOne->flag : null;
+        if (!is_null($game->team_one_flag)) {
+            $game->team_one_flag = asset('storage/' . $game->team_one_flag);
+        }
+
+        $game->team_two_flag = $game->teamTwo ? $game->teamTwo->flag : null;
+        if (!is_null($game->team_two_flag)) {
+            $game->team_two_flag = asset('storage/' . $game->team_two_flag);
+        }
+        $game->winning_team_flag = $game->winningTeam ? $game->winningTeam->flag : null;
+        if (!is_null($game->winning_team_flag)) {
+            $game->winning_team_flag = asset('storage/' . $game->winning_team_flag);
+        }
+        $game->first_goal_team_flag = $game->firstGoalTeam ? $game->firstGoalTeam->flag : null;
+        if (!is_null($game->first_goal_team_flag)) {
+            $game->first_goal_team_flag = asset('storage/' . $game->first_goal_team_flag);
+        }
 
     
-      
+        foreach ($predictions as $prediction) {
+            $game->predicted_team_one_goals = $prediction->team_one_goals ?? null;
+            $game->predicted_team_two_goals = $prediction->team_two_goals ?? null;
+            $game->predicted_winning_team_id = $prediction->winning_team_id ?? null;
+            $game->predicted_first_goal_id = $prediction->first_goal_team_id ?? null;
+            $game->is_score_predicted = !is_null($prediction->team_one_goals && $prediction->team_two_goals);
+            $game->is_first_goal_predicted = !is_null($prediction->winning_team_id);
+        }
+        $game->top_predictions = $this->getTopPredictions($game->id);
+        
+    
         unset($game->teamOne, $game->teamTwo, $game->winningTeam, $game->firstGoalTeam, $game->predictions);
     
         return $game;
     }
     
+
     private function getTopPredictions($gameId)
     {
+
         $totalPredictions = DB::table('predictions')
             ->where('game_id', $gameId)
             ->count();
-    
+
         return DB::table('predictions')
             ->select(
                 'team_one_goals',
@@ -118,7 +128,7 @@ class GameController extends Controller
             ->take(4)
             ->get();
     }
-    
+
 
     /**
      * Show the form for creating a new resource.

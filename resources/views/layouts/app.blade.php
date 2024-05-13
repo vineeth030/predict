@@ -96,6 +96,13 @@
       .nav-link{
         color: black !important;
       }
+
+      .game-list{
+        font-size:12px
+      }
+      .team-list{
+        font-size:12px
+      }
     </style>
 
 

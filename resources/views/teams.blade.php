@@ -13,7 +13,7 @@
     @method('PUT')
                         @csrf
 
-        <table class="table table-striped">
+        <table class="table table-striped team-list">
             <thead>
                 <tr>
                     <th>ID</th>

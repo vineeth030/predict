@@ -25,6 +25,7 @@ class GameFactory extends Factory
             'team_two_id' => $team_two_id,
             'team_one_goals' => rand(0,3),
             'team_two_goals' => rand(0,3),
+            'match_status' => 'upcoming',
             'winning_team_id' => $team_one_id,
             'kick_off_time' => Carbon::now(),
             'game_type' => 'Group Stage'

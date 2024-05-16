@@ -19,12 +19,15 @@ class TeamFactory extends Factory
         return [
             'name' => fake()->name(),
             'short_name' => fake()->word(),
-            'group_id' => rand(1,6),
-            'points' => rand(0,10),
-            'games_played' => rand(1,3),
-            'wins' => rand(1,3),
-            'draws' => rand(1,2),
-            'losses' => rand(1,2)
+            'group_id' => 0,
+            'points' => 0,
+            'games_played' => 0,
+            'wins' => 0,
+            'draws' => 0,
+            'losses' => 0,
+            'GF' => 0,
+            'GA' => 0,
+            'GD' => 0
         ];
     }
 }

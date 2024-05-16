@@ -20,6 +20,7 @@ class TeamFactory extends Factory
             'name' => fake()->name(),
             'short_name' => fake()->word(),
             'group_id' => 0,
+            'flag' => null,
             'points' => 0,
             'games_played' => 0,
             'wins' => 0,

@@ -51,7 +51,7 @@ class TeamSeeder extends Seeder
                 'name' => $team[0],
                 'short_name' => $team[1],
                 'group_id' => $team[2],
-
+                'flag' => $team[3],
             ]);
         }
     }

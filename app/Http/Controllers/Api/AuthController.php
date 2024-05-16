@@ -117,7 +117,7 @@ class AuthController extends Controller
                 }
             } else {
                 // Return an error response if authentication fails
-                throw ValidationException::withMessages(['error' => 'The provided password is incorrect.', 'status' => 422]);
+                throw ValidationException::withMessages(['error' => 'The provided password is incorrect.', 'status_code' => 422]);
             }
         } /* catch (ValidationException $e) {
             // Return the error response with custom error messages and status code
@@ -132,7 +132,7 @@ class AuthController extends Controller
             // Return the error response with custom error messages and status code
             $errorMessage = $e->errors()['error'][0];
             $statusCode = $e->status;
-            return response()->json(['message' => $errorMessage, 'status' => $statusCode], $statusCode);
+            return response()->json(['result' => $errorMessage, 'status_code' => $statusCode], $statusCode);
         }
     }
 

@@ -139,9 +139,9 @@ try{
                 'user1' => [
                     'user_id' =>  $userId1,
                     'matches_played' => $user1MatchesPlayed,
-                    'points' => $user1Points,
+                    'points' => "$user1Points",
                     'wins' => $user1Wins,
-                    'win_percentage' => round($user1WinPercentage, 2),
+                    'win_percentage' => round($user1WinPercentage, 0),
                     'score_predicted' => Point::where('user_id', $userId1)->where('goal_prediction', 3)->count(),
                     'first_goal_predicted' => Point::where('user_id', $userId1)->where('first_goal_prediction', 1)->count(),
                     'win_predicted' => Point::where('user_id', $userId1)->where('win_prediction', 1)->count(),
@@ -149,9 +149,9 @@ try{
                 'user2' => [
                     'user_id' =>  $userId2,
                     'matches_played' => $user2MatchesPlayed,
-                    'points' => $user2Points,
+                    'points' => "$user2Points",
                     'wins' => $user2Wins,
-                    'win_percentage' => round($user2WinPercentage, 2),
+                    'win_percentage' => round($user2WinPercentage, 0),
                     'score_predicted' => Point::where('user_id', $userId2)->where('goal_prediction', 3)->count(),
                     'first_goal_predicted' => Point::where('user_id', $userId2)->where('first_goal_prediction', 1)->count(),
                     'win_predicted' => Point::where('user_id', $userId2)->where('win_prediction', 1)->count(),

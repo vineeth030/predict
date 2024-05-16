@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Game;
-use App\Models\Team;
+use App\Models\Point;
+use Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use GuzzleHttp\Psr7\Response;
@@ -18,13 +19,25 @@ class GameController extends Controller
     public function index()
     {
         try {
+         
+            $userId = auth()->user()->id;
+        //  $userId = 27;
+           /// dd($userId);
             $currentTime = now()->timestamp * 1000;
 
-           
+           $games = Game::with(['predictions' => function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        }])
+            ->get(['id', 'game_type', 'team_one_id', 'team_two_id', 'team_one_goals', 'team_two_goals', 'winning_team_id', 'first_goal_team_id', 'kick_off_time', 'match_status']);
 
             // Fetch all games
-            $games = Game::with('predictions')
+            // $games = Game::with('predictions')
+            //     ->get(['id', 'game_type', 'team_one_id', 'team_two_id', 'team_one_goals', 'team_two_goals', 'winning_team_id', 'first_goal_team_id', 'kick_off_time', 'match_status']);
+            $games = Game::with(['predictions' => function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            }])
                 ->get(['id', 'game_type', 'team_one_id', 'team_two_id', 'team_one_goals', 'team_two_goals', 'winning_team_id', 'first_goal_team_id', 'kick_off_time', 'match_status']);
+
 
             $upcomingGames = [];
             $completedGames = [];
@@ -59,6 +72,7 @@ class GameController extends Controller
 
     private function prepareGameData($game, $currentTime)
     {
+        $userId = auth()->user()->id;
         $predictions = $game->predictions;
         $isStarted = $game->kick_off_time <= $currentTime;
     
@@ -70,6 +84,13 @@ class GameController extends Controller
       //  $game->team_two_flag = $game->teamTwo ? asset('storage/' . $game->teamTwo->flag) : null;      
        // $game->winning_team_flag = $game->winningTeam ? asset('storage/' . $game->winningTeam->flag) : null;    
        // $game->first_goal_team_flag = $game->firstGoalTeam ? asset('storage/' . $game->firstGoalTeam->flag) : null;
+
+       if ($game->match_status === 'completed') {
+        $totalPoints = Point::where('game_id', $game->id)->where('user_id',$userId)->sum('points');
+        $game->points =(int) $totalPoints;
+    } else {
+        $game->points = null; // Set points to null for upcoming and ongoing games
+    }
         $game->isStarted = $isStarted;
 
         $game->team_one_flag = $game->teamOne ? $game->teamOne->flag : null;

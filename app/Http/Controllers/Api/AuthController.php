@@ -96,7 +96,8 @@ class AuthController extends Controller
             // Check if the email exists in the database
             $user = User::where('email', $request->email)->first();
             if (!$user) {
-                throw ValidationException::withMessages(['email' => 'Email is not registered.'])->status(422);
+              
+                throw ValidationException::withMessages(['error' => 'Email is not registered.'])->status(422);
             }
 
             // Attempt to authenticate the user
@@ -116,19 +117,20 @@ class AuthController extends Controller
                 }
             } else {
                 // Return an error response if authentication fails
-                throw ValidationException::withMessages(['password' => 'The provided password is incorrect.', 'status' => 422]);
+                throw ValidationException::withMessages(['error' => 'The provided password is incorrect.', 'status' => 422]);
             }
         } /* catch (ValidationException $e) {
             // Return the error response with custom error messages and status code
             $responseData = [
-                'errors' => $e->errors(),
-                'status' => $e->status
+                             
+                'status' => $e->status,
+                'errors' => $e->errors()
             ];
             return response()->json($responseData, $e->status);
         } */
         catch (ValidationException $e) {
             // Return the error response with custom error messages and status code
-            $errorMessage = $e->errors()['password'][0];
+            $errorMessage = $e->errors()['error'][0];
             $statusCode = $e->status;
             return response()->json(['message' => $errorMessage, 'status' => $statusCode], $statusCode);
         }

@@ -8,7 +8,8 @@
         <div class="btn-toolbar mb-2 mb-md-0">
         </div>
     </div>
-    <p style="color:red">** Incase of match is  draw then Winning Team ID will be 0</p>
+    <p style="color:red">** Incase of match is  draw then Winning Team ID will be 0</p> 
+    <p style="color:red">** Incase of a non scoring  match  then First Goal ID will be 0</p>
     <table class="table table-striped game-list ">
         <thead>
             <tr>

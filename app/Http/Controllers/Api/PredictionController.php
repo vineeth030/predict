@@ -81,7 +81,7 @@ class PredictionController extends Controller
                     'winning_team_id' => $request->input('winning_team_id'),
                     'team_one_goals' => $request->input('team_one_goals'),
                     'team_two_goals' => $request->input('team_two_goals'),
-                    'first_goal_team_id' => $request->input('first_goal_team_id'),
+                  //  'first_goal_team_id' => $request->input('first_goal_team_id'),
                 ]);
             } else {
                 // Prediction does not exist, create a new prediction
@@ -91,15 +91,58 @@ class PredictionController extends Controller
                     'winning_team_id' => $request->input('winning_team_id'),
                     'team_one_goals' => $request->input('team_one_goals'),
                     'team_two_goals' => $request->input('team_two_goals'),
-                    'first_goal_team_id' => $request->input('first_goal_team_id'),
+                   // 'first_goal_team_id' => $request->input('first_goal_team_id'),
                 ]);
             }
 
-            return response()->json(['status' => 'success','status_code' => 200, 'message' => 'Prediction updated or created successfully'], self::HTTP_OK);
+            return response()->json(['status' => 200, 'message' => 'Prediction updated or created successfully'], self::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], self::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function firstgoal(Request $request, Prediction $prediction)
+    {
+        try {
+
+
+            
+            $userId = auth()->user()->id;
+            $gameId = $request->input('game_id');
+
+            // Find the prediction for the given match ID and user ID
+            $prediction = Prediction::where('user_id', $userId)
+                ->where('game_id', $gameId)
+                ->first();
+
+            if ($prediction) {
+                // Prediction exists, update the existing prediction
+                $prediction->update([
+                  //  'winning_team_id' => $request->input('winning_team_id'),
+                  //  'team_one_goals' => $request->input('team_one_goals'),
+                  //  'team_two_goals' => $request->input('team_two_goals'),
+                    'first_goal_team_id' => $request->input('first_goal_team_id'),
+                ]);
+            } else {
+                // Prediction does not exist, create a new prediction
+                Prediction::create([
+                    'user_id' => $userId,
+                    'game_id' => $gameId,
+                 //   'winning_team_id' => $request->input('winning_team_id'),
+                  //  'team_one_goals' => $request->input('team_one_goals'),
+                  //  'team_two_goals' => $request->input('team_two_goals'),
+                    'first_goal_team_id' => $request->input('first_goal_team_id'),
+                ]);
+            }
+
+            return response()->json(['status' => 200, 'message' => 'Prediction updated or created successfully'], self::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], self::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
 
     /**
      * Remove the specified resource from storage.

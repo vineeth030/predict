@@ -23,12 +23,13 @@ class GameFactory extends Factory
         return [
             'team_one_id' => $team_one_id,
             'team_two_id' => $team_two_id,
-            'team_one_goals' => rand(0,3),
-            'team_two_goals' => rand(0,3),
+            'team_one_goals' => null,
+            'team_two_goals' => null,
             'match_status' => 'upcoming',
-            'winning_team_id' => $team_one_id,
+            'winning_team_id' => null,
             'kick_off_time' => Carbon::now(),
-            'game_type' => 'Group Stage'
+            'game_type' => 'Group Stage',
+            'first_goal_team_id' => null
         ];
     }
 }

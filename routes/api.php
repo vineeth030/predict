@@ -50,9 +50,12 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
    // Route::get('/predictions/user/show', [PredictionController::class, 'show']);
 
     Route::post('/predictions/update', [PredictionController::class, 'update']);
+    Route::post('/predictions/final', [PredictionController::class, 'final']);
     Route::post('/predictions/first-goal', [PredictionController::class, 'firstgoal']);
  //   Route::get('/versions', [VersionController::class, 'index']);
     Route::get('/teams', [TeamController::class, 'index']);
+    Route::get('/final-teams', [TeamController::class, 'finalTeams']);
+
     Route::get('/user-points/{userId}/total', [PointController::class, 'getTotalPointsForUser']);
     Route::get('/head-to-head', [PointController::class, 'headtoHead']);
     Route::get('/breakdown', [PointController::class, 'pointsBreakdown']);

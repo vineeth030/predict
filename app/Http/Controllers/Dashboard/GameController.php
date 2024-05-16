@@ -47,6 +47,7 @@ class GameController extends Controller
        
        if($game->game_type !== 'final')
        {
+       
             if ($game->winning_team_id == $prediction->winning_team_id) {
                 // Correct outcome prediction
                 $pointsEarned += 1;
@@ -65,13 +66,15 @@ class GameController extends Controller
                 }
             }
         }else{
-            $userPrediction = [$prediction->team_one_id, $prediction->team_two_id];
+            $userPrediction = [$prediction->team_one_id, $prediction->team_two_id];                
             sort($userPrediction);
             $normalizedPrediction = implode(' vs ', $userPrediction);
+           
 
             $actualWinningTeams = [$game->team_one_id, $game->team_two_id];
             sort($actualWinningTeams);
             $normalizedWinningTeam = implode(' vs ', $actualWinningTeams);
+         //  dd($normalizedWinningTeam);
 
             if ($normalizedPrediction === $normalizedWinningTeam) {
                 

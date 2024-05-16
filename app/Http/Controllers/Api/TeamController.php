@@ -32,4 +32,26 @@ class TeamController extends Controller
             return response()->json("Error", 400);
         }
     }
+
+public function finalTeams() 
+{
+
+ // Simulated data for demonstration purposes
+ $teams = [
+    ['id' => 1, 'name' => 'Team A'],
+    ['id' => 2, 'name' => 'Team B'],
+    ['id' => 3, 'name' => 'Team C'],
+    ['id' => 4, 'name' => 'Team D'],
+    ['id' => 5, 'name' => 'Team E'],
+    ['id' => 6, 'name' => 'Team F'],
+    ['id' => 7, 'name' => 'Team G'],
+    ['id' => 8, 'name' => 'Team H']
+];
+
+//return response()->json($teams);
+
+return response()->json(['status' => 200, 'data' => $teams]);
+
+}
+
 }

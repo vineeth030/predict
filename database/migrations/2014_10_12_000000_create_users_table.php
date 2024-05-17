@@ -15,14 +15,14 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email');
-            $table->string('otp');
-            $table->string('password_reset_otp');
-            $table->string('verified');
+            $table->string('otp')->nullable();
+            $table->string('password_reset_otp')->nullable();
+            $table->string('verified')->nullable();
             $table->string('designation')->nullable();
             $table->string('employee_id')->nullable();
             $table->string('fav_team')->nullable();
             $table->string('image')->nullable();
-            $table->string('company_group_id');
+            $table->string('company_group_id')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->boolean('is_admin')->default(false);

@@ -28,6 +28,15 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/games', [GameController::class, 'index'])->middleware('auth')->name('games');
 Route::put('/games/{id}/update', [GameController::class, 'update'])->middleware('auth')->name('games.update');
 
+Route::get('/edit', [GameController::class, 'edit'])->middleware('auth')->name('edit');
+Route::post('/manage', [GameController::class, 'manage'])->middleware('auth')->name('games.manage');
+Route::delete('/delete', [GameController::class, 'delete'])->middleware('auth')->name('games.delete');
+
+//Route::get('/edit-games', [GameController::class, 'gamesindex']);
+Route::post('/games', [GameController::class, 'store']);
+Route::delete('/games/{id}', [GameController::class, 'destroy']);
+
+
 // Standings Page
 Route::get('/teams', [TeamController::class, 'index'])->middleware('auth')->name('teams.index');
 Route::put('/teams/update', [TeamController::class, 'update'])->middleware('auth')->name('teams.update');

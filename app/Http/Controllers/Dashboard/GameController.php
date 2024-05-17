@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class GameController extends Controller
 {
@@ -43,50 +44,48 @@ class GameController extends Controller
             $correctWinpredicted  = 0;
             $correctGoalpredicted  = 0;
             $firstGoalprediction = 0;
-       
-       
-       if($game->game_type !== 'final')
-       {
-       
-            if ($game->winning_team_id == $prediction->winning_team_id) {
-                // Correct outcome prediction
-                $pointsEarned += 1;
-                $correctWinpredicted  += 1;
 
-                if ($game->team_one_goals == $prediction->team_one_goals && $game->team_two_goals == $prediction->team_two_goals) {
-                    // Correct team1 goals prediction
-                    $pointsEarned += 3;
-                    $correctGoalpredicted  += 3;
-                }
 
-                if ($game->first_goal_team_id == $prediction->first_goal_team_id) {
-                    // Correct team2 goals prediction
+            if ($game->game_type !== 'final') {
+
+                if ($game->winning_team_id == $prediction->winning_team_id) {
+                    // Correct outcome prediction
                     $pointsEarned += 1;
-                    $firstGoalprediction += 1;
+                    $correctWinpredicted  += 1;
+
+                    if ($game->team_one_goals == $prediction->team_one_goals && $game->team_two_goals == $prediction->team_two_goals) {
+                        // Correct team1 goals prediction
+                        $pointsEarned += 3;
+                        $correctGoalpredicted  += 3;
+                    }
+
+                    if ($game->first_goal_team_id == $prediction->first_goal_team_id) {
+                        // Correct team2 goals prediction
+                        $pointsEarned += 1;
+                        $firstGoalprediction += 1;
+                    }
+                }
+            } else {
+                $userPrediction = [$prediction->team_one_id, $prediction->team_two_id];
+                sort($userPrediction);
+                $normalizedPrediction = implode(' vs ', $userPrediction);
+
+
+                $actualWinningTeams = [$game->team_one_id, $game->team_two_id];
+                sort($actualWinningTeams);
+                $normalizedWinningTeam = implode(' vs ', $actualWinningTeams);
+                //  dd($normalizedWinningTeam);
+
+                if ($normalizedPrediction === $normalizedWinningTeam) {
+
+                    $pointsEarned += 10;
                 }
             }
-        }else{
-            $userPrediction = [$prediction->team_one_id, $prediction->team_two_id];                
-            sort($userPrediction);
-            $normalizedPrediction = implode(' vs ', $userPrediction);
-           
-
-            $actualWinningTeams = [$game->team_one_id, $game->team_two_id];
-            sort($actualWinningTeams);
-            $normalizedWinningTeam = implode(' vs ', $actualWinningTeams);
-         //  dd($normalizedWinningTeam);
-
-            if ($normalizedPrediction === $normalizedWinningTeam) {
-                
-                $pointsEarned += 10; 
-            }
-           
-        }
 
 
 
-         
-            
+
+
             // Find existing user points or create new if not exist
             $userPoint = Point::where('user_id', $prediction->user_id)
                 ->where('game_id', $game->id)
@@ -138,4 +137,45 @@ class GameController extends Controller
             $user->save();
         }
     }
+
+    public function edit()
+    {
+        return view('edit-games');
+    }
+
+    public function manage(Request $request)
+    {
+
+      //  dd("inside");
+        $request->validate([
+            'team_one_id' => 'required|integer',
+            'team_two_id' => 'required|integer',
+            'game_type' => 'required|string',
+            'match_status' => 'required|string',
+            'kick_off_time' => 'required|string',
+        ]);
+
+        $game = Game::create($request->all());
+
+        return redirect()->route('edit')->with('success', 'Game added successfully');
+    }
+
+    public function delete(Request $request)
+    {
+
+     // dd("inside");
+      $request->validate([
+        'game_id' => 'required|integer|exists:games,id',
+    ]);
+
+    $game = Game::find($request->game_id);
+    if ($game) {
+        $game->delete();
+        return redirect()->route('edit')->with('success', 'Game deleted successfully');
+    }
+
+    return redirect()->route('edit')->with('error', 'Game not found');
+       
+    }
+ 
 }

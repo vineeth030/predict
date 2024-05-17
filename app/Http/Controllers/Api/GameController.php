@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\DB;
 use App\Models\Prediction;
+use Illuminate\Support\Facades\Validator;
 
 class GameController extends Controller
 {
@@ -150,52 +151,64 @@ class GameController extends Controller
             ->get();
     }
 
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function index1()
     {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+       // dd("inside");
+        $games = Game::all();
+        return response()->json(['status' => 'success', 'data' => $games], 200);
+    }
+    
+    public function show($id)
+    {
+        $game = Game::findOrFail($id);
+        return response()->json(['status' => 'success', 'data' => $game], 200);
+    }
+    
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'team_one_id' => 'required|integer',
+            'team_two_id' => 'required|integer',
+            'game_type' => 'required|string',
+            'match_status' => 'required|string',
+            'kick_off_time' => 'required|string',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->errors()->first()], 400);
+        }
+    
+        $game = Game::create($request->all());
+        return response()->json(['status' => 'success', 'data' => $game], 201);
+    }
+    
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'team_one_id' => 'required|integer',
+            'team_two_id' => 'required|integer',
+            'game_type' => 'required|string',
+            'match_status' => 'required|string',
+            'kick_off_time' => 'required|string',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->errors()->first()], 400);
+        }
+    
+        $game = Game::findOrFail($id);
+        $game->update($request->all());
+        return response()->json(['status' => 'success', 'data' => $game], 200);
+    }
+    
+    public function destroy($id)
+    {
+        $game = Game::findOrFail($id);
+        $game->delete();
+        return response()->json(['status' => 'success', 'message' => 'Game deleted successfully'], 200);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Game $game)
-    {
-        //
-    }
+ 
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Game $game)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Game $game)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Game $game)
-    {
-        //  
-    }
 }

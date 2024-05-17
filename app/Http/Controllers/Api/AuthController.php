@@ -266,7 +266,7 @@ class AuthController extends Controller
             ->first();
 
         if (!$user) {
-            return response()->json(['error' => 'Invalid OTP','status' => 422], 422);
+            return response()->json(['message' => 'Invalid OTP','status' => 422], 422);
         }
 
         // Update the user's password

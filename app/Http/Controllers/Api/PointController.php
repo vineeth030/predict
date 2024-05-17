@@ -214,6 +214,7 @@ try{
             ->where('users.company_group_id', $companyGroupId)
             ->where('users.verified', 1)
             ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank')
+            ->orderBy('total_points', 'desc')
             ->get();
     
         foreach ($users as $user) {

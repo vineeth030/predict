@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('verified');
             $table->string('designation')->nullable();
             $table->string('employee_id')->nullable();
+            $table->string('fav_team')->nullable();
             $table->string('image')->nullable();
             $table->string('company_group_id');
             $table->timestamp('email_verified_at')->nullable();

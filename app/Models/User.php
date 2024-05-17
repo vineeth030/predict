@@ -33,7 +33,8 @@ class User extends Authenticatable
         'otp',
         'verified',
         'image',
-        'password_reset_otp'
+        'password_reset_otp',
+        'fav_team'
 
     ];
 

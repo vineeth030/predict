@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LabController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\GameController;
+use App\Http\Controllers\Api\ManageGameController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\PointController;
 use App\Http\Controllers\Api\VersionController;
@@ -44,6 +45,9 @@ Route::get('/versions', [VersionController::class, 'index']);
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::get('/games', [GameController::class, 'index']);
+
+
+
     Route::get('/points', [PointController::class, 'index']);
     Route::get('/points/user/show', [PointController::class, 'show']);
     Route::get('/predictions', [PredictionController::class, 'index']);

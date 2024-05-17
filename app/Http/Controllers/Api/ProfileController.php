@@ -15,8 +15,10 @@ class ProfileController extends Controller
 
         // Validate the request data
         $validator = Validator::make($request->all(), [
-            // 'name' => 'required|string|max:255',
+             'name' => 'required|string|max:255',
             'designation' => 'nullable|string|max:255',
+            'fav_team' => 'nullable|string|max:255',
+
             // 'employee_id' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
         ]);
@@ -43,6 +45,8 @@ class ProfileController extends Controller
             $user = auth()->user();
               /** @var \App\Models\User $user **/
             $user->designation = $request->input('designation');
+            $user->name = $request->input('name');
+            $user->fav_team = $request->input('fav_team');
             $user->save();
         
             // Handle other updates or actions if needed

@@ -17,9 +17,9 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             TeamSeeder::class,
             GameSeeder::class,
-            PointSeeder::class,
-            PredictionSeeder::class,
-            VersionSeeder::class
+            //PointSeeder::class,
+            //PredictionSeeder::class,
+            //VersionSeeder::class
         ]);
     }
 }

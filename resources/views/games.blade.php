@@ -26,9 +26,9 @@
             <tr>
                 <td>{{ $game->id }}</td>
                 <td>{{ $game->team_one_id }}</td>
-                <td>{{ $game->teamOne->name ? $game->teamOne->name : null;}}</td>
+                <td>{{ optional($game->teamOne)->name }}</td>
                 <td>{{ $game->team_two_id}}</td>
-                <td>{{ $game->teamTwo->name ? $game->teamTwo->name : null;}}</td>
+                <td>{{ optional($game->teamTwo)->name }}</td>
                 <td>{{ $game->result }}</td>
                 <td>
                     <form method="POST" action="{{ route('games.update', ['id' => $game->id]) }}">

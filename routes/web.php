@@ -31,10 +31,7 @@ Route::put('/games/{id}/update', [GameController::class, 'update'])->middleware(
 Route::get('/edit', [GameController::class, 'edit'])->middleware('auth')->name('edit');
 Route::post('/manage', [GameController::class, 'manage'])->middleware('auth')->name('games.manage');
 Route::delete('/delete', [GameController::class, 'delete'])->middleware('auth')->name('games.delete');
-
-//Route::get('/edit-games', [GameController::class, 'gamesindex']);
-Route::post('/games', [GameController::class, 'store']);
-Route::delete('/games/{id}', [GameController::class, 'destroy']);
+Route::put('/editgame', [GameController::class, 'editgame'])->middleware('auth')->name('games.editgame');
 
 
 // Standings Page

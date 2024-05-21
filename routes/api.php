@@ -41,7 +41,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::middleware(['auth:sanctum', 'check_kickoff_time'])->post('/predictions/update', [PredictionController::class, 'update']);
 
 Route::post('/auth-lab', [LabController::class, 'sendRequest'])->name('auth-lab.sendRequest');
-Route::get('/versions', [VersionController::class, 'index']);
+Route::get('/version', [VersionController::class, 'index']);
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::get('/games', [GameController::class, 'index']);

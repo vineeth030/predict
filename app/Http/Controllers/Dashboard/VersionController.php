@@ -18,11 +18,22 @@ class VersionController extends Controller
         $androidName = Version::where('platform', 'android')->first();
         $iosName = Version::where('platform', 'ios')->first();
 
+
+
         $androidIsMandatory = Version::where('platform', 'android')->first();
         $iosIsMandatory = Version::where('platform', 'ios')->first();
 
+        $androidWinner = Version::where('platform', 'android')->first();
+        $iosWinner = Version::where('platform', 'ios')->first();
+
+
         $androdIsQuarterStarted = Version::where('platform', 'android')->first();
         $iosIsQuarterStarted = Version::where('platform', 'ios')->first();
+
+        $androdisRound16Completed = Version::where('platform', 'android')->first();
+        $iosisRound16Completed = Version::where('platform', 'ios')->first();
+
+
 
         $versions = Version::all();
         return view('versions', [
@@ -38,6 +49,12 @@ class VersionController extends Controller
             'androdIsQuarterStarted' =>  $androdIsQuarterStarted ? $androdIsQuarterStarted->is_quarter_started : 'N/A',
             'iosIsQuarterStarted' => $iosIsQuarterStarted ? $iosIsQuarterStarted->is_quarter_started : 'N/A',
 
+            'androdisRound16Completed' =>  $androdisRound16Completed ? $androdisRound16Completed->is_round16_completed : 'N/A',
+            'iosisRound16Completed' => $iosisRound16Completed ? $iosisRound16Completed->is_round16_completed : 'N/A',
+
+            'androidWinner' => $androidWinner ? $androidWinner->winner : 'N/A',
+            'iosWinner' => $iosWinner ? $iosWinner->winner : 'N/A',
+
         ]);
     }
 
@@ -45,22 +62,34 @@ class VersionController extends Controller
     {
 
         $kickoff_time = $request->input('kickoff_time');
-      
+
         $carbonDatetime = Carbon::parse($kickoff_time);
-    
-       // $utcDatetime = $carbonDatetime->utc();
-        $milliseconds = $carbonDatetime->timestamp * 1000;
-     // dd($milliseconds);
+
+        // $utcDatetime = $carbonDatetime->utc();
+        $wc_start_date = $carbonDatetime->timestamp * 1000;
+        // dd($milliseconds);
+        $wc_end_date = $request->input('wc_end_date');
+
+        $carbonDatetime = Carbon::parse($wc_end_date);
+
+        // $utcDatetime = $carbonDatetime->utc();
+        $wc_end_date = $carbonDatetime->timestamp * 1000;
+
+
+
 
         $validated = $request->validate([
             'platform' => 'required|in:android,ios',
             'code' => 'required|string',
             'name' => 'required|string',
             'is_mandatory' => 'required|string',
-          
+            'winner' => 'required|string',
+            'is_round16_completed' => 'required|string',
+            'is_quarter_started' => 'required|string',
+
         ]);
 
-        //dd( $validated);
+        //  dd( $validated);
 
         // Update the version in the database, creating a new row if it does not exist
         Version::where('platform', $request->get('platform'))->update(
@@ -69,7 +98,11 @@ class VersionController extends Controller
                 'code' => $validated['code'], // Values to update or insert
                 'name' => $validated['name'], // Values to update or insert
                 'is_mandatory' => $validated['is_mandatory'],
-                'countdown_timer' => $milliseconds
+                'is_round16_completed' => $validated['is_round16_completed'],
+                'is_quarter_started' => $validated['is_quarter_started'],
+                'winner' => $validated['winner'],
+                'countdown_timer' => $wc_start_date,
+                'wc_end_date' => $wc_end_date
             ] // Values to update or insert
         );
 

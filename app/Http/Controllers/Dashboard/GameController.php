@@ -79,6 +79,13 @@ class GameController extends Controller
                 if ($normalizedPrediction === $normalizedWinningTeam) {
 
                     $pointsEarned += 10;
+
+                    if ($game->winning_team_id == $prediction->winning_team_id){
+
+                        $pointsEarned += 5;
+                        $correctWinpredicted  = +5;
+                    }
+
                 }
             }
 
@@ -147,13 +154,13 @@ class GameController extends Controller
     {
 
       //  dd("inside");
-        $request->validate([
-            'team_one_id' => 'required|integer',
-            'team_two_id' => 'required|integer',
-            'game_type' => 'required|string',
-            'match_status' => 'required|string',
-            'kick_off_time' => 'required|string',
-        ]);
+        // $request->validate([
+        //     'team_one_id' => 'integer',
+        //     'team_two_id' => 'integer',
+        //     'game_type' => 'string',
+        //     'match_status' => 'string',
+        //     'kick_off_time' => 'string',
+        // ]);
 
         $game = Game::create($request->all());
 
@@ -177,5 +184,27 @@ class GameController extends Controller
     return redirect()->route('edit')->with('error', 'Game not found');
        
     }
+  
+    public function editgame(Request $request)
+    {
+
+       // dd("inside");
+      // dd($request->all());
+     //  dd($request->game_id);
+
+       $game = Game::findOrFail($request->game_id);
+     
+    $game->team_one_id = $request->input('team_one_id');
+    $game->team_two_id = $request->input('team_two_id');
+    $game->winning_team_id = $request->input('winning_team_id');
+    $game->first_goal_team_id = $request->input('first_goal_team_id');
+    $game->game_type = $request->input('game_type');
+    $game->match_status = $request->input('match_status');
+    $game->save();
+
+    return redirect()->route('edit')->with('success', 'Game editted successfully');
+       
+    }
+
  
 }

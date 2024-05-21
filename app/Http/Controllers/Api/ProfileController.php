@@ -51,9 +51,9 @@ class ProfileController extends Controller
         
             // Handle other updates or actions if needed
         
-            return response()->json(['message' => 'Profile updated successfully'], 200);
+            return response()->json(['message' => 'Profile updated successfully','status' =>200]);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['error' => $e->getMessage(),'status' =>500]);
         }
     }
 

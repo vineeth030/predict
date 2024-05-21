@@ -12,7 +12,7 @@ class Version extends Model
     public $table = "versions";
 
     protected $fillable = [
-      'code', 'name', 'is_mandatory','is_quarter_started','countdown_timer'
+      'code', 'name', 'is_mandatory','is_quarter_started','countdown_timer','is_round16_completed','wc_end_date','winner'
     ];
   
       // Example relationships: a user points entry belongs to a user and a match

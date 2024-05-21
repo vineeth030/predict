@@ -94,23 +94,23 @@ class GameController extends Controller
     }
         $game->isStarted = $isStarted;
 
-        $game->team_one_flag = $game->teamOne ? $game->teamOne->flag : null;
-        if (!is_null($game->team_one_flag)) {
-            $game->team_one_flag = asset('storage/' . $game->team_one_flag);
-        }
+        // $game->team_one_flag = $game->teamOne ? $game->teamOne->flag : null;
+        // if (!is_null($game->team_one_flag)) {
+        //     $game->team_one_flag = asset('storage/' . $game->team_one_flag);
+        // }
 
-        $game->team_two_flag = $game->teamTwo ? $game->teamTwo->flag : null;
-        if (!is_null($game->team_two_flag)) {
-            $game->team_two_flag = asset('storage/' . $game->team_two_flag);
-        }
-        $game->winning_team_flag = $game->winningTeam ? $game->winningTeam->flag : null;
-        if (!is_null($game->winning_team_flag)) {
-            $game->winning_team_flag = asset('storage/' . $game->winning_team_flag);
-        }
-        $game->first_goal_team_flag = $game->firstGoalTeam ? $game->firstGoalTeam->flag : null;
-        if (!is_null($game->first_goal_team_flag)) {
-            $game->first_goal_team_flag = asset('storage/' . $game->first_goal_team_flag);
-        }
+        // $game->team_two_flag = $game->teamTwo ? $game->teamTwo->flag : null;
+        // if (!is_null($game->team_two_flag)) {
+        //     $game->team_two_flag = asset('storage/' . $game->team_two_flag);
+        // }
+        // $game->winning_team_flag = $game->winningTeam ? $game->winningTeam->flag : null;
+        // if (!is_null($game->winning_team_flag)) {
+        //     $game->winning_team_flag = asset('storage/' . $game->winning_team_flag);
+        // }
+        // $game->first_goal_team_flag = $game->firstGoalTeam ? $game->firstGoalTeam->flag : null;
+        // if (!is_null($game->first_goal_team_flag)) {
+        //     $game->first_goal_team_flag = asset('storage/' . $game->first_goal_team_flag);
+        // }
 
     
         foreach ($predictions as $prediction) {
@@ -166,13 +166,15 @@ class GameController extends Controller
     }
     
     public function store(Request $request)
-    {
+    { 
+         dd("inside");
+
         $validator = Validator::make($request->all(), [
-            'team_one_id' => 'required|integer',
-            'team_two_id' => 'required|integer',
-            'game_type' => 'required|string',
-            'match_status' => 'required|string',
-            'kick_off_time' => 'required|string',
+            'team_one_id' => 'integer',
+            'team_two_id' => 'integer',
+            'game_type' => 'string',
+            'match_status' => 'string',
+            'kick_off_time' => 'string',
         ]);
     
         if ($validator->fails()) {
@@ -185,12 +187,13 @@ class GameController extends Controller
     
     public function update(Request $request, $id)
     {
+      
         $validator = Validator::make($request->all(), [
-            'team_one_id' => 'required|integer',
-            'team_two_id' => 'required|integer',
-            'game_type' => 'required|string',
-            'match_status' => 'required|string',
-            'kick_off_time' => 'required|string',
+            'team_one_id' => 'integer',
+            'team_two_id' => 'integer',
+            'game_type' => 'string',
+            'match_status' => 'string',
+            'kick_off_time' => 'string',
         ]);
     
         if ($validator->fails()) {

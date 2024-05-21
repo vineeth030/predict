@@ -17,7 +17,11 @@ return new class extends Migration
             $table->string('code');
             $table->string('name');
             $table->string('is_mandatory');
+            $table->string('countdown_timer');
             $table->string('is_quarter_started');
+            $table->string('is_round16_completed');
+            $table->string('wc_end_date');
+            $table->string('winner');
             $table->timestamps();
         });
     }

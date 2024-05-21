@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('email');
             $table->string('otp')->nullable();
+            $table->string('old_rank')->nullable();
+            $table->string('new_rank')->nullable();
             $table->string('password_reset_otp')->nullable();
             $table->string('verified')->nullable();
             $table->string('designation')->nullable();

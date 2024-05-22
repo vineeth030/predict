@@ -50,6 +50,10 @@
                 <input type="text" id="match_status" name="match_status" class="form-control" >
             </div>
             <div class="form-group mb-3">
+                <label for="stadium_name">Stadium Name:</label>
+                <input type="text" id="stadium_name" name="stadium_name" class="form-control" >
+            </div>
+            <div class="form-group mb-3">
                 <label for="kick_off_time">Kick Off Time:</label>
                 <input type="text" id="kick_off_time" name="kick_off_time" class="form-control" >
             </div>
@@ -79,6 +83,10 @@
             <div class="form-group mb-3">
                 <label for="match_status">Match Status:</label>
                 <input type="text" id="match_status" name="match_status" class="form-control" >
+            </div>
+            <div class="form-group mb-3">
+                <label for="stadium_name">Stadium Name:</label>
+                <input type="text" id="stadium_name" name="stadium_name" class="form-control" >
             </div>
             <div class="form-group mb-3">
                 <label for="kick_off_time">Kick Off Time:</label>

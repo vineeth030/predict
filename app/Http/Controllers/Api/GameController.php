@@ -29,7 +29,7 @@ class GameController extends Controller
            $games = Game::with(['predictions' => function ($query) use ($userId) {
             $query->where('user_id', $userId);
         }])
-            ->get(['id', 'game_type', 'team_one_id', 'team_two_id', 'team_one_goals', 'team_two_goals', 'winning_team_id', 'first_goal_team_id', 'kick_off_time', 'match_status']);
+            ->get(['id', 'game_type', 'team_one_id', 'team_two_id', 'team_one_goals', 'team_two_goals', 'winning_team_id', 'first_goal_team_id', 'kick_off_time', 'match_status','stadium_name']);
 
             // Fetch all games
             // $games = Game::with('predictions')
@@ -37,7 +37,7 @@ class GameController extends Controller
             $games = Game::with(['predictions' => function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             }])
-                ->get(['id', 'game_type', 'team_one_id', 'team_two_id', 'team_one_goals', 'team_two_goals', 'winning_team_id', 'first_goal_team_id', 'kick_off_time', 'match_status']);
+                ->get(['id', 'game_type', 'team_one_id', 'team_two_id', 'team_one_goals', 'team_two_goals', 'winning_team_id', 'first_goal_team_id', 'kick_off_time', 'match_status','stadium_name']);
 
 
             $upcomingGames = [];

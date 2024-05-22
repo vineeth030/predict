@@ -200,6 +200,7 @@ class GameController extends Controller
     $game->first_goal_team_id = $request->input('first_goal_team_id');
     $game->game_type = $request->input('game_type');
     $game->match_status = $request->input('match_status');
+    $game->stadium_name = $request->input('stadium_name');
     $game->save();
 
     return redirect()->route('edit')->with('success', 'Game editted successfully');

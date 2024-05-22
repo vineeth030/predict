@@ -55,16 +55,7 @@ class VersionController extends Controller
        //     $countdownTimer = $versions->first()->countdown_timer ?? null;
 
 
-            $teams = [
-                ['id' => 1, 'name' => 'Team A'],
-                ['id' => 2, 'name' => 'Team B'],
-                ['id' => 3, 'name' => 'Team C'],
-                ['id' => 4, 'name' => 'Team D'],
-                ['id' => 5, 'name' => 'Team E'],
-                ['id' => 6, 'name' => 'Team F'],
-                ['id' => 7, 'name' => 'Team G'],
-                ['id' => 8, 'name' => 'Team H']
-            ];
+         
     
             return response()->json([
                 'status' => 'success',
@@ -72,7 +63,7 @@ class VersionController extends Controller
                
                 'android' => $latestAndroidVersion,
                 'ios' => $latestIosVersion,
-                'finalist_teams' => $teams,
+                
             
             ], self::HTTP_OK);
         } catch (\Exception $e) {

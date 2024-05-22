@@ -212,6 +212,43 @@ class GameController extends Controller
         return response()->json(['status' => 'success', 'message' => 'Game deleted successfully'], 200);
     }
 
+
+    public function summary($userId)
+    {
+
+    // dd($userId);
+
+        try {
+         
+            $totalGames = Game::count();
+           
+
+           
+            $predictedGamesCount = Prediction::where('user_id', $userId)->distinct('game_id')->count('game_id');
+         //  $predictedGamesCount = Prediction::where('user_id', $userId)->count();
+
+          //  dd($predictedGamesCount);
+
+          
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'total_games' => $totalGames,
+                    'predicted_games' => $predictedGamesCount,
+                ],
+                'status_code' => 200
+            ], 200);
+        } catch (\Exception $e) {
+          
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'status_code' => 500
+            ], 500);
+        }
+    } 
+     
+    
  
 
 }

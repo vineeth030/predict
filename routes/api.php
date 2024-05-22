@@ -45,6 +45,7 @@ Route::get('/version', [VersionController::class, 'index']);
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::get('/games', [GameController::class, 'index']);
+    Route::get('/{userId}/summary', [GameController::class, 'summary']);
 
 
 

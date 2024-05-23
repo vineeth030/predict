@@ -10,11 +10,12 @@ class VersionController extends Controller
 {
     const HTTP_INTERNAL_SERVER_ERROR = 500;
     const HTTP_OK = 200;
-    public function index() {
+    public function index()
+    {
         try {
             // Fetch all versions
             $versions = Version::all();
-    
+
             // Get the latest version for Android
             $latestAndroidVersion = $versions->filter(function ($version) {
                 return $version->platform === 'android';
@@ -33,7 +34,7 @@ class VersionController extends Controller
                     'updated_at' => $version->updated_at,
                 ];
             })->first(); // Get the first (or latest) item
-    
+
             // Get the latest version for iOS
             $latestIosVersion = $versions->filter(function ($version) {
                 return $version->platform === 'ios';
@@ -52,24 +53,22 @@ class VersionController extends Controller
                     'updated_at' => $version->updated_at,
                 ];
             })->first(); // Get the first (or latest) item
-       //     $countdownTimer = $versions->first()->countdown_timer ?? null;
+            //     $countdownTimer = $versions->first()->countdown_timer ?? null;
 
 
-         
-    
+
+
             return response()->json([
                 'status' => 'success',
                 'status_code' => 200,
-               
+
                 'android' => $latestAndroidVersion,
                 'ios' => $latestIosVersion,
-                
-            
+
+
             ], self::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], self::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    
-    
 }

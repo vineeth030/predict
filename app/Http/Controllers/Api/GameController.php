@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\DB;
 use App\Models\Prediction;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class GameController extends Controller
@@ -20,24 +21,21 @@ class GameController extends Controller
     public function index()
     {
         try {
-         
+
             $userId = auth()->user()->id;
-        //  $userId = 27;
-           /// dd($userId);
+
             $currentTime = now()->timestamp * 1000;
 
-           $games = Game::with(['predictions' => function ($query) use ($userId) {
-            $query->where('user_id', $userId);
-        }])
-            ->get(['id', 'game_type', 'team_one_id', 'team_two_id', 'team_one_goals', 'team_two_goals', 'winning_team_id', 'first_goal_team_id', 'kick_off_time', 'match_status','stadium_name']);
-
-            // Fetch all games
-            // $games = Game::with('predictions')
-            //     ->get(['id', 'game_type', 'team_one_id', 'team_two_id', 'team_one_goals', 'team_two_goals', 'winning_team_id', 'first_goal_team_id', 'kick_off_time', 'match_status']);
             $games = Game::with(['predictions' => function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             }])
-                ->get(['id', 'game_type', 'team_one_id', 'team_two_id', 'team_one_goals', 'team_two_goals', 'winning_team_id', 'first_goal_team_id', 'kick_off_time', 'match_status','stadium_name']);
+                ->get(['id', 'game_type', 'team_one_id', 'team_two_id', 'team_one_goals', 'team_two_goals', 'winning_team_id', 'first_goal_team_id', 'kick_off_time', 'match_status', 'stadium_name']);
+
+
+            $games = Game::with(['predictions' => function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            }])
+                ->get(['id', 'game_type', 'team_one_id', 'team_two_id', 'team_one_goals', 'team_two_goals', 'winning_team_id', 'first_goal_team_id', 'kick_off_time', 'match_status', 'stadium_name']);
 
 
             $upcomingGames = [];
@@ -50,10 +48,6 @@ class GameController extends Controller
                     $upcomingGames[] = $this->prepareGameData($game, $currentTime);
                 } elseif ($game->match_status === 'completed') {
                     $completedGames[] = $this->prepareGameData($game, $currentTime);
-
-                 //   $completedMatchPredictions[$game->id] = $game->predictions;
-
-                  //  dd($game->predictions);
                 } elseif ($game->kick_off_time <= $currentTime && $game->match_status !== 'completed') {
                     $ongoingGames[] = $this->prepareGameData($game, $currentTime);
                 }
@@ -75,60 +69,66 @@ class GameController extends Controller
     {
         $userId = auth()->user()->id;
         $predictions = $game->predictions;
+
+
         $isStarted = $game->kick_off_time <= $currentTime;
-    
+
         $game->team_one_name = $game->teamOne ? $game->teamOne->name : null;
         $game->team_two_name = $game->teamTwo ? $game->teamTwo->name : null;
         $game->winning_team_name = $game->winningTeam ? $game->winningTeam->name : null;
         $game->firstgoal_team_name = $game->firstGoalTeam ? $game->firstGoalTeam->name : null;
-       // $game->team_one_flag = $game->teamOne ? asset('storage/' . $game->teamOne->flag) : null;    
-      //  $game->team_two_flag = $game->teamTwo ? asset('storage/' . $game->teamTwo->flag) : null;      
-       // $game->winning_team_flag = $game->winningTeam ? asset('storage/' . $game->winningTeam->flag) : null;    
-       // $game->first_goal_team_flag = $game->firstGoalTeam ? asset('storage/' . $game->firstGoalTeam->flag) : null;
 
-       if ($game->match_status === 'completed') {
-        $totalPoints = Point::where('game_id', $game->id)->where('user_id',$userId)->sum('points');
-        $game->points =(int) $totalPoints;
-    } else {
-        $game->points = null; // Set points to null for upcoming and ongoing games
-    }
+
+        if ($game->match_status === 'completed') {
+            $totalPoints = Point::where('game_id', $game->id)->where('user_id', $userId)->sum('points');
+            $game->points = (int) $totalPoints;
+        } else {
+            $game->points = null; // Set points to null for upcoming and ongoing games
+        }
         $game->isStarted = $isStarted;
 
-        // $game->team_one_flag = $game->teamOne ? $game->teamOne->flag : null;
-        // if (!is_null($game->team_one_flag)) {
-        //     $game->team_one_flag = asset('storage/' . $game->team_one_flag);
-        // }
+        if (count($predictions) == 0) {
 
-        // $game->team_two_flag = $game->teamTwo ? $game->teamTwo->flag : null;
-        // if (!is_null($game->team_two_flag)) {
-        //     $game->team_two_flag = asset('storage/' . $game->team_two_flag);
-        // }
-        // $game->winning_team_flag = $game->winningTeam ? $game->winningTeam->flag : null;
-        // if (!is_null($game->winning_team_flag)) {
-        //     $game->winning_team_flag = asset('storage/' . $game->winning_team_flag);
-        // }
-        // $game->first_goal_team_flag = $game->firstGoalTeam ? $game->firstGoalTeam->flag : null;
-        // if (!is_null($game->first_goal_team_flag)) {
-        //     $game->first_goal_team_flag = asset('storage/' . $game->first_goal_team_flag);
-        // }
 
-    
-        foreach ($predictions as $prediction) {
-            $game->predicted_team_one_goals = $prediction->team_one_goals ?? null;
-            $game->predicted_team_two_goals = $prediction->team_two_goals ?? null;
-            $game->predicted_winning_team_id = $prediction->winning_team_id ?? null;
-            $game->predicted_first_goal_id = $prediction->first_goal_team_id ?? null;
-            $game->is_score_predicted = !is_null($prediction->team_one_goals && $prediction->team_two_goals);
-            $game->is_first_goal_predicted = !is_null($prediction->winning_team_id);
+            $game->predicted_team_one_goals =  null;
+            $game->predicted_team_two_goals =  null;
+            $game->predicted_winning_team_id = null;
+            $game->predicted_first_goal_id =  null;
+            $game->is_score_predicted = false;
+
+            $game->is_first_goal_predicted = false;
+        } else {
+
+            foreach ($predictions as $prediction) {
+
+                $game->predicted_team_one_goals = $prediction->team_one_goals ?? null;
+                $game->predicted_team_two_goals = $prediction->team_two_goals ?? null;
+                $game->predicted_winning_team_id = $prediction->winning_team_id ?? null;
+                $game->predicted_first_goal_id = $prediction->first_goal_team_id ?? null;
+                $game->is_score_predicted = !is_null($prediction->team_one_goals && $prediction->team_two_goals);
+                $game->is_first_goal_predicted = !is_null($prediction->first_goal_team_id);
+            }
         }
+
+        // foreach ($predictions as $prediction) {
+
+        //     $game->predicted_team_one_goals = $prediction->team_one_goals ?? null;
+        //     $game->predicted_team_two_goals = $prediction->team_two_goals ?? null;
+        //     $game->predicted_winning_team_id = $prediction->winning_team_id ?? null;
+        //     $game->predicted_first_goal_id = $prediction->first_goal_team_id ?? null;
+        //     $game->is_score_predicted = !is_null($prediction->team_one_goals && $prediction->team_two_goals);
+        //     $game->is_score_predicted = is_null($prediction->team_one_goals && $prediction->team_two_goals);
+        //     $game->is_first_goal_predicted = !is_null($prediction->winning_team_id);
+        // }
+
         $game->top_predictions = $this->getTopPredictions($game->id);
-        
-    
+
+
         unset($game->teamOne, $game->teamTwo, $game->winningTeam, $game->firstGoalTeam, $game->predictions);
-    
+
         return $game;
     }
-    
+
 
     private function getTopPredictions($gameId)
     {
@@ -154,20 +154,20 @@ class GameController extends Controller
     public function index1()
     {
 
-       // dd("inside");
+        // dd("inside");
         $games = Game::all();
         return response()->json(['status' => 'success', 'data' => $games], 200);
     }
-    
+
     public function show($id)
     {
         $game = Game::findOrFail($id);
         return response()->json(['status' => 'success', 'data' => $game], 200);
     }
-    
+
     public function store(Request $request)
-    { 
-         dd("inside");
+    {
+        dd("inside");
 
         $validator = Validator::make($request->all(), [
             'team_one_id' => 'integer',
@@ -176,18 +176,18 @@ class GameController extends Controller
             'match_status' => 'string',
             'kick_off_time' => 'string',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()->first()], 400);
         }
-    
+
         $game = Game::create($request->all());
         return response()->json(['status' => 'success', 'data' => $game], 201);
     }
-    
+
     public function update(Request $request, $id)
     {
-      
+
         $validator = Validator::make($request->all(), [
             'team_one_id' => 'integer',
             'team_two_id' => 'integer',
@@ -195,16 +195,16 @@ class GameController extends Controller
             'match_status' => 'string',
             'kick_off_time' => 'string',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()->first()], 400);
         }
-    
+
         $game = Game::findOrFail($id);
         $game->update($request->all());
         return response()->json(['status' => 'success', 'data' => $game], 200);
     }
-    
+
     public function destroy($id)
     {
         $game = Game::findOrFail($id);
@@ -216,20 +216,26 @@ class GameController extends Controller
     public function summary($userId)
     {
 
-    // dd($userId);
+
 
         try {
-         
-            $totalGames = Game::count();
-           
 
-           
-            $predictedGamesCount = Prediction::where('user_id', $userId)->distinct('game_id')->count('game_id');
-         //  $predictedGamesCount = Prediction::where('user_id', $userId)->count();
+            $totalGames = Game::where('game_type', '!=', 'final-prediction')->count();
 
-          //  dd($predictedGamesCount);
 
-          
+
+            // $predictedGamesCount = Prediction::where('user_id', $userId)->distinct('game_id')->count('game_id');
+            $predictedGamesCount = Prediction::where('user_id', $userId)
+                ->whereHas('game', function ($query) {
+                    $query->where('game_type', '!=', 'final-prediction');
+                })
+                ->distinct('game_id')
+                ->count('game_id');
+
+            //    dd($predictedGamesCount);
+
+
+
             return response()->json([
                 'status' => 'success',
                 'data' => [
@@ -239,16 +245,12 @@ class GameController extends Controller
                 'status_code' => 200
             ], 200);
         } catch (\Exception $e) {
-          
+
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage(),
                 'status_code' => 500
             ], 500);
         }
-    } 
-     
-    
- 
-
+    }
 }

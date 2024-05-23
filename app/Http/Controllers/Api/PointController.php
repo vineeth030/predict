@@ -26,9 +26,7 @@ class PointController extends Controller
    // public function pointsBreakdown(Request $request)
    public function pointsBreakdown(Request $request)
     {
-       // dd("inside");
-
-      
+       // dd("inside");      
 
 try{
 
@@ -202,12 +200,13 @@ try{
 
         return response()->json(['status' => 200,'message' =>'success' ,'data' => $users]);
     }    */
+
     public function allUserPoints()
     {
         $companyGroupId = auth()->user()->company_group_id;
     
         $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
-            ->select('users.id', 'users.name', 'users.image',
+            ->select('users.id', 'users.name', 'users.image','fav_team',
                 DB::raw('COALESCE(SUM(points.points), 0) as total_points'), 
                 DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
                 DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank'))

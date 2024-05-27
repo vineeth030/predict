@@ -119,8 +119,8 @@ class PredictionController extends Controller
                 // Prediction exists, update the existing prediction
                 $prediction->update([
                     'winning_team_id' => $request->input('winning_team_id'),
-                    'team_one_id' => $request->input('team_one_id'),
-                    'team_two_id' => $request->input('team_two_id'),
+                    'final_team_one_id' => $request->input('final_team_one_id'),
+                    'final_team_two_id' => $request->input('final_team_two_id'),
                   //  'first_goal_team_id' => $request->input('first_goal_team_id'),
                 ]);
             } else {
@@ -129,8 +129,8 @@ class PredictionController extends Controller
                     'user_id' => $userId,
                     'game_id' => $gameId,
                     'winning_team_id' => $request->input('winning_team_id'),
-                    'team_one_id' => $request->input('team_one_id'),
-                    'team_two_id' => $request->input('team_two_id'),
+                    'final_team_one_id' => $request->input('final_team_one_id'),
+                    'final_team_two_id' => $request->input('final_team_two_id'),
                    // 'first_goal_team_id' => $request->input('first_goal_team_id'),
                 ]);
             }

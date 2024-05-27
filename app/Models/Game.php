@@ -40,4 +40,15 @@ class Game extends Model
           return $this->belongsTo(Team::class, 'first_goal_team_id');
       }
 
+      public function finalTeamOne()
+      {
+          return $this->belongsTo(Team::class, 'final_team_one_id');
+      }
+  
+      public function finalTeamTwo()
+      {
+          return $this->belongsTo(Team::class, 'final_team_two_id');
+      }
+
+
 }

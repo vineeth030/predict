@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 
 class ProfileController extends Controller
@@ -132,5 +134,44 @@ class ProfileController extends Controller
 
         // Return the user's profile as a JSON response
        // return response()->json(['profile' => $user]);
+    }
+    
+    public function changePassword(Request $request)
+    {
+      
+
+     //   dd(request()->all());
+        try {
+            $user = Auth::user();
+
+            // Validate input
+            $validator = Validator::make($request->all(), [
+                'old_password' => 'required|string',
+                'new_password' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['status' => 400, 'message' => $validator->errors()->first()], 400);
+            }
+
+            // Check if the old password is correct
+            if (!Hash::check($request->old_password, $user->password)) {
+                return response()->json(['status' => 400, 'message' => 'Old password is incorrect'], 400);
+            }
+
+            // Check if the new password is different from the old password
+            if (Hash::check($request->new_password, $user->password)) {
+                return response()->json(['status' => 400, 'message' => 'New password cannot be the same as the old password'], 400);
+            }
+            /** @var \App\Models\User $user **/
+            // Update the password
+            $user->password = bcrypt($request->new_password);
+            $user->save();
+
+            return response()->json(['status' => 200, 'message' => 'Password updated successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 500, 'message' => $e->getMessage()], 500);
+        }
+
     }
 }

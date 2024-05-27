@@ -19,6 +19,9 @@ return new class extends Migration
             $table->integer('team_two_goals')->nullable();
             $table->integer('winning_team_id')->nullable();
             $table->integer('first_goal_team_id')->nullable();
+            $table->integer('final_team_one_id')->nullable();
+            $table->integer('final_team_two_id')->nullable();
+          
             $table->timestamps();
         });
     }

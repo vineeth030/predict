@@ -69,6 +69,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/users/allUserPoints', [PointController::class, 'allUserPoints']);
     Route::post('/edit-profile', [ProfileController::class, 'update']);
     Route::get('/user/profile', [ProfileController::class, 'profile']);
+    Route::post('/change-password', [ProfileController::class, 'changePassword']);
 
 
 });

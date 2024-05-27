@@ -13,7 +13,7 @@ class Prediction extends Model
     public $table = "predictions";
   
       protected $fillable = [
-          'user_id', 'game_id', 'team_one_goals', 'team_two_goals', 'winning_team_id','first_goal_team_id','team_one_id','team_two_id'
+          'user_id', 'game_id', 'team_one_goals', 'team_two_goals', 'winning_team_id','first_goal_team_id','final_team_one_id','final_team_two_id'
         
       ];
 
@@ -22,28 +22,15 @@ class Prediction extends Model
         return $this->belongsTo(Game::class);
     }
 
- /*public function teamOne()
-    {
-        return $this->belongsTo(Team::class, 'team_one_id');
-    }
+      public function finalTeamOne()
+      {
+          return $this->belongsTo(Team::class, 'final_team_one_id');
+      }
+  
+      public function finalTeamTwo()
+      {
+          return $this->belongsTo(Team::class, 'final_team_two_id');
+      }
 
-    // Define the relationship with the team for team two
-    public function teamTwo()
-    {
-        return $this->belongsTo(Team::class, 'team_two_id');
-    }
-
-    // Define the relationship with the winning team
-    public function winningTeam()
-    {
-        return $this->belongsTo(Team::class, 'winning_team_id');
-    }
-
-    // Define the relationship with the first goal team
-    public function firstGoalTeam()
-    {
-        return $this->belongsTo(Team::class, 'first_goal_team_id');
-    }
-*/
 
 }

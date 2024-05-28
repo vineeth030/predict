@@ -61,35 +61,31 @@ class VersionController extends Controller
     public function updateversion(Request $request)
     {
 
-        $kickoff_time = $request->input('kickoff_time');
-
-        $carbonDatetime = Carbon::parse($kickoff_time);
-
-        // $utcDatetime = $carbonDatetime->utc();
-        $wc_start_date = $carbonDatetime->timestamp * 1000;
-        // dd($milliseconds);
-        $wc_end_date = $request->input('wc_end_date');
-
-        $carbonDatetime = Carbon::parse($wc_end_date);
-
-        // $utcDatetime = $carbonDatetime->utc();
-        $wc_end_date = $carbonDatetime->timestamp * 1000;
+        $eu_start_date = $request->input('eu_start_date');
+        $euStartDate = Carbon::parse($eu_start_date);
+        $wc_start_date = $euStartDate->timestamp * 1000;
 
 
 
+
+        $eu_end_date = $request->input('eu_end_date');
+        $euEndDate = Carbon::parse($eu_end_date);
+        $wc_end_date = $euEndDate->timestamp * 1000;
+
+      
+        //dd('uuu');
 
         $validated = $request->validate([
             'platform' => 'required|in:android,ios',
             'code' => 'required|string',
             'name' => 'required|string',
             'is_mandatory' => 'required|string',
-            'winner' => 'required|string',
             'is_round16_completed' => 'required|string',
             'is_quarter_started' => 'required|string',
 
         ]);
 
-        //  dd( $validated);
+       
 
         // Update the version in the database, creating a new row if it does not exist
         Version::where('platform', $request->get('platform'))->update(
@@ -100,7 +96,7 @@ class VersionController extends Controller
                 'is_mandatory' => $validated['is_mandatory'],
                 'is_round16_completed' => $validated['is_round16_completed'],
                 'is_quarter_started' => $validated['is_quarter_started'],
-                'winner' => $validated['winner'],
+                'winner' => $request->winner,
                 'countdown_timer' => $wc_start_date,
                 'wc_end_date' => $wc_end_date
             ] // Values to update or insert

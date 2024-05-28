@@ -52,19 +52,20 @@ class GameController extends Controller
                     // Correct outcome prediction
                     $pointsEarned += 1;
                     $correctWinpredicted  += 1;
-
-                    if ($game->team_one_goals == $prediction->team_one_goals && $game->team_two_goals == $prediction->team_two_goals) {
-                        // Correct team1 goals prediction
-                        $pointsEarned += 3;
-                        $correctGoalpredicted  += 3;
-                    }
-
-                    if ($game->first_goal_team_id == $prediction->first_goal_team_id) {
-                        // Correct team2 goals prediction
-                        $pointsEarned += 1;
-                        $firstGoalprediction += 1;
-                    }
                 }
+
+                if ($game->team_one_goals == $prediction->team_one_goals && $game->team_two_goals == $prediction->team_two_goals) {
+                    // Correct team1 goals prediction
+                    $pointsEarned += 3;
+                    $correctGoalpredicted  += 3;
+                }
+
+                if ($game->first_goal_team_id == $prediction->first_goal_team_id) {
+                    // Correct team2 goals prediction
+                    $pointsEarned += 1;
+                    $firstGoalprediction += 1;
+                }
+                
             } else {
                 $userPrediction = [$prediction->team_one_id, $prediction->team_two_id];
                 sort($userPrediction);
@@ -80,12 +81,11 @@ class GameController extends Controller
 
                     $pointsEarned += 10;
 
-                    if ($game->winning_team_id == $prediction->winning_team_id){
+                    if ($game->winning_team_id == $prediction->winning_team_id) {
 
                         $pointsEarned += 5;
                         $correctWinpredicted  = +5;
                     }
-
                 }
             }
 
@@ -153,7 +153,7 @@ class GameController extends Controller
     public function manage(Request $request)
     {
 
-      //  dd("inside");
+        //  dd("inside");
         // $request->validate([
         //     'team_one_id' => 'integer',
         //     'team_two_id' => 'integer',
@@ -170,42 +170,38 @@ class GameController extends Controller
     public function delete(Request $request)
     {
 
-     // dd("inside");
-      $request->validate([
-        'game_id' => 'required|integer|exists:games,id',
-    ]);
+        // dd("inside");
+        $request->validate([
+            'game_id' => 'required|integer|exists:games,id',
+        ]);
 
-    $game = Game::find($request->game_id);
-    if ($game) {
-        $game->delete();
-        return redirect()->route('edit')->with('success', 'Game deleted successfully');
+        $game = Game::find($request->game_id);
+        if ($game) {
+            $game->delete();
+            return redirect()->route('edit')->with('success', 'Game deleted successfully');
+        }
+
+        return redirect()->route('edit')->with('error', 'Game not found');
     }
 
-    return redirect()->route('edit')->with('error', 'Game not found');
-       
-    }
-  
     public function editgame(Request $request)
     {
 
-       // dd("inside");
-      // dd($request->all());
-     //  dd($request->game_id);
+        // dd("inside");
+        // dd($request->all());
+        //  dd($request->game_id);
 
-       $game = Game::findOrFail($request->game_id);
-     
-    $game->team_one_id = $request->input('team_one_id');
-    $game->team_two_id = $request->input('team_two_id');
-    $game->winning_team_id = $request->input('winning_team_id');
-    $game->first_goal_team_id = $request->input('first_goal_team_id');
-    $game->game_type = $request->input('game_type');
-    $game->match_status = $request->input('match_status');
-    $game->stadium_name = $request->input('stadium_name');
-    $game->save();
+        $game = Game::findOrFail($request->game_id);
 
-    return redirect()->route('edit')->with('success', 'Game editted successfully');
-       
+        $game->team_one_id = $request->input('team_one_id');
+        $game->team_two_id = $request->input('team_two_id');
+        $game->winning_team_id = $request->input('winning_team_id');
+        $game->first_goal_team_id = $request->input('first_goal_team_id');
+        $game->game_type = $request->input('game_type');
+        $game->match_status = $request->input('match_status');
+        $game->stadium_name = $request->input('stadium_name');
+        $game->save();
+
+        return redirect()->route('edit')->with('success', 'Game editted successfully');
     }
-
- 
 }

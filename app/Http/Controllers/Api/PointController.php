@@ -89,7 +89,7 @@ try{
 
         try {
             // Total points earned by the user
-            $totalPoints = Point::where('user_id', $userId)->sum('points');
+            $totalPoints = (int) Point::where('user_id', $userId)->sum('points');
             $totalWinspredicted = Point::where('user_id', $userId)->where('win_prediction', 1)->count();
             $totalGoalspredicted = Point::where('user_id', $userId)->where('goal_prediction', 3)->count();
 
@@ -201,19 +201,20 @@ try{
         return response()->json(['status' => 200,'message' =>'success' ,'data' => $users]);
     }    */
 
-    public function allUserPoints()
+   public function allUserPoints()
     {
         $companyGroupId = auth()->user()->company_group_id;
     
         $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
             ->select('users.id', 'users.name', 'users.image','fav_team',
-                DB::raw('COALESCE(SUM(points.points), 0) as total_points'), 
+            DB::raw('COALESCE(SUM(points.points), 0) as total_points'), 
                 DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
                 DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank'))
             ->where('users.company_group_id', $companyGroupId)
             ->where('users.verified', 1)
             ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank')
             ->orderBy('total_points', 'desc')
+            ->orderBy('name', 'asc')
             ->get();
     
         foreach ($users as $user) {
@@ -222,7 +223,55 @@ try{
         }
     
         return response()->json(['status' => 200, 'message' => 'success', 'data' => $users]);
+    } 
+/*    public function allUserPoints()
+{
+    $companyGroupId = auth()->user()->company_group_id;
+
+    $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
+        ->select(
+            'users.id',
+            'users.name',
+            'users.image',
+            'users.fav_team',
+            DB::raw('COALESCE(SUM(points.points), 0) as total_points'),
+            DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
+            DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank')
+        )
+        ->where('users.company_group_id', $companyGroupId)
+        ->where('users.verified', 1)
+        ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank')
+        ->orderBy('total_points', 'desc')
+        ->orderBy('name', 'asc')
+        ->get();
+
+    // Initialize rank variables
+    $currentRank = 0;
+    $previousPoints = null;
+    $rankCounter = 0;
+
+    foreach ($users as $user) {
+        // Cast total_points to integer
+        $user->total_points = (int) $user->total_points;
+
+        // Compute rank
+        if ($previousPoints !== $user->total_points) {
+            $currentRank = $rankCounter + 1;
+        }
+        $user->rank = $currentRank;
+
+        // Update previousPoints and rankCounter
+        $previousPoints = $user->total_points;
+        $rankCounter++;
+
+        // Calculate rank change
+        $rankChange = $user->new_rank - $user->old_rank;
+        $user->rank_change = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
     }
+
+    return response()->json(['status' => 200, 'message' => 'success', 'data' => $users]);
+}
+*/
     
     
 }

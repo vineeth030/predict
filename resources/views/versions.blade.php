@@ -9,6 +9,8 @@
         </div>
     </div>
 
+
+
     <div>
 
 
@@ -48,11 +50,11 @@
                 <label for="is_round16_completed">Is Round 16 Completed:</label>
                 <input type="text" class="form-control" id="is_round16_completed" name="is_round16_completed">
                 <br>
-                <label for="kickoff_time">EURO CUP Start Date:</label>
-                <input type="datetime-local" class="form-control" id="kickoff_time" name="kickoff_time">
+                <label for="eu_start_date">EURO CUP Start Date:</label>
+                <input type="datetime-local" class="form-control" id="eu_start_date" name="eu_start_date">
                 <br>
-                <label for="wc_end_date">EURO CUP End Date:</label>
-                <input type="datetime-local" class="form-control" id="wc_end_date" name="wc_end_date">
+                <label for="eu_end_date">EURO CUP End Date:</label>
+                <input type="datetime-local" class="form-control" id="eu_end_date" name="eu_end_date">
                 <br>
                 <label for="winner">Winner</label>
                 <input type="text" class="form-control" id="winner" name="winner">

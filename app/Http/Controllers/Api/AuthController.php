@@ -33,8 +33,12 @@ class AuthController extends Controller
                     // Custom rule to check if the email exists in the database
                     function ($attribute, $value, $fail) {
                         $user = User::where('email', $value)->first();
-                        if ($user) {
-                            $fail('The email has already been taken.');
+                        // if ($user) {
+                        //     $fail('The email has already been taken.');
+                        // }
+                        
+                        if($user && !$user->verified){
+                            throw ValidationException::withMessages(['email' => 'The email has already been registered but not verified.'])->status(300);
                         }
                     },
                 ],
@@ -113,21 +117,13 @@ class AuthController extends Controller
                 } else {
                     // Log out the user if email is not verified
                     auth()->logout();
-                    return response()->json(['error' => 'Email not verified', 'status' => 401]);
+                    return response()->json(['message' => 'Email not verified', 'status_code' => 401]);
                 }
             } else {
                 // Return an error response if authentication fails
                 throw ValidationException::withMessages(['error' => 'The provided password is incorrect.', 'status_code' => 422]);
             }
-        } /* catch (ValidationException $e) {
-            // Return the error response with custom error messages and status code
-            $responseData = [
-                             
-                'status' => $e->status,
-                'errors' => $e->errors()
-            ];
-            return response()->json($responseData, $e->status);
-        } */
+        } 
         catch (ValidationException $e) {
             // Return the error response with custom error messages and status code
             $errorMessage = $e->errors()['error'][0];

@@ -166,6 +166,13 @@
                 Edit Games
               </a>
             </li>
+
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center gap-2" href="{{ route('domain') }}">
+                <svg class="bi"><use xlink:href="#file-earmark"/></svg>
+                Manage Domain
+              </a>
+            </li>
             
             <li class="nav-item">
               <a class="nav-link d-flex align-items-center gap-2" href="{{ route('logout') }}">

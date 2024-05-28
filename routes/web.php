@@ -5,6 +5,7 @@ use App\Http\Controllers\Dashboard\AuthController;
 use App\Http\Controllers\Dashboard\GameController;
 use App\Http\Controllers\Dashboard\TeamController;
 use App\Http\Controllers\Dashboard\VersionController;
+use App\Http\Controllers\Dashboard\EmailController;
 use App\Http\Controllers\LabController;
 
 /*
@@ -32,7 +33,8 @@ Route::get('/edit', [GameController::class, 'edit'])->middleware('auth')->name('
 Route::post('/manage', [GameController::class, 'manage'])->middleware('auth')->name('games.manage');
 Route::delete('/delete', [GameController::class, 'delete'])->middleware('auth')->name('games.delete');
 Route::put('/editgame', [GameController::class, 'editgame'])->middleware('auth')->name('games.editgame');
-
+Route::get('/domain', [EmailController::class, 'domain'])->middleware('auth')->name('domain');
+Route::post('/addDomain', [EmailController::class, 'addDomain'])->middleware('auth')->name('domain.add');
 
 // Standings Page
 Route::get('/teams', [TeamController::class, 'index'])->middleware('auth')->name('teams.index');

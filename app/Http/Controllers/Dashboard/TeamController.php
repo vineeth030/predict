@@ -18,16 +18,12 @@ class TeamController extends Controller
 
     public function update(Request $request)
     {
-       //dd("aaaaa");
 
-        
-
-        //dd($validatedData);
         try {
 
             $validatedData = $request->validate([
                 'teams.*.points' => 'integer',
-                'teams.*.matches_played' => 'integer',
+                'teams.*.games_played' => 'integer',
                 'teams.*.wins' => 'integer',
                 'teams.*.draws' => 'integer',
                 'teams.*.losses' => 'integer',
@@ -38,6 +34,8 @@ class TeamController extends Controller
 
             // Update standings data based on form input
             foreach ($validatedData['teams'] as $teamid => $data) {
+
+              
                 $team = Team::findOrFail($teamid);
                 $team->update($data);
             }

@@ -16,7 +16,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
-
+use App\Models\EmailExtension;
 
 class AuthController extends Controller
 {
@@ -43,13 +43,21 @@ class AuthController extends Controller
                     },
                 ],
                 'password' => 'required|min:6',
-                'company_group_id' => 'required',
+               // 'company_group_id' => 'required',
             ]);
+
+
 
             // Check if the validation fails
             if ($validator->fails()) {
                 // Throw a ValidationException with custom error code
                 throw ValidationException::withMessages($validator->errors()->toArray())->status(422);
+            }
+
+            $emailDomain = substr(strrchr($request->email, "@"), 1);
+            $emailExtension = EmailExtension::where('domain', $emailDomain)->first();
+            if (!$emailExtension) {
+                return response()->json(['domain' => 'Invalid email domain.', 'status' => 400], 400);
             }
 
             // Generate and send OTP
@@ -59,7 +67,7 @@ class AuthController extends Controller
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'company_group_id' => $request->company_group_id,
+                'company_group_id' => $emailExtension->company_group_id,
                 'password' => bcrypt($request->password),
                 'otp' => $otp,
             ]);

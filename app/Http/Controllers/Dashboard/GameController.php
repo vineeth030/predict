@@ -65,7 +65,6 @@ class GameController extends Controller
                     $pointsEarned += 1;
                     $firstGoalprediction += 1;
                 }
-                
             } else {
                 $userPrediction = [$prediction->team_one_id, $prediction->team_two_id];
                 sort($userPrediction);
@@ -74,17 +73,16 @@ class GameController extends Controller
 
                 $actualWinningTeams = [$game->team_one_id, $game->team_two_id];
                 sort($actualWinningTeams);
+
                 $normalizedWinningTeam = implode(' vs ', $actualWinningTeams);
-                //  dd($normalizedWinningTeam);
 
-                if ($normalizedPrediction === $normalizedWinningTeam) {
+                if ($game->winning_team_id == $prediction->winning_team_id) {
 
-                    $pointsEarned += 10;
+                    $pointsEarned += 5;
+                    $correctWinpredicted  = +5;
+                    if ($normalizedPrediction === $normalizedWinningTeam) {
 
-                    if ($game->winning_team_id == $prediction->winning_team_id) {
-
-                        $pointsEarned += 5;
-                        $correctWinpredicted  = +5;
+                        $pointsEarned += 10;
                     }
                 }
             }
@@ -129,8 +127,15 @@ class GameController extends Controller
 
     private function assignRank()
     {
+
+        $companyGroupId = auth()->user()->company_group_id;
         // Calculate the sum of points for each user ID
+        
         $userPoints = Point::select('user_id', DB::raw('SUM(points) as total_points'))
+        ///////////////////////////////////////////////
+                    ->join('users', 'users.id', '=', 'points.user_id')
+                    ->where('users.company_group_id', $companyGroupId)
+        ///////////////////////////////////////////////
             ->groupBy('user_id')
             ->orderBy('total_points', 'desc')
             ->get();
@@ -152,15 +157,6 @@ class GameController extends Controller
 
     public function manage(Request $request)
     {
-
-        //  dd("inside");
-        // $request->validate([
-        //     'team_one_id' => 'integer',
-        //     'team_two_id' => 'integer',
-        //     'game_type' => 'string',
-        //     'match_status' => 'string',
-        //     'kick_off_time' => 'string',
-        // ]);
 
         $game = Game::create($request->all());
 
@@ -187,12 +183,7 @@ class GameController extends Controller
     public function editgame(Request $request)
     {
 
-        // dd("inside");
-        // dd($request->all());
-        //  dd($request->game_id);
-
         $game = Game::findOrFail($request->game_id);
-
         $game->team_one_id = $request->input('team_one_id');
         $game->team_two_id = $request->input('team_two_id');
         $game->winning_team_id = $request->input('winning_team_id');
@@ -204,4 +195,8 @@ class GameController extends Controller
 
         return redirect()->route('edit')->with('success', 'Game editted successfully');
     }
+
+
+
+
 }

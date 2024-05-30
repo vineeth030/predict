@@ -46,7 +46,7 @@ class GameController extends Controller
             $firstGoalprediction = 0;
 
 
-            if ($game->game_type !== 'final') {
+            if ($game->game_type !== 'final-prediction') {
 
                 if ($game->winning_team_id == $prediction->winning_team_id) {
                     // Correct outcome prediction
@@ -66,13 +66,16 @@ class GameController extends Controller
                     $firstGoalprediction += 1;
                 }
             } else {
-                $userPrediction = [$prediction->team_one_id, $prediction->team_two_id];
+             //  dd("inside final-prediction");
+                $userPrediction = [$prediction->final_team_one_id, $prediction->final_team_two_id];
                 sort($userPrediction);
+               // dd($userPrediction);
                 $normalizedPrediction = implode(' vs ', $userPrediction);
 
 
                 $actualWinningTeams = [$game->team_one_id, $game->team_two_id];
                 sort($actualWinningTeams);
+                
 
                 $normalizedWinningTeam = implode(' vs ', $actualWinningTeams);
 
@@ -82,7 +85,7 @@ class GameController extends Controller
                     $correctWinpredicted  = +5;
                     if ($normalizedPrediction === $normalizedWinningTeam) {
 
-                        $pointsEarned += 10;
+                        $pointsEarned += 5;
                     }
                 }
             }

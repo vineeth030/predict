@@ -128,7 +128,7 @@ class ProfileController extends Controller
 
       // Append the image URL to the user data
       $userData = $user->toArray();
-    $userData['image_url'] = $imageUrl;
+      $userData['image_url'] = $imageUrl;
 
       return response()->json(['status' => 'success','code' =>200 , 'data' => $userData]);
 

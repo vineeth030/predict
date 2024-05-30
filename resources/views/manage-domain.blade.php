@@ -55,10 +55,6 @@
                 <label for="domain">Domain</label>
                 <input type="text" id="domain" name="domain" class="form-control" required>
             </div>
-            <div class="form-group mb-3">
-                <label for="company_group_id">Company Group ID</label>
-                <input type="number" id="company_group_id" name="company_group_id" class="form-control" required>
-            </div>
             <button type="submit" class="btn btn-danger">ADD Domain</button>
         </form>
 

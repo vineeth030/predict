@@ -51,10 +51,10 @@
                 <input type="text" class="form-control" id="is_round16_completed" name="is_round16_completed">
                 <br>
                 <label for="eu_start_date">EURO CUP Start Date:</label>
-                <input type="datetime-local" class="form-control" id="eu_start_date" name="eu_start_date">
+                <input type="text" class="form-control" id="eu_start_date" name="eu_start_date">
                 <br>
                 <label for="eu_end_date">EURO CUP End Date:</label>
-                <input type="datetime-local" class="form-control" id="eu_end_date" name="eu_end_date">
+                <input type="text" class="form-control" id="eu_end_date" name="eu_end_date">
                 <br>
                 <label for="winner">Winner</label>
                 <input type="text" class="form-control" id="winner" name="winner">
@@ -72,6 +72,8 @@
                     var isQuarterStarted = document.getElementById('is_quarter_started');
                     var isRound16Completed = document.getElementById('is_round16_completed');
                     var winner = document.getElementById('winner');
+                    var eu_start_date = document.getElementById('eu_start_date');
+                    var eu_end_date = document.getElementById('eu_end_date');
 
 
 
@@ -93,6 +95,12 @@
                     var androidWinner = "{{ $androidWinner }}";
                     var iosWinner = "{{ $iosWinner }}";
 
+                    var android_eu_start_date = "{{ $androdEuroStartDate }}";
+                    var ios_eu_start_date = "{{ $iosEuroStartDate }}";
+
+                    var android_eu_end_date = "{{ $androdEuroEndDate }}";
+                    var ios_eu_end_date = "{{ $iosEuroEndDate }}";
+
 
 
                     if (platform === 'android') {
@@ -102,6 +110,9 @@
                         isQuarterStarted.value = androdIsQuarterStarted;
                         isRound16Completed.value = androidisRound16Completed;
                         winner.value = androidWinner;
+                        eu_start_date.value=android_eu_start_date;
+                        eu_end_date.value=android_eu_end_date ;
+
                     } else if (platform === 'ios') {
                         code.value = iosVersion;
                         name.value = iosName;
@@ -109,6 +120,9 @@
                         isQuarterStarted.value = iosIsQuarterStarted;
                         isRound16Completed.value = iosisRound16Completed;
                         winner.value = iosWinner;
+                        eu_start_date.value=ios_eu_start_date;
+                        eu_end_date.value=ios_eu_end_date ;
+
                     } else {
                         code.value = '';
                         name.value = '';
@@ -116,6 +130,9 @@
                         isQuarterStarted.value = '';
                         isRound16Completed.value = '';
                         winner.value = '';
+                        eu_start_date.value='';
+                        eu_end_date.value='';
+
                     }
                 }
             </script>

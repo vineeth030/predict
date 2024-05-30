@@ -27,7 +27,7 @@ class EmailController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            "company_group_id" => "integer",         
+                  
             "domain" => "string",
         ]);
 
@@ -40,8 +40,13 @@ class EmailController extends Controller
                 400
             );
         }
+        $nextCompanyGroupId = EmailExtension::max('company_group_id') + 1;
+    //    dd($nextCompanyGroupId);
 
-        $email = EmailExtension::create($request->all());
+        $emailExtension = EmailExtension::create([
+            'domain' => $request->domain,
+            'company_group_id' => $nextCompanyGroupId,
+        ]);
         
       //  return response()->json(["status" => "success", "data" => $email], 201);
         return redirect()->route('domain')->with('success', 'Domain added successfully');

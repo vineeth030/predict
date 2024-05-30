@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class EmailExtension extends Model
+class CardsGame extends Model
 {
     use HasFactory;
 
-    public $table = "email_extensions";
+    public $table = "cards_game";
 
     protected $fillable = [
-      'domain','company_group_id'
+      'user_id','questions_asked','cards_opened','last_attended','is_question_opened'
     ];
   
 }

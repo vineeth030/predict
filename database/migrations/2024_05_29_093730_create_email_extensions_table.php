@@ -9,12 +9,12 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('email_extensions', function (Blueprint $table) {
-            $table->id();
+            $table->id(); // This will be the auto-increment primary key
             $table->string('domain')->unique();
-            $table->integer('company_group_id');
+            $table->unsignedBigInteger('company_group_id'); // Regular unsigned big integer
             $table->timestamps();
         });
     }

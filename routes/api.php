@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\PointController;
 use App\Http\Controllers\Api\VersionController;
 use App\Http\Controllers\Api\PredictionController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\CardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,6 +71,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/edit-profile', [ProfileController::class, 'update']);
     Route::get('/user/profile', [ProfileController::class, 'profile']);
     Route::post('/change-password', [ProfileController::class, 'changePassword']);
+    Route::delete('/user/delete', [GameController::class, 'deleteUser'])->name('user.delete');
+    Route::post('/cards-game', [CardController::class, 'cardsGame'])->name('cardsGame');
+    Route::get('/fetch-cards', [CardController::class, 'fetchCards'])->name('fetchCards');
 
 
 });

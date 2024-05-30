@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Game;
 use App\Models\Point;
+use App\Models\User;
 use Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -310,4 +311,83 @@ class GameController extends Controller
             );
         }
     }
-}
+
+
+
+        public function deleteUser(Request $request)
+        {
+            $validator = Validator::make($request->all(), [
+                'user_id' => 'required|integer|exists:users,id',
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 400,
+                    'message' => $validator->errors()->first(),
+                ]);
+            }
+    
+            $user = User::find($request->user_id);
+    
+            if ($user) {
+                DB::transaction(function () use ($user) {
+                    // Delete user's predictions
+                    Prediction::where('user_id', $user->id)->delete();
+    
+                    // Delete user's points
+                    Point::where('user_id', $user->id)->delete();
+    
+                    // Delete the user
+                    $user->delete();
+                });
+    
+                // Recalculate ranks after user deletion
+                $this->assignRank();
+    
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'User deleted successfully',
+                ]);
+            }
+    
+            return response()->json([
+                'status' => 404,
+                'message' => 'User not found',
+            ]);
+        }
+
+        private function assignRank()
+        {
+    
+            // Get all company_group_ids
+            $companyGroupIds = User::select('company_group_id')->distinct()->pluck('company_group_id');
+    
+            foreach ($companyGroupIds as $companyGroupId) {
+                // Retrieve users in this company group, sorted by total points descending
+                $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
+                    ->select(
+                        'users.id',
+                        'users.company_group_id',
+                        DB::raw('COALESCE(SUM(points.points), 0) as total_points')
+                    )
+                    ->where('users.company_group_id', $companyGroupId)
+                    ->where('users.verified', 1)
+                    ->groupBy('users.id', 'users.company_group_id')
+                    ->orderBy('total_points', 'desc')
+                    ->get();
+    
+                // Assign ranks
+                $rank = 1;
+                foreach ($users as $user) {
+                    $userModel = User::find($user->id);
+                    $userModel->old_rank = $userModel->new_rank;
+                    $userModel->new_rank = $rank;
+                    $userModel->save();
+    
+                    $rank++;
+                }
+            }
+        }
+
+    }
+

@@ -128,27 +128,40 @@ class GameController extends Controller
     private function assignRank()
     {
 
-        $companyGroupId = auth()->user()->company_group_id;
-        // Calculate the sum of points for each user ID
-        
-        $userPoints = Point::select('user_id', DB::raw('SUM(points) as total_points'))
-        ///////////////////////////////////////////////
-                    ->join('users', 'users.id', '=', 'points.user_id')
-                    ->where('users.company_group_id', $companyGroupId)
-        ///////////////////////////////////////////////
-            ->groupBy('user_id')
-            ->orderBy('total_points', 'desc')
-            ->get();
+        // Get all company_group_ids
+        $companyGroupIds = User::select('company_group_id')->distinct()->pluck('company_group_id');
 
-        // Assign ranks based on the order of users' total points
-        $rank = 1;
-        foreach ($userPoints as $userPoint) {
-            $user = User::find($userPoint->user_id);
-            $user->old_rank = $user->new_rank; // Save the old rank
-            $user->new_rank = $rank++;
-            $user->save();
+        foreach ($companyGroupIds as $companyGroupId) {
+            // Retrieve users in this company group, sorted by total points descending
+            $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
+                ->select(
+                    'users.id',
+                    'users.company_group_id',
+                    DB::raw('COALESCE(SUM(points.points), 0) as total_points')
+                )
+                ->where('users.company_group_id', $companyGroupId)
+                ->where('users.verified', 1)
+                ->groupBy('users.id', 'users.company_group_id')
+                ->orderBy('total_points', 'desc')
+                ->get();
+
+            // Assign ranks
+            $rank = 1;
+            foreach ($users as $user) {
+                $userModel = User::find($user->id);
+                $userModel->old_rank = $userModel->new_rank;
+                $userModel->new_rank = $rank;
+                $userModel->save();
+
+                $rank++;
+            }
         }
     }
+
+
+
+
+
 
     public function edit()
     {
@@ -196,7 +209,11 @@ class GameController extends Controller
         return redirect()->route('edit')->with('success', 'Game editted successfully');
     }
 
-
+    public function deleteUser(Request $request)
+    {
+        dd("inside delete");
+    }
 
 
 }
+

@@ -18,11 +18,58 @@ class UserSeeder extends Seeder
             'email' => 'admin@predict.com',
             'employee_id' => 28,
             'image' => '28_photo.jpg',
-            'company_group_id' => 2,
+            'company_group_id' => 0,
             'password' => 'password',
-            'is_admin' => true
+            'is_admin' => true,
+            'verified' => 1
         ]);
 
+
+        \App\Models\User::factory()->create([
+            'name' => 'Test Android1',
+            'designation' => 'Web Developer',
+            'email' => 'test@beo.in',
+            'employee_id' => 28,
+            'image' => '28_photo.jpg',
+            'company_group_id' => 0,
+            'password' => 'password',
+            'is_admin' => false,
+            'verified' => 1
+        ]);
+        \App\Models\User::factory()->create([
+            'name' => 'Test Android2',
+            'designation' => 'Web Developer',
+            'email' => 'test@beo.in',
+            'employee_id' => 28,
+            'image' => '28_photo.jpg',
+            'company_group_id' => 0,
+            'password' => 'password',
+            'is_admin' => false,
+            'verified' => 1
+        ]);
+        \App\Models\User::factory()->create([
+            'name' => 'Test iOS1',
+            'designation' => 'Web Developer',
+            'email' => 'test@beo.in',
+            'employee_id' => 28,
+            'image' => '28_photo.jpg',
+            'company_group_id' => 0,
+            'password' => 'password',
+            'is_admin' => false,
+            'verified' => 1
+        ]);
+
+        \App\Models\User::factory()->create([
+            'name' => 'Test iOS2',
+            'designation' => 'Web Developer',
+            'email' => 'test@beo.in',
+            'employee_id' => 28,
+            'image' => '28_photo.jpg',
+            'company_group_id' => 0,
+            'password' => 'password',
+            'is_admin' => false,
+            'verified' => 1
+        ]);
         //\App\Models\User::factory(10)->create();
     }
 }

@@ -206,7 +206,7 @@ try{
         $companyGroupId = auth()->user()->company_group_id;
     
         $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
-            ->select('users.id', 'users.name', 'users.image','fav_team',
+            ->select('users.id', 'users.image','fav_team',
             DB::raw('COALESCE(SUM(points.points), 0) as total_points'), 
                 DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
                 DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank'))
@@ -216,10 +216,13 @@ try{
             ->orderBy('total_points', 'desc')
             ->orderBy('name', 'asc')
             ->get();
+
+            $baseImagePath = url('storage/profile_images/');
     
         foreach ($users as $user) {
             $rankChange = $user->new_rank - $user->old_rank;
             $user->rank_change = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
+            $user->image = $user->image ? $baseImagePath . '/' . $user->image : null;
         }
     
         return response()->json(['status' => 200, 'message' => 'success', 'data' => $users]);

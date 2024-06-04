@@ -16,6 +16,8 @@ class VersionController extends Controller
             // Fetch all versions
             $versions = Version::all();
 
+         //  dd($versions);
+
             // Get the latest version for Android
             $latestAndroidVersion = $versions->filter(function ($version) {
                 return $version->platform === 'android';
@@ -30,10 +32,10 @@ class VersionController extends Controller
                     'eu_start_date' => $version->countdown_timer,
                     'eu_end_date' => $version->wc_end_date,
                     'winner' => $version->winner,
-                    'created_at' => $version->created_at,
-                    'updated_at' => $version->updated_at,
                 ];
             })->first(); // Get the first (or latest) item
+
+           
 
             // Get the latest version for iOS
             $latestIosVersion = $versions->filter(function ($version) {
@@ -49,8 +51,6 @@ class VersionController extends Controller
                     'eu_start_date' => $version->countdown_timer,
                     'eu_end_date' => $version->wc_end_date,
                     'winner' => $version->winner,
-                    'created_at' => $version->created_at,
-                    'updated_at' => $version->updated_at,
                 ];
             })->first(); // Get the first (or latest) item
             //     $countdownTimer = $versions->first()->countdown_timer ?? null;

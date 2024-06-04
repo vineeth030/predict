@@ -12,17 +12,6 @@ class VersionSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\Version::factory()->create([
-            'platform' => 'android',
-            'code' => 'a',
-            'name' => 'a',
-            'is_mandatory' => '0',
-            'is_quarter_started' => '0',
-            'countdown_timer' => '1718391600000',
-            'is_round16_completed' => '0',
-            'wc_end_date' => '1723662000000',
-            'winner' => 'England'
-        ]);
 
         \App\Models\Version::factory()->create([
             'platform' => 'ios',
@@ -35,6 +24,21 @@ class VersionSeeder extends Seeder
             'wc_end_date' => '1723662000000',
             'winner' => 'England'
         ]);
+
+
+        \App\Models\Version::factory()->create([
+            'platform' => 'android',
+            'code' => 'a',
+            'name' => 'a',
+            'is_mandatory' => '0',
+            'is_quarter_started' => '0',
+            'countdown_timer' => '1718391600000',
+            'is_round16_completed' => '0',
+            'wc_end_date' => '1723662000000',
+            'winner' => 'England'
+        ]);
+
+      
 
     }
 }

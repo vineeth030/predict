@@ -34,10 +34,10 @@ class VersionController extends Controller
         $iosisRound16Completed = Version::where('platform', 'ios')->first();
 
         $androidEuroStartDate = Version::where('platform', 'android')->first();
-        $iosEuroStartDate = Version::where('platform', 'android')->first();
+        $iosEuroStartDate = Version::where('platform', 'ios')->first();
 
         $androidEuroEndDate = Version::where('platform', 'android')->first();
-        $iosEuroEndDate = Version::where('platform', 'android')->first();
+        $iosEuroEndDate = Version::where('platform', 'ios')->first();
 
 
 
@@ -76,19 +76,6 @@ class VersionController extends Controller
     public function updateversion(Request $request)
     {
 
-        // $eu_start_date = $request->input('eu_start_date');
-        // $euStartDate = Carbon::parse($eu_start_date);
-        // $wc_start_date = $euStartDate->timestamp * 1000;
-
-
-
-
-        // $eu_end_date = $request->input('eu_end_date');
-        // $euEndDate = Carbon::parse($eu_end_date);
-        // $wc_end_date = $euEndDate->timestamp * 1000;
-
-      
-        //dd('uuu');
 
         $validated = $request->validate([
             'platform' => 'required|in:android,ios',
@@ -101,11 +88,9 @@ class VersionController extends Controller
             'eu_end_date' => 'required|string',
 
 
+
         ]);
 
-
-
-       
 
         // Update the version in the database, creating a new row if it does not exist
         Version::where('platform', $request->get('platform'))->update(
@@ -116,7 +101,7 @@ class VersionController extends Controller
                 'is_mandatory' => $validated['is_mandatory'],
                 'is_round16_completed' => $validated['is_round16_completed'],
                 'is_quarter_started' => $validated['is_quarter_started'],
-                'winner' => $request->winner,
+                 'winner' => $request->winner,
                 'countdown_timer' =>  $validated['eu_start_date'],
                 'wc_end_date' =>  $validated['eu_end_date'],
             ] // Values to update or insert

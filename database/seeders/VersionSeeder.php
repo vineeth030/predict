@@ -12,11 +12,29 @@ class VersionSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\Version::factory()->create();
+        \App\Models\Version::factory()->create([
+            'platform' => 'android',
+            'code' => 'a',
+            'name' => 'a',
+            'is_mandatory' => '0',
+            'is_quarter_started' => '0',
+            'countdown_timer' => '1718391600000',
+            'is_round16_completed' => '0',
+            'wc_end_date' => '1723662000000',
+            'winner' => null
+        ]);
 
         \App\Models\Version::factory()->create([
             'platform' => 'ios',
-            'name' => 'version 2.0.0',
+            'code' => 'a',
+            'name' => 'a',
+            'is_mandatory' => '0',
+            'is_quarter_started' => '0',
+            'countdown_timer' => '1718391600000',
+            'is_round16_completed' => '0',
+            'wc_end_date' => '1723662000000',
+            'winner' => null
         ]);
+
     }
 }

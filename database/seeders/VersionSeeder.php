@@ -21,7 +21,7 @@ class VersionSeeder extends Seeder
             'countdown_timer' => '1718391600000',
             'is_round16_completed' => '0',
             'wc_end_date' => '1723662000000',
-            'winner' => null
+            'winner' => 'England'
         ]);
 
         \App\Models\Version::factory()->create([
@@ -33,7 +33,7 @@ class VersionSeeder extends Seeder
             'countdown_timer' => '1718391600000',
             'is_round16_completed' => '0',
             'wc_end_date' => '1723662000000',
-            'winner' => null
+            'winner' => 'England'
         ]);
 
     }

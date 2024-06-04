@@ -212,7 +212,7 @@ try{
                 DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank'))
             ->where('users.company_group_id', $companyGroupId)
             ->where('users.verified', 1)
-            ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank')
+            ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank','users.fav_team')
             ->orderBy('total_points', 'desc')
             ->orderBy('name', 'asc')
             ->get();

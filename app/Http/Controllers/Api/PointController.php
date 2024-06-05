@@ -41,7 +41,7 @@ try{
    ->select('points', 'win_prediction', 'goal_prediction', 'first_goal_prediction')
    ->first();
 
-   return response()->json(['statuscode' =>  200, 'data' => $pointsBreakdown]);
+   return response()->json(['status' =>  200, 'data' => $pointsBreakdown]);
 
 }catch(\Exception $e){
     return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
@@ -132,8 +132,8 @@ try{
             $user2WinPercentage = $user2MatchesPlayed > 0 ? ($user2Wins / $user2MatchesPlayed) * 100 : 0;
     
             return response()->json([
-                'status' => 'success',
-                'code' => 200,
+                'message' => 'success',
+                'status' => 200,
                 'user1' => [
                     'user_id' =>  $userId1,
                     'matches_played' => $user1MatchesPlayed,

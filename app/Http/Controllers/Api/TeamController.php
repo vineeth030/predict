@@ -77,8 +77,8 @@ class TeamController extends Controller
             ];
 
             return response()->json([
-                'status' => 'success',
-                'status_code' => 200,
+                'message' => 'success',
+                'status' => 200,
                 'finalist_teams' => $teams,
                 'app_data' => $latestAndroidVersion,
                 // 'ios' => $latestIosVersion,

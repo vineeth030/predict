@@ -72,8 +72,8 @@ class GameController extends Controller
 
             return response()->json(
                 [
-                    "status" => "success",
-                    "status_code" => 200,
+                    "message" => "success",
+                    "status" => 200,
                     "upcoming_games" => $upcomingGames,
                     "completed_games" => $completedGames,
                     "ongoing_games" => $ongoingGames,
@@ -293,7 +293,7 @@ class GameController extends Controller
                         "total_games" => $totalGames,
                         "predicted_games" => $predictedGamesCount,
                     ],
-                    "status_code" => 200,
+                    "status" => 200,
                 ],
                 200
             );
@@ -302,7 +302,7 @@ class GameController extends Controller
                 [
                     "status" => "error",
                     "message" => $e->getMessage(),
-                    "status_code" => 500,
+                    "status" => 500,
                 ],
                 500
             );

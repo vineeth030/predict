@@ -130,7 +130,7 @@ class ProfileController extends Controller
       $userData = $user->toArray();
       $userData['image_url'] = $imageUrl;
 
-      return response()->json(['status' => 'success','code' =>200 , 'data' => $userData]);
+      return response()->json(['message' => 'success','status' =>200 , 'data' => $userData]);
 
         // Return the user's profile as a JSON response
        // return response()->json(['profile' => $user]);

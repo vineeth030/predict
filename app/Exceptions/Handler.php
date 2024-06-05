@@ -34,7 +34,7 @@ class Handler extends ExceptionHandler
             return response()->json([
                 'message' => 'Unauthenticated',
                 'error' => 'Your session has expired. Please log in again.',
-                'status_code'=>401
+                'status'=>401
             ], 401); // Customize the status code and message here
 
 

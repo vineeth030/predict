@@ -59,8 +59,8 @@ class VersionController extends Controller
 
 
             return response()->json([
-                'status' => 'success',
-                'status_code' => 200,
+                'message' => 'success',
+                'status' => 200,
 
                 'android' => $latestAndroidVersion,
                 'ios' => $latestIosVersion,

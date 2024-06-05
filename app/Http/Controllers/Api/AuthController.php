@@ -121,22 +121,22 @@ class AuthController extends Controller
                     $authToken = $user->createToken('auth-token')->plainTextToken;
 
                     // Return the access token in the response
-                    return response()->json(['access_token' => $authToken, 'status_code' => 200, 'user_id' => $user->id, 'result' => "Login Success",]);
+                    return response()->json(['access_token' => $authToken, 'status' => 200, 'user_id' => $user->id, 'result' => "Login Success",]);
                 } else {
                     // Log out the user if email is not verified
                     auth()->logout();
-                    return response()->json(['message' => 'Email not verified', 'status_code' => 401]);
+                    return response()->json(['message' => 'Email not verified', 'status' => 401]);
                 }
             } else {
                 // Return an error response if authentication fails
-                throw ValidationException::withMessages(['error' => 'The provided password is incorrect.', 'status_code' => 422]);
+                throw ValidationException::withMessages(['error' => 'The provided password is incorrect.', 'status' => 422]);
             }
         } 
         catch (ValidationException $e) {
             // Return the error response with custom error messages and status code
             $errorMessage = $e->errors()['error'][0];
             $statusCode = $e->status;
-            return response()->json(['result' => $errorMessage, 'status_code' => $statusCode], $statusCode);
+            return response()->json(['result' => $errorMessage, 'status' => $statusCode], $statusCode);
         }
     }
 

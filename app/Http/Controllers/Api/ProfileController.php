@@ -128,6 +128,9 @@ class ProfileController extends Controller
 
       $imageUrl = $user->image ? asset('storage/profile_images/' . $user->image) : null;
 
+      $rankChange = $user->new_rank - $user->old_rank;
+      $user->rank_change = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
+
       $cardsGame = CardsGame::where('user_id', $userId)->first();
       $starsCollected = 0;
       if ($cardsGame && !is_null($cardsGame->cards_opened)) {
@@ -138,6 +141,7 @@ class ProfileController extends Controller
       $userData = $user->toArray();
       $userData['image_url'] = $imageUrl;
       $userData['stars_collected'] = $starsCollected;
+      $userData['rank_change'] =  $rankChange;
 
 
       return response()->json(['message' => 'success','status' =>200 , 'data' => $userData]);

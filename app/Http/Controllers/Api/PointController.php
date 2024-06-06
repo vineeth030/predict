@@ -162,7 +162,7 @@ class PointController extends Controller
         $companyGroupId = auth()->user()->company_group_id;
 
         $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
-                 ->leftJoin('cards_game', 'users.id', '=', 'cards_game.user_id')
+        
             ->select(
                 'users.id',
                 'users.image',
@@ -171,7 +171,6 @@ class PointController extends Controller
                 DB::raw('COALESCE(SUM(points.points), 0) as total_points'),
                 DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
                 DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank'),
-                DB::raw('IFNULL(LENGTH(cards_game.cards_opened) - LENGTH(REPLACE(cards_game.cards_opened, ",", "")) + 1, 0) as stars_collected')
 
             )
             ->where('users.company_group_id', $companyGroupId)

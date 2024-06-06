@@ -270,7 +270,7 @@ class PointController extends Controller
     
             // Calculate rank change
             $rankChange = $user->new_rank - $user->old_rank;
-            $user->rank_change = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
+            $user->rank_change = $rankChange > 0 ? '-1' : ($rankChange < 0 ? '+1' : '0');
     
             // Update image path
             $user->image = $user->image ? $baseImagePath . '/' . $user->image : null;

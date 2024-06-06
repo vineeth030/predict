@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Point;
 use App\Models\User;
 use App\Models\Game;
+use App\Models\CardsGame;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
@@ -93,7 +94,15 @@ class PointController extends Controller
             // Total matches played by the user
             $totalMatches = Game::whereHas('predictions', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
+                
             })->count();
+
+            $cardsGame = CardsGame::where('user_id', $userId)->first();
+            $starsCollected = 0;
+            if ($cardsGame && !is_null($cardsGame->cards_opened)) {
+                $starsCollected = substr_count($cardsGame->cards_opened, ',') + 1;
+            }
+
 
             return response()->json([
                 'status' => 200,
@@ -103,6 +112,7 @@ class PointController extends Controller
                     'TotalMatchesPlayed' => $totalMatches,
                     'Win_prediction' => $totalWinspredicted,
                     'Goal_prediction' => $totalGoalspredicted,
+                    'StarsCollected' => $starsCollected,
                 ]
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
@@ -162,7 +172,7 @@ class PointController extends Controller
         $companyGroupId = auth()->user()->company_group_id;
 
         $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
-        
+                 ->leftJoin('cards_game', 'users.id', '=', 'cards_game.user_id')
             ->select(
                 'users.id',
                 'users.image',
@@ -171,11 +181,12 @@ class PointController extends Controller
                 DB::raw('COALESCE(SUM(points.points), 0) as total_points'),
                 DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
                 DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank'),
+                  DB::raw('IFNULL(LENGTH(cards_game.cards_opened) - LENGTH(REPLACE(cards_game.cards_opened, ",", "")) + 1, 0) as stars_collected')
 
             )
             ->where('users.company_group_id', $companyGroupId)
             ->where('users.verified', 1)
-            ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank', 'users.fav_team')
+            ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank', 'users.fav_team','stars_collected')
             ->orderBy('total_points', 'desc')
             ->orderBy('name', 'asc')
             ->get();

@@ -157,7 +157,7 @@ class PointController extends Controller
     }
 
 
-    /*  public function allUserPoints()
+    public function allUserPoints()
     {
         $companyGroupId = auth()->user()->company_group_id;
     
@@ -183,8 +183,8 @@ class PointController extends Controller
     
         return response()->json(['status' => 200, 'message' => 'success', 'data' => $users]);
     } 
-*/
-    public function allUserPoints()
+
+/*    public function allUserPoints()
     {
         $companyGroupId = auth()->user()->company_group_id;
 
@@ -229,5 +229,5 @@ class PointController extends Controller
         }
 
         return response()->json(['status' => 200, 'message' => 'success', 'data' => $users]);
-    }
+    }*/
 }

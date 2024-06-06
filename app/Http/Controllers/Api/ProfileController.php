@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Models\CardsGame;
 
 
 class ProfileController extends Controller
@@ -123,12 +124,21 @@ class ProfileController extends Controller
         //dd("inside user view ");
 
         $user = $request->user(); // Retrieve the authenticated user
+        $userId = $user->id;
 
       $imageUrl = $user->image ? asset('storage/profile_images/' . $user->image) : null;
+
+      $cardsGame = CardsGame::where('user_id', $userId)->first();
+      $starsCollected = 0;
+      if ($cardsGame && !is_null($cardsGame->cards_opened)) {
+          $starsCollected = substr_count($cardsGame->cards_opened, ',') + 1;
+      }
 
       // Append the image URL to the user data
       $userData = $user->toArray();
       $userData['image_url'] = $imageUrl;
+      $userData['stars_collected'] = $starsCollected;
+
 
       return response()->json(['message' => 'success','status' =>200 , 'data' => $userData]);
 

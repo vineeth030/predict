@@ -189,21 +189,19 @@ class PointController extends Controller
         $companyGroupId = auth()->user()->company_group_id;
 
         $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
-            ->select(
-                'users.id',
-                'users.name',
-                'users.image',
-                'users.fav_team',
-                DB::raw('COALESCE(SUM(points.points), 0) as total_points'),
-                DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
-                DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank')
-            )
-            ->where('users.company_group_id', $companyGroupId)
-            ->where('users.verified', 1)
-            ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank')
-            ->orderBy('total_points', 'desc')
-            ->orderBy('name', 'asc')
-            ->get();
+        ->select('users.id', 'users.image','users.fav_team','users.name',
+        DB::raw('COALESCE(SUM(points.points), 0) as total_points'), 
+            DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
+            DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank'))
+        ->where('users.company_group_id', $companyGroupId)
+        ->where('users.verified', 1)
+        ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank','users.fav_team')
+        ->orderBy('total_points', 'desc')
+        ->orderBy('name', 'asc')
+        ->get();
+
+
+
         $baseImagePath = url('storage/profile_images/');
         // Initialize rank variables
         $currentRank = 0;

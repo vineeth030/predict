@@ -162,72 +162,45 @@ class PointController extends Controller
         $companyGroupId = auth()->user()->company_group_id;
     
         $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
-            ->select('users.id', 'users.image','users.fav_team','users.name',
-            DB::raw('COALESCE(SUM(points.points), 0) as total_points'), 
+            ->select('users.id', 'users.image', 'users.fav_team', 'users.name',
+                DB::raw('COALESCE(SUM(points.points), 0) as total_points'),
                 DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
                 DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank'))
             ->where('users.company_group_id', $companyGroupId)
             ->where('users.verified', 1)
-            ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank','users.fav_team')
+            ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank', 'users.fav_team')
             ->orderBy('total_points', 'desc')
             ->orderBy('name', 'asc')
             ->get();
-
-            $baseImagePath = url('storage/profile_images/');
     
-        foreach ($users as $user) {
-            $rankChange = $user->new_rank - $user->old_rank;
-            $user->rank_change = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
-            $user->image = $user->image ? $baseImagePath . '/' . $user->image : null;
-        }
-    
-        return response()->json(['status' => 200, 'message' => 'success', 'data' => $users]);
-    } 
-
-/*    public function allUserPoints()
-    {
-        $companyGroupId = auth()->user()->company_group_id;
-
-        $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
-        ->select('users.id', 'users.image','users.fav_team','users.name',
-        DB::raw('COALESCE(SUM(points.points), 0) as total_points'), 
-            DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
-            DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank'))
-        ->where('users.company_group_id', $companyGroupId)
-        ->where('users.verified', 1)
-        ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank','users.fav_team')
-        ->orderBy('total_points', 'desc')
-        ->orderBy('name', 'asc')
-        ->get();
-
-
-
+        // Initialize rank
+        $rank = 1;
         $baseImagePath = url('storage/profile_images/');
-        // Initialize rank variables
-        $currentRank = 0;
-        $previousPoints = null;
-        $rankCounter = 0;
-
+    
         foreach ($users as $user) {
-            // Cast total_points to integer
-            $user->total_points = (int) $user->total_points;
-
-            // Compute rank
-            if ($previousPoints !== $user->total_points) {
-                $currentRank = $rankCounter + 1;
-            }
-            $user->rank = $currentRank;
-
-            // Update previousPoints and rankCounter
-            $previousPoints = $user->total_points;
-            $rankCounter++;
-
+            $userModel = User::find($user->id);
+            
+            // Update old and new ranks
+            $user->old_rank = $userModel->new_rank;
+            $user->new_rank = $rank;
+            
             // Calculate rank change
             $rankChange = $user->new_rank - $user->old_rank;
             $user->rank_change = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
+            
+            // Update image path
             $user->image = $user->image ? $baseImagePath . '/' . $user->image : null;
+            
+            // Save updated rank in the User model
+            $userModel->new_rank = $rank;
+            $userModel->save();
+            
+            $rank++;
         }
-
+    
         return response()->json(['status' => 200, 'message' => 'success', 'data' => $users]);
-    }*/
+    }
+    
+
+
 }

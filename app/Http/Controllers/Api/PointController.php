@@ -127,6 +127,9 @@ class PointController extends Controller
             $userId1 = $request->userId1;
             $userId2 = $request->userId2;
 
+            $user1Email=User::where('id', $userId1)->pluck('email');
+            $user2Email=User::where('id', $userId2)->pluck('email');
+
             $user1MatchesPlayed = Point::where('user_id', $userId1)->count();
             $user1Wins = Point::where('user_id', $userId1)->where('goal_prediction', 3)->count();
             $user1Points = Point::where('user_id', $userId1)->sum('points');
@@ -149,6 +152,7 @@ class PointController extends Controller
                     'score_predicted' => Point::where('user_id', $userId1)->where('goal_prediction', 3)->count(),
                     'first_goal_predicted' => Point::where('user_id', $userId1)->where('first_goal_prediction', 1)->count(),
                     'win_predicted' => Point::where('user_id', $userId1)->where('win_prediction', 1)->count(),
+                    'email'=>$user1Email[0],
                 ],
                 'user2' => [
                     'user_id' =>  $userId2,
@@ -159,6 +163,7 @@ class PointController extends Controller
                     'score_predicted' => Point::where('user_id', $userId2)->where('goal_prediction', 3)->count(),
                     'first_goal_predicted' => Point::where('user_id', $userId2)->where('first_goal_prediction', 1)->count(),
                     'win_predicted' => Point::where('user_id', $userId2)->where('win_prediction', 1)->count(),
+                    'email'=>$user2Email[0],
                 ],
             ], Response::HTTP_OK);
         } catch (\Exception $e) {

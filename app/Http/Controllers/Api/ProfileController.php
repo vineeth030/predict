@@ -14,7 +14,7 @@ use App\Models\CardsGame;
 
 class ProfileController extends Controller
 {
- /*   public function update(Request $request)
+    /*   public function update(Request $request)
     {
         //  dd("inside profile");
 
@@ -41,7 +41,7 @@ class ProfileController extends Controller
             $image->storeAs('profile_images', $imageName, 'public');
             // Update the user's profile picture path in the database
             /** @var \App\Models\User $user **/
-       /*     $user = auth()->user();
+    /*     $user = auth()->user();
             $user->image = $imageName;
             $user->save();
         }
@@ -49,7 +49,7 @@ class ProfileController extends Controller
         try {
             $user = auth()->user();
               /** @var \App\Models\User $user **/
-       /*     $user->designation = $request->input('designation');
+    /*     $user->designation = $request->input('designation');
             $user->name = $request->input('name');
             $user->fav_team = $request->input('fav_team');
             $user->save();
@@ -72,31 +72,31 @@ class ProfileController extends Controller
                 'fav_team' => 'nullable|string|max:255',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
             ]);
-    
+
             // Check if the validation fails
             if ($validator->fails()) {
                 throw ValidationException::withMessages($validator->errors()->toArray())->status(422);
             }
-    
+
             // Handle profile picture upload
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
                 $imageName = time() . '.' . $image->getClientOriginalExtension();
                 $image->storeAs('profile_images', $imageName, 'public');
             }
-    
+
             // Update the user's profile
             $user = auth()->user();
             $user->name = $request->input('name');
             $user->designation = $request->input('designation');
             $user->fav_team = $request->input('fav_team');
-            
+
             if (isset($imageName)) {
                 $user->image = $imageName;
             }
-    /** @var \App\Models\User $user **/
+            /** @var \App\Models\User $user **/
             $user->save();
-    
+
             return response()->json(['message' => 'Profile updated successfully', 'status' => 200]);
         } catch (ValidationException $e) {
             // Return the error response with custom error code
@@ -116,45 +116,43 @@ class ProfileController extends Controller
             return response()->json($response, $e->status);
         }
     }
-    
+
 
 
     public function profile(Request $request)
     {
-        //dd("inside user view ");
 
-        $user = $request->user(); // Retrieve the authenticated user
+
+        $user = $request->user();
         $userId = $user->id;
 
-      $imageUrl = $user->image ? asset('storage/profile_images/' . $user->image) : null;
-
-      $rankChange = $user->new_rank - $user->old_rank;
-      $user->rank_change = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
-
-      $cardsGame = CardsGame::where('user_id', $userId)->first();
-      $starsCollected = 0;
-      if ($cardsGame && !is_null($cardsGame->cards_opened)) {
-          $starsCollected = substr_count($cardsGame->cards_opened, ',') + 1;
-      }
-
-      // Append the image URL to the user data
-      $userData = $user->toArray();
-      $userData['image_url'] = $imageUrl;
-      $userData['stars_collected'] = $starsCollected;
-      $userData['rank_change'] =  $rankChange;
+        $imageUrl = $user->image ? asset('storage/profile_images/' . $user->image) : null;
 
 
-      return response()->json(['message' => 'success','status' =>200 , 'data' => $userData]);
 
-        // Return the user's profile as a JSON response
-       // return response()->json(['profile' => $user]);
+        $cardsGame = CardsGame::where('user_id', $userId)->first();
+        $starsCollected = 0;
+        if ($cardsGame && !is_null($cardsGame->cards_opened)) {
+            $starsCollected = substr_count($cardsGame->cards_opened, ',') + 1;
+        }
+        $rankChange = (int) $user->new_rank - (int) $user->old_rank;
+        $rankChangeMessage = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
+
+        $userData = $user->toArray();
+        $userData['image_url'] = $imageUrl;
+        $userData['stars_collected'] = $starsCollected;
+        $userData['rank_change'] = $rankChangeMessage;
+
+
+
+        return response()->json(['message' => 'success', 'status' => 200, 'data' => $userData]);
     }
-    
+
     public function changePassword(Request $request)
     {
-      
 
-     //   dd(request()->all());
+
+        //   dd(request()->all());
         try {
             $user = Auth::user();
 
@@ -186,6 +184,5 @@ class ProfileController extends Controller
         } catch (\Exception $e) {
             return response()->json(['status' => 500, 'message' => $e->getMessage()], 500);
         }
-
     }
 }

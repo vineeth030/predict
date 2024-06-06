@@ -246,8 +246,8 @@ class PointController extends Controller
        ->where('users.verified', 1)
        ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank', 'users.fav_team', 'cards_game.cards_opened')
        ->orderBy('total_points', 'desc')
-       ->orderBy('name', 'asc')
        ->orderBy('new_rank', 'asc')
+       ->orderBy('name', 'asc')
        ->get();
 
 

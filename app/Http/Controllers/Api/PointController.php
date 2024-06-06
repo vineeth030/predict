@@ -195,7 +195,7 @@ class PointController extends Controller
             $userModel->new_rank = $rank;
             $userModel->save();
             $user->new_rank =  $userModel->new_rank;
-            $user->old_rank =  $userModel->old_rank;
+            $user->old_rank = (int) $userModel->old_rank;
             
             $rank++;
         }

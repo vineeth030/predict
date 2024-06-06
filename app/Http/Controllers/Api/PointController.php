@@ -174,19 +174,8 @@ class PointController extends Controller
             ->get();
 
             $baseImagePath = url('storage/profile_images/');
-            ////////
-            $rank = 1;
-            ///////
+    
         foreach ($users as $user) {
-
-            /////////////
-            $userModel = User::find($user->id);
-        
-            // Update old and new ranks
-            $user->old_rank = $userModel->new_rank;
-            $user->new_rank = $rank;
-
-            ///////////////////////////////
             $rankChange = $user->new_rank - $user->old_rank;
             $user->rank_change = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
             $user->image = $user->image ? $baseImagePath . '/' . $user->image : null;

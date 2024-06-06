@@ -136,7 +136,7 @@ class ProfileController extends Controller
             $starsCollected = substr_count($cardsGame->cards_opened, ',') + 1;
         }
         $rankChange = (int) $user->new_rank - (int) $user->old_rank;
-        $rankChangeMessage = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
+        $rankChangeMessage = $rankChange > 0 ? '-1' : ($rankChange < 0 ? '+1' : '0');
 
         $userData = $user->toArray();
         $userData['image_url'] = $imageUrl;

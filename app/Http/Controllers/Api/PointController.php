@@ -225,11 +225,11 @@ class PointController extends Controller
         return response()->json(['status' => 200, 'message' => 'success', 'data' => $users]);
     }   */
 
-
     public function allUserPoints()
     {
         $companyGroupId = auth()->user()->company_group_id;
     
+        // Fetch users and their total points
         $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
             ->leftJoin('cards_game', 'users.id', '=', 'cards_game.user_id')
             ->select(
@@ -258,7 +258,7 @@ class PointController extends Controller
             $userModel = User::find($user->id);
     
             // Update old rank before calculating new rank
-            $user->old_rank = (int) $userModel->new_rank;
+            $user->old_rank = $userModel->new_rank;
     
             // If the current user's points are the same as the previous user's points, they share the same rank
             if ($previousPoints !== null && $user->total_points == $previousPoints) {
@@ -269,15 +269,15 @@ class PointController extends Controller
             }
     
             // Calculate rank change
-            $rankChange = $user->new_rank - $user->old_rank;
-            $user->rank_change = $rankChange > 0 ? '-1' : ($rankChange < 0 ? '+1' : '0');
+            $rankChange = $user->old_rank - $user->new_rank;
+            $user->rank_change = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
     
             // Update image path
             $user->image = $user->image ? $baseImagePath . '/' . $user->image : null;
     
             // Save updated rank in the User model
-            $userModel->new_rank =(int) $user->new_rank;
-            $userModel->old_rank = (int) $user->old_rank;
+            $userModel->new_rank = $user->new_rank;
+            $userModel->old_rank = $user->old_rank;
             $userModel->save();
     
             $previousPoints = $user->total_points;
@@ -286,5 +286,7 @@ class PointController extends Controller
     
         return response()->json(['status' => 200, 'message' => 'success', 'data' => $users]);
     }
+    
+
     
 }

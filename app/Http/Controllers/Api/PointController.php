@@ -257,7 +257,7 @@ class PointController extends Controller
             if ($previousPoints !== $user->total_points) {
                 $currentRank = $rankCounter + 1;
             }
-            $user->rank = $currentRank;
+          //  $user->rank = $currentRank;
 
             // Update previousPoints and rankCounter
             $previousPoints = $user->total_points;

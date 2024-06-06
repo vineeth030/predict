@@ -23,32 +23,28 @@ class PointController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-   // public function pointsBreakdown(Request $request)
-   public function pointsBreakdown(Request $request)
+    // public function pointsBreakdown(Request $request)
+    public function pointsBreakdown(Request $request)
     {
-       // dd("inside");      
+        // dd("inside");      
 
-try{
+        try {
 
-    $userId = $request->userId;
-    $gameId = $request->gameId;
-   // $userId = 16;
-   // $gameId = 6;
-
-
-   $pointsBreakdown = Point::where('user_id', $userId)
-   ->where('game_id', $gameId)
-   ->select('points', 'win_prediction', 'goal_prediction', 'first_goal_prediction')
-   ->first();
-
-   return response()->json(['status' =>  200, 'data' => $pointsBreakdown]);
-
-}catch(\Exception $e){
-    return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
-}
+            $userId = $request->userId;
+            $gameId = $request->gameId;
+            // $userId = 16;
+            // $gameId = 6;
 
 
+            $pointsBreakdown = Point::where('user_id', $userId)
+                ->where('game_id', $gameId)
+                ->select('points', 'win_prediction', 'goal_prediction', 'first_goal_prediction')
+                ->first();
 
+            return response()->json(['status' =>  200, 'data' => $pointsBreakdown]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+        }
     }
 
     /**
@@ -120,17 +116,17 @@ try{
         try {
             $userId1 = $request->userId1;
             $userId2 = $request->userId2;
-    
+
             $user1MatchesPlayed = Point::where('user_id', $userId1)->count();
             $user1Wins = Point::where('user_id', $userId1)->where('goal_prediction', 3)->count();
             $user1Points = Point::where('user_id', $userId1)->sum('points');
             $user1WinPercentage = $user1MatchesPlayed > 0 ? ($user1Wins / $user1MatchesPlayed) * 100 : 0;
-    
+
             $user2MatchesPlayed = Point::where('user_id', $userId2)->count();
             $user2Wins = Point::where('user_id', $userId2)->where('goal_prediction', 3)->count();
             $user2Points = Point::where('user_id', $userId2)->sum('points');
             $user2WinPercentage = $user2MatchesPlayed > 0 ? ($user2Wins / $user2MatchesPlayed) * 100 : 0;
-    
+
             return response()->json([
                 'message' => 'success',
                 'status' => 200,
@@ -159,49 +155,9 @@ try{
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    
-
-  /*  public function allUserPoints()
-    {
-        $companyGroupId = auth()->user()->company_group_id;
-       // dd($companyGroupId);
-       // Calculate the sum of points for each user ID
-        $userPoints = Point::select('user_id', DB::raw('SUM(points) as total_points'))
-            ->join('users', 'points.user_id', '=', 'users.id')
-            ->where('users.company_group_id', $companyGroupId)
-            ->where('users.verified', 1)
-            ->groupBy('user_id')
-            ->orderBy('total_points', 'desc')
-            ->get();
-
-        // Assign ranks based on the order of users' total points
-        // $rank = 1;
-        // foreach ($userPoints as $userPoint) {
-        //     $user = User::find($userPoint->user_id);
-        //     $user->old_rank = $user->new_rank; // Save the old rank
-        //     $user->new_rank = $rank++;
-        //     $user->save();
-        // }
-
-        $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
-        ->select('users.id', 'users.name', 'users.image',
-            DB::raw('SUM(points.points) as total_points'), 
-            'users.old_rank', 'users.new_rank')
-            ->where('users.company_group_id', $companyGroupId)
-            ->where('users.verified', 1)
-        ->groupBy('users.id', 'users.name', 'users.old_rank', 'users.new_rank')
-        ->get();
-
-        foreach ($users as $user) {
-            $rankChange = $user->new_rank - $user->old_rank;
-            $user->rank_change = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
-        }
 
 
-        return response()->json(['status' => 200,'message' =>'success' ,'data' => $users]);
-    }    */
-
-   public function allUserPoints()
+    /*  public function allUserPoints()
     {
         $companyGroupId = auth()->user()->company_group_id;
     
@@ -227,54 +183,53 @@ try{
     
         return response()->json(['status' => 200, 'message' => 'success', 'data' => $users]);
     } 
-/*    public function allUserPoints()
-{
-    $companyGroupId = auth()->user()->company_group_id;
-
-    $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
-        ->select(
-            'users.id',
-            'users.name',
-            'users.image',
-            'users.fav_team',
-            DB::raw('COALESCE(SUM(points.points), 0) as total_points'),
-            DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
-            DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank')
-        )
-        ->where('users.company_group_id', $companyGroupId)
-        ->where('users.verified', 1)
-        ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank')
-        ->orderBy('total_points', 'desc')
-        ->orderBy('name', 'asc')
-        ->get();
-
-    // Initialize rank variables
-    $currentRank = 0;
-    $previousPoints = null;
-    $rankCounter = 0;
-
-    foreach ($users as $user) {
-        // Cast total_points to integer
-        $user->total_points = (int) $user->total_points;
-
-        // Compute rank
-        if ($previousPoints !== $user->total_points) {
-            $currentRank = $rankCounter + 1;
-        }
-        $user->rank = $currentRank;
-
-        // Update previousPoints and rankCounter
-        $previousPoints = $user->total_points;
-        $rankCounter++;
-
-        // Calculate rank change
-        $rankChange = $user->new_rank - $user->old_rank;
-        $user->rank_change = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
-    }
-
-    return response()->json(['status' => 200, 'message' => 'success', 'data' => $users]);
-}
 */
-    
-    
+    public function allUserPoints()
+    {
+        $companyGroupId = auth()->user()->company_group_id;
+
+        $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
+            ->select(
+                'users.id',
+                'users.name',
+                'users.image',
+                'users.fav_team',
+                DB::raw('COALESCE(SUM(points.points), 0) as total_points'),
+                DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
+                DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank')
+            )
+            ->where('users.company_group_id', $companyGroupId)
+            ->where('users.verified', 1)
+            ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank')
+            ->orderBy('total_points', 'desc')
+            ->orderBy('name', 'asc')
+            ->get();
+        $baseImagePath = url('storage/profile_images/');
+        // Initialize rank variables
+        $currentRank = 0;
+        $previousPoints = null;
+        $rankCounter = 0;
+
+        foreach ($users as $user) {
+            // Cast total_points to integer
+            $user->total_points = (int) $user->total_points;
+
+            // Compute rank
+            if ($previousPoints !== $user->total_points) {
+                $currentRank = $rankCounter + 1;
+            }
+            $user->rank = $currentRank;
+
+            // Update previousPoints and rankCounter
+            $previousPoints = $user->total_points;
+            $rankCounter++;
+
+            // Calculate rank change
+            $rankChange = $user->new_rank - $user->old_rank;
+            $user->rank_change = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
+            $user->image = $user->image ? $baseImagePath . '/' . $user->image : null;
+        }
+
+        return response()->json(['status' => 200, 'message' => 'success', 'data' => $users]);
+    }
 }

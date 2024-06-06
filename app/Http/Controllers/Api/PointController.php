@@ -276,8 +276,8 @@ class PointController extends Controller
             $user->image = $user->image ? $baseImagePath . '/' . $user->image : null;
     
             // Save updated rank in the User model
-            $userModel->new_rank = $user->new_rank;
-            $userModel->old_rank = $user->old_rank;
+            $userModel->new_rank = (int)$user->new_rank;
+            $userModel->old_rank =(int) $user->old_rank;
             $userModel->save();
     
             $previousPoints = $user->total_points;

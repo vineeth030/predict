@@ -228,62 +228,47 @@ class PointController extends Controller
     public function allUserPoints()
     {
         $companyGroupId = auth()->user()->company_group_id;
-    
-        // Fetch users and their total points
+
         $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
-            ->leftJoin('cards_game', 'users.id', '=', 'cards_game.user_id')
-            ->select(
-                'users.id',
-                'users.image',
-                'users.fav_team',
-                'users.name',
-                DB::raw('COALESCE(SUM(points.points), 0) as total_points'),
-                DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
-                DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank'),
-                DB::raw('IFNULL(LENGTH(cards_game.cards_opened) - LENGTH(REPLACE(cards_game.cards_opened, ",", "")) + 1, 0) as stars_collected')
-            )
-            ->where('users.company_group_id', $companyGroupId)
-            ->where('users.verified', 1)
-            ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank', 'users.fav_team', 'cards_game.cards_opened')
-            ->orderBy('total_points', 'desc')
-            ->orderBy('name', 'asc')
-            ->get();
-    
+        ->select('users.id', 'users.image','users.fav_team','users.name',
+        DB::raw('COALESCE(SUM(points.points), 0) as total_points'), 
+            DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
+            DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank'))
+        ->where('users.company_group_id', $companyGroupId)
+        ->where('users.verified', 1)
+        ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank','users.fav_team')
+        ->orderBy('total_points', 'desc')
+        ->orderBy('name', 'asc')
+        ->get();
+
+
+
         $baseImagePath = url('storage/profile_images/');
-        $rank = 1;
+        // Initialize rank variables
+        $currentRank = 0;
         $previousPoints = null;
-        $adjustedRank = 1;
-    
+        $rankCounter = 0;
+
         foreach ($users as $user) {
-            $userModel = User::find($user->id);
-    
-            // Update old rank before calculating new rank
-            $user->old_rank = (int)$userModel->new_rank;
-    
-            // If the current user's points are the same as the previous user's points, they share the same rank
-            if ($previousPoints !== null && $user->total_points == $previousPoints) {
-                $user->new_rank = $adjustedRank;
-            } else {
-                $user->new_rank = $rank;
-                $adjustedRank = $rank;
+            // Cast total_points to integer
+            $user->total_points = (int) $user->total_points;
+
+            // Compute rank
+            if ($previousPoints !== $user->total_points) {
+                $currentRank = $rankCounter + 1;
             }
-    
-            // Calculate rank change
-            $rankChange = $user->old_rank - $user->new_rank;
-            $user->rank_change = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
-    
-            // Update image path
-            $user->image = $user->image ? $baseImagePath . '/' . $user->image : null;
-    
-            // Save updated rank in the User model
-            $userModel->new_rank = (int)$user->new_rank;
-            $userModel->old_rank =(int) $user->old_rank;
-            $userModel->save();
-    
+            $user->rank = $currentRank;
+
+            // Update previousPoints and rankCounter
             $previousPoints = $user->total_points;
-            $rank++;
+            $rankCounter++;
+
+            // Calculate rank change
+            $rankChange = $user->new_rank - $user->old_rank;
+            $user->rank_change = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
+            $user->image = $user->image ? $baseImagePath . '/' . $user->image : null;
         }
-    
+
         return response()->json(['status' => 200, 'message' => 'success', 'data' => $users]);
     }
     

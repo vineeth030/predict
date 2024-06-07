@@ -243,7 +243,7 @@ public function allUserPoints()
         $userModel = User::find($user->id);
 
         // Set old rank to current new rank before updating
-        $user->old_rank = $userModel->new_rank;
+        $user->old_rank = (int)$userModel->new_rank;
 
         // If the current user's points are the same as the previous user's points, they share the same rank
         if ($previousPoints !== null && $user->total_points == $previousPoints) {

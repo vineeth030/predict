@@ -163,7 +163,7 @@ class PointController extends Controller
 
 
 
-    public function allUserPoints()
+  /*  public function allUserPoints()
     {
         $companyGroupId = auth()->user()->company_group_id;
 
@@ -195,5 +195,76 @@ class PointController extends Controller
         }
 
         return response()->json(['status' => 200, 'message' => 'success', 'data' => $users]);
+    }  */
+}
+
+public function allUserPoints()
+{
+    $companyGroupId = auth()->user()->company_group_id;
+
+    // Retrieve users with total points
+    $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
+        ->leftJoin('cards_game', 'users.id', '=', 'cards_game.user_id')
+        ->select(
+            'users.id',
+            'users.image',
+            'users.fav_team',
+            'users.name',
+            DB::raw('CAST(COALESCE(SUM(points.points), 0) AS UNSIGNED) as total_points'),
+            DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
+            DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank'),
+            DB::raw('IFNULL(LENGTH(cards_game.cards_opened) - LENGTH(REPLACE(cards_game.cards_opened, ",", "")) + 1, 0) as stars_collected')
+        )
+        ->where('users.company_group_id', $companyGroupId)
+        ->where('users.verified', 1)
+        ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank', 'users.fav_team', 'stars_collected')
+        ->orderBy('total_points', 'desc')
+        ->orderBy('name', 'asc')
+        ->get();
+
+    // Separate users with 0 points
+    $usersWithPoints = $users->filter(function ($user) {
+        return $user->total_points > 0;
+    });
+    $usersWithZeroPoints = $users->filter(function ($user) {
+        return $user->total_points == 0;
+    });
+
+    // Merge users with points and those with zero points
+    $sortedUsers = $usersWithPoints->merge($usersWithZeroPoints);
+
+    // Initialize variables
+    $baseImagePath = url('storage/profile_images/');
+    $rank = 1;
+    $previousPoints = null;
+    $adjustedRank = 1;
+
+    foreach ($sortedUsers as $user) {
+        $userModel = User::find($user->id);
+
+        // Set old rank to current new rank before updating
+        $user->old_rank = $userModel->new_rank;
+
+        // If the current user's points are the same as the previous user's points, they share the same rank
+        if ($previousPoints !== null && $user->total_points == $previousPoints) {
+            $user->new_rank = $adjustedRank;
+        } else {
+            $user->new_rank = $rank;
+            $adjustedRank = $rank;
+        }
+
+        // Update image path
+        $user->image = $user->image ? $baseImagePath . '/' . $user->image : null;
+
+        // Save updated rank in the User model
+        $userModel->old_rank = $userModel->new_rank;
+        $userModel->new_rank = $user->new_rank;
+        $userModel->save();
+
+        // Update previous points and increment rank
+        $previousPoints = $user->total_points;
+        $rank++;
     }
+
+    return response()->json(['status' => 200, 'message' => 'success', 'data' => $sortedUsers]);
 }

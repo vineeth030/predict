@@ -174,7 +174,7 @@ class PointController extends Controller
                 'users.image',
                 'users.fav_team',
                 'users.name',
-                DB::raw('COALESCE(SUM(points.points), 0) as total_points'),
+                DB::raw('CAST(COALESCE(SUM(points.points), 0) AS UNSIGNED) as total_points'),
                 DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
                 DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank'),
                 DB::raw('IFNULL(LENGTH(cards_game.cards_opened) - LENGTH(REPLACE(cards_game.cards_opened, ",", "")) + 1, 0) as stars_collected')

@@ -190,7 +190,7 @@ class PointController extends Controller
         $baseImagePath = url('storage/profile_images/');
 
         foreach ($users as $user) {
-            $rankChange = $user->new_rank - $user->old_rank;
+            $rankChange =$user->old_rank  - $user->new_rank;
             $user->rank_change = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
             $user->image = $user->image ? $baseImagePath . '/' . $user->image : null;
         }

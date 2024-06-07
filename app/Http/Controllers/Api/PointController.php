@@ -184,6 +184,7 @@ class PointController extends Controller
             ->where('users.verified', 1)
             ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank', 'users.fav_team', 'stars_collected')
             ->orderBy('total_points', 'desc')
+            ->sortBy('name')
             ->get();
 
         $baseImagePath = url('storage/profile_images/');

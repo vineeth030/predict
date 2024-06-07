@@ -57,7 +57,7 @@ class AuthController extends Controller
             $emailDomain = substr(strrchr($request->email, "@"), 1);
             $emailExtension = EmailExtension::where('domain', $emailDomain)->first();
             if (!$emailExtension) {
-                return response()->json(['domain' => 'Invalid email domain.', 'status' => 400], 400);
+                return response()->json(['message' => 'Invalid email domain.', 'status' => 400], 400);
             }
 
             // Generate and send OTP

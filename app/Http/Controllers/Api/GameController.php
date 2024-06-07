@@ -327,6 +327,8 @@ class GameController extends Controller
         $user = User::find($request->user_id);
 
         if ($user) {
+
+            $companyGroupId = $user->company_group_id;
             DB::transaction(function () use ($user) {
                 // Delete user's predictions
                 Prediction::where('user_id', $user->id)->delete();
@@ -339,7 +341,7 @@ class GameController extends Controller
             });
 
             // Recalculate ranks after user deletion
-            $this->assignRank();
+            $this->assignRank($companyGroupId);
 
             return response()->json([
                 'status' => 200,
@@ -353,12 +355,12 @@ class GameController extends Controller
         ]);
     }
 
- /*   private function assignRank()
+
+
+    /*  private function assignRank()
     {
-
-      // Get all company_group_ids
+        // Get all company_group_ids
         $companyGroupIds = User::select('company_group_id')->distinct()->pluck('company_group_id');
-
         foreach ($companyGroupIds as $companyGroupId) {
             // Retrieve users in this company group, sorted by total points descending
             $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
@@ -372,38 +374,50 @@ class GameController extends Controller
                 ->groupBy('users.id', 'users.company_group_id')
                 ->orderBy('total_points', 'desc')
                 ->get();
-
-            // Assign ranks
+            // Initialize rank variables
             $rank = 1;
+            $previousPoints = null;
+            $adjustedRank = 1;
+
             foreach ($users as $user) {
                 $userModel = User::find($user->id);
+
+                // Set old rank to current new rank before updating
                 $userModel->old_rank = $userModel->new_rank;
-                $userModel->new_rank = $rank;
+
+                // If the current user's points are the same as the previous user's points, they share the same rank
+                if ($previousPoints !== null && $user->total_points == $previousPoints) {
+                    $userModel->new_rank = $adjustedRank;
+                } else {
+                    $userModel->new_rank = $rank;
+                    $adjustedRank = $rank;
+                }
+
+                // Save updated rank in the User model
                 $userModel->save();
 
+                // Update previous points and increment rank
+                $previousPoints = $user->total_points;
                 $rank++;
             }
         }
     } */
 
-    private function assignRank()
-{
-    // Get all company_group_ids
-    $companyGroupIds = User::select('company_group_id')->distinct()->pluck('company_group_id');
-
-    foreach ($companyGroupIds as $companyGroupId) {
+    private function assignRank($companyGroupId)
+    {
         // Retrieve users in this company group, sorted by total points descending
         $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
             ->select(
                 'users.id',
                 'users.company_group_id',
-                DB::raw('COALESCE(SUM(points.points), 0) as total_points')
+                DB::raw('CAST(COALESCE(SUM(points.points), 0) AS UNSIGNED) as total_points')
             )
             ->where('users.company_group_id', $companyGroupId)
             ->where('users.verified', 1)
             ->groupBy('users.id', 'users.company_group_id')
             ->orderBy('total_points', 'desc')
             ->get();
+
         // Initialize rank variables
         $rank = 1;
         $previousPoints = null;
@@ -430,8 +444,5 @@ class GameController extends Controller
             $previousPoints = $user->total_points;
             $rank++;
         }
-
     }
-}
-
 }

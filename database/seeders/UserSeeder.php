@@ -27,10 +27,10 @@ class UserSeeder extends Seeder
 
         \App\Models\User::factory()->create([
             'name' => 'Test Android1',
-            'designation' => 'Web Developer',
+            'designation' => 'Android Developer',
             'email' => 'test@beo.in',
-            'employee_id' => 28,
-            'image' => '28_photo.jpg',
+            'employee_id' => 30,
+            'image' => '30_photo.jpg',
             'company_group_id' => 0,
             'password' => 'password',
             'is_admin' => false,
@@ -38,10 +38,10 @@ class UserSeeder extends Seeder
         ]);
         \App\Models\User::factory()->create([
             'name' => 'Test Android2',
-            'designation' => 'Web Developer',
+            'designation' => 'Android Developer',
             'email' => 'test@beo.in',
-            'employee_id' => 28,
-            'image' => '28_photo.jpg',
+            'employee_id' => 31,
+            'image' => '31_photo.jpg',
             'company_group_id' => 0,
             'password' => 'password',
             'is_admin' => false,
@@ -49,10 +49,10 @@ class UserSeeder extends Seeder
         ]);
         \App\Models\User::factory()->create([
             'name' => 'Test iOS1',
-            'designation' => 'Web Developer',
+            'designation' => 'ios Developer',
             'email' => 'test@beo.in',
-            'employee_id' => 28,
-            'image' => '28_photo.jpg',
+            'employee_id' => 32,
+            'image' => '32_photo.jpg',
             'company_group_id' => 0,
             'password' => 'password',
             'is_admin' => false,
@@ -61,10 +61,10 @@ class UserSeeder extends Seeder
 
         \App\Models\User::factory()->create([
             'name' => 'Test iOS2',
-            'designation' => 'Web Developer',
+            'designation' => 'ios Developer',
             'email' => 'test@beo.in',
-            'employee_id' => 28,
-            'image' => '28_photo.jpg',
+            'employee_id' => 33,
+            'image' => '33_photo.jpg',
             'company_group_id' => 0,
             'password' => 'password',
             'is_admin' => false,

@@ -213,13 +213,6 @@ class PointController extends Controller
             // Update image path
             $user->image = $user->image ? $baseImagePath . '/' . $user->image : null;
 
-            // Save updated rank in the User model
-            $userModel->new_rank = $rank;
-            $userModel->save();
-            $user->new_rank =  $userModel->new_rank;
-            $user->old_rank = (int) $userModel->old_rank;
-
-            $rank++;
         }
 
         return response()->json(['status' => 200, 'message' => 'success', 'data' => $users]);

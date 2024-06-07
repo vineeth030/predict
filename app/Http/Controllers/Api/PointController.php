@@ -196,7 +196,7 @@ class PointController extends Controller
 
         return response()->json(['status' => 200, 'message' => 'success', 'data' => $users]);
     }  */
-}
+
 
 public function allUserPoints()
 {
@@ -267,4 +267,5 @@ public function allUserPoints()
     }
 
     return response()->json(['status' => 200, 'message' => 'success', 'data' => $sortedUsers]);
+}
 }

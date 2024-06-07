@@ -178,7 +178,6 @@ class GameController extends Controller
             ->groupBy('users.id', 'users.company_group_id')
             ->orderBy('total_points', 'desc')
             ->get();
-
         // Initialize rank variables
         $rank = 1;
         $previousPoints = null;
@@ -186,30 +185,26 @@ class GameController extends Controller
 
         foreach ($users as $user) {
             $userModel = User::find($user->id);
-            $oldRank = $userModel->new_rank;  // Save the current new rank as old rank
+
+            // Set old rank to current new rank before updating
+            $userModel->old_rank = $userModel->new_rank;
 
             // If the current user's points are the same as the previous user's points, they share the same rank
             if ($previousPoints !== null && $user->total_points == $previousPoints) {
-                $newRank = $adjustedRank;
+                $userModel->new_rank = $adjustedRank;
             } else {
-                $newRank = $rank;
+                $userModel->new_rank = $rank;
                 $adjustedRank = $rank;
             }
 
-            // Calculate rank change
-            $rankChange = $oldRank - $newRank;
-            $rankChangeString = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
-
-            // Update old and new ranks
-            $userModel->old_rank = $oldRank;
-            $userModel->new_rank = $newRank;
-            $userModel->rank_change = $rankChangeString;  // Assuming you have a rank_change column
+            // Save updated rank in the User model
             $userModel->save();
 
-            // Update variables
+            // Update previous points and increment rank
             $previousPoints = $user->total_points;
             $rank++;
         }
+
     }
 }
 

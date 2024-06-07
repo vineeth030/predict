@@ -253,24 +253,10 @@ class PointController extends Controller
 
 
         $baseImagePath = url('storage/profile_images/');
-        // Initialize rank variables
-        $currentRank = 0;
-        $previousPoints = null;
-        $rankCounter = 0;
+
 
         foreach ($users as $user) {
-            // Cast total_points to integer
-            $user->total_points = (int) $user->total_points;
 
-            // Compute rank
-            if ($previousPoints !== $user->total_points) {
-                $currentRank = $rankCounter + 1;
-            }
-          //  $user->rank = $currentRank;
-
-            // Update previousPoints and rankCounter
-            $previousPoints = $user->total_points;
-            $rankCounter++;
 
             // Calculate rank change
             $rankChange =  $user->old_rank-$user->new_rank;

@@ -17,6 +17,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
 use App\Models\EmailExtension;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -161,7 +162,7 @@ class AuthController extends Controller
         if ($user) {
             // Update user status or perform any other actions as needed
             $user->update(['verified' => true]); // Example: Mark user as verified
-            
+            $this->assignRank($user->company_group_id);
 
             // Return a success response
             return response()->json(['message' => 'OTP verified successfully','status' => 200], 200);
@@ -170,6 +171,54 @@ class AuthController extends Controller
         // Return an error response if user with the given email and OTP is not found
         return response()->json(['message' => 'Invalid OTP','status' => 400], 400);
     }
+
+
+
+    private function assignRank($companyGroupId)
+    {
+
+        // Retrieve users in this company group, sorted by total points descending
+        $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
+            ->select(
+                'users.id',
+                'users.company_group_id',
+                DB::raw('COALESCE(SUM(points.points), 0) as total_points')
+            )
+            ->where('users.company_group_id', $companyGroupId)
+            ->where('users.verified', 1)
+            ->groupBy('users.id', 'users.company_group_id')
+            ->orderBy(DB::raw('CAST(total_points as UNSIGNED)'), 'desc')
+            ->get();
+    
+        // Initialize rank variables
+        $rank = 1;
+        $previousPoints = null;
+        $adjustedRank = 1;
+    
+        foreach ($users as $user) {
+            $userModel = User::find($user->id);
+    
+            // Set old rank to current new rank before updating
+            $userModel->old_rank = $userModel->new_rank;
+    
+            // If the current user's points are the same as the previous user's points, they share the same rank
+            if ($previousPoints !== null && $user->total_points == $previousPoints) {
+                $userModel->new_rank = $adjustedRank;
+            } else {
+                $userModel->new_rank = $rank;
+                $adjustedRank = $rank;
+            }
+    
+            // Save updated rank in the User model
+            $userModel->save();
+    
+            // Update previous points and increment rank
+            $previousPoints = $user->total_points;
+            $rank++;
+        }
+    }
+    
+
 
 
     public function resendOtp(Request $request): JsonResponse

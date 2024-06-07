@@ -162,7 +162,7 @@ class AuthController extends Controller
         if ($user) {
             // Update user status or perform any other actions as needed
             $user->update(['verified' => true]); // Example: Mark user as verified
-            $this->assignRank($user->company_group_id);
+          //  $this->assignRank($user->company_group_id);
 
             // Return a success response
             return response()->json(['message' => 'OTP verified successfully','status' => 200], 200);

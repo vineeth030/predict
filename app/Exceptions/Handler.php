@@ -31,11 +31,11 @@ class Handler extends ExceptionHandler
     protected function unauthenticated($request, AuthenticationException $exception)
     {
 
-            return response()->json([
-                'message' => 'Unauthenticated',
-                'error' => 'Your session has expired. Please log in again.',
-                'status'=>401
-            ], 401); // Customize the status code and message here
+        return response()->json([
+            'message' => 'Unauthenticated',
+            'error' => 'Your session has expired. Please log in again.',
+            'status' => 401
+        ], 401); // Customize the status code and message here
 
 
 

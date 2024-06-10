@@ -70,6 +70,9 @@ class GameController extends Controller
                     );
                 }
             }
+            usort($completedGames, function ($a, $b) {
+                return $b['id'] <=> $a['id'];
+            });
 
             return response()->json(
                 [

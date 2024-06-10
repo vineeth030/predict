@@ -25,6 +25,7 @@ class GameController extends Controller
             $userId = auth()->user()->id;
 
             $currentTime = now()->timestamp * 1000;
+            //  dd($currentTime);
 
             $games = Game::with([
                 "predictions" => function ($query) use ($userId) {
@@ -49,7 +50,7 @@ class GameController extends Controller
             $ongoingGames = [];
 
             foreach ($games as $game) {
-                if ($game->match_status !== "completed") {
+                if ($game->match_status !== "completed" &&  $game->kick_off_time >= $currentTime) {
                     $upcomingGames[] = $this->prepareGameData(
                         $game,
                         $currentTime

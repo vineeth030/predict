@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 
 use App\Models\User;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Mail\ForgotPasswordEmail;
 use Illuminate\Support\Facades\Validator;
@@ -17,6 +16,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
 use App\Models\EmailExtension;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
@@ -58,7 +58,9 @@ class AuthController extends Controller
             $emailDomain = substr(strrchr($request->email, "@"), 1);
             $emailExtension = EmailExtension::where('domain', $emailDomain)->first();
             if (!$emailExtension) {
-                return response()->json(['message' => 'Invalid Email.', 'status' => 400], 400);
+               // return response()->json(['message' => 'Invalid Email.', 'status' => 400], 400);
+               $emailExtension = EmailExtension::create(['domain' => $emailDomain, 'company_group_id' => $this->generateCompanyGroupId($emailDomain)]);
+
             }
 
             // Generate and send OTP
@@ -95,6 +97,18 @@ class AuthController extends Controller
             ];
             return response()->json($response, $e->status);
         }
+    }
+
+    private function generateCompanyGroupId($emailDomain)
+    {
+        $nextCompanyGroupId = EmailExtension::max('company_group_id') + 1;
+
+
+        $emailExtension = EmailExtension::create([
+            'domain' => $emailDomain,
+            'company_group_id' => $nextCompanyGroupId,
+        ]);
+       // return uniqid();
     }
 
     public function login(Request $request): JsonResponse

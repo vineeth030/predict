@@ -47,15 +47,15 @@ color: #888888;
 <body>
 <div class="email-container">
 <div class="email-header">
-BEO Predict Email Verification
+Predict Email Verification
 </div>
 <div class="email-body">
 <p>Hello,</p>
-<p>Thank you for registering with the BEO Predict application. To complete your email verification process, please use the following One-Time Password (OTP):</p>
+<p>Thank you for registering with the Predict application. To complete your email verification process, please use the following One-Time Password (OTP):</p>
 <div class="otp-code"><strong>{{ $otp }}</strong></div>
 <p>Please note that this OTP is valid for <strong>30 minutes</strong> and is for one-time use only. If you did not initiate this request, please ignore this email or contact our support team immediately.</p>
 <p>For any assistance, feel free to reach out to us at <a href="mailto:arteam@beo.in">arteam@beo.in</a>.</p>
-<p>Thank you for choosing BEO Predict.</p>
+<p>Thank you for choosing Predict.</p>
 </div>
 <div class="email-footer">
 Warm regards,<br>

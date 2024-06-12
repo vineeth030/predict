@@ -64,15 +64,15 @@
 <body>
     <div class="email-container">
         <div class="email-header">
-            BEO Predict Password Assistance
+             Predict Password Assistance
         </div>
         <div class="email-body">
             <p>Hello</p>
-            <p>We received a request to reset the password for your BEO Predict account. To confirm this request and set a new password, please enter the following One-Time Password (OTP):</p>
+            <p>We received a request to reset the password for your Predict account. To confirm this request and set a new password, please enter the following One-Time Password (OTP):</p>
             <div class="otp-code">{{$otp}}</div>
             <p>This OTP is valid for <strong>30 minutes</strong> and can only be used once. If you did not request a password reset, please disregard this email or contact us for support.</p>
             <p>If you have any questions or need further assistance, please contact our support team at <a href="mailto:[arteam@beo.in]">[arteam@beo.in]</a>.</p>
-            <p>Thank you for using BEO Predict.</p>
+            <p>Thank you for using Predict.</p>
         </div>
         <div class="email-footer">
             Warm regards,<br>

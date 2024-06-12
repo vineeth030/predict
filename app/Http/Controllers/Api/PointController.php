@@ -41,7 +41,7 @@ class PointController extends Controller
                 ->select('points', 'win_prediction', 'goal_prediction', 'first_goal_prediction')
                 ->first();
 
-            return response()->json(['statuscode' =>  200, 'data' => $pointsBreakdown]);
+            return response()->json(['status' =>  200, 'data' => $pointsBreakdown]);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }

@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             GameSeeder::class,
             //PointSeeder::class,
             //PredictionSeeder::class,
-            //VersionSeeder::class
+            VersionSeeder::class
         ]);
     }
 }

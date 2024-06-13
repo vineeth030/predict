@@ -4,20 +4,21 @@ namespace App\Http\Controllers\Api;
 
 
 use App\Models\User;
-use App\Http\Controllers\Controller;
-use App\Mail\ForgotPasswordEmail;
-use Illuminate\Support\Facades\Validator;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Illuminate\Support\Facades\Mail;
 use App\Mail\VerifyEmail;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Hash;
-use App\Models\EmailExtension;
 use Illuminate\Http\Request;
+use App\Models\EmailExtension;
+use App\Mail\ForgotPasswordEmail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AuthController extends Controller
 {
@@ -59,7 +60,9 @@ class AuthController extends Controller
             $emailExtension = EmailExtension::where('domain', $emailDomain)->first();
             if (!$emailExtension) {
                // return response()->json(['message' => 'Invalid Email.', 'status' => 400], 400);
+               Log::info('inside');
                $emailExtension = EmailExtension::create(['domain' => $emailDomain, 'company_group_id' => $this->generateCompanyGroupId($emailDomain)]);
+              
 
             }
 
@@ -104,11 +107,11 @@ class AuthController extends Controller
         $nextCompanyGroupId = EmailExtension::max('company_group_id') + 1;
 
 
-        $emailExtension = EmailExtension::create([
-            'domain' => $emailDomain,
-            'company_group_id' => $nextCompanyGroupId,
-        ]);
-       // return uniqid();
+        // $emailExtension = EmailExtension::create([
+        //     'domain' => $emailDomain,
+        //     'company_group_id' => $nextCompanyGroupId,
+        // ]);
+        return $nextCompanyGroupId;
     }
 
     public function login(Request $request): JsonResponse

@@ -190,9 +190,8 @@ class GameController extends Controller
                 "team_one_goals",
                 "team_two_goals",
                 DB::raw("COUNT(*) as prediction_count"),
-                DB::raw(
-                    "(COUNT(*) / " . $totalPredictions . ") * 100 as percentage"
-                )
+              //  DB::raw("(COUNT(*) / " . $totalPredictions . ") * 100 as percentage")
+                DB::raw("ROUND((COUNT(*) / " . $totalPredictions . ") * 100, 0) as percentage")
             )
             ->where("game_id", $gameId)
             ->groupBy("team_one_goals", "team_two_goals")

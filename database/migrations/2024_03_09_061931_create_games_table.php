@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('games', function (Blueprint $table) {
             $table->id();
-            $table->integer('team_one_id');
-            $table->integer('team_two_id');
+            $table->integer('team_one_id')->nullable();;
+            $table->integer('team_two_id')->nullable();;
             $table->string('game_type');
             $table->string('stadium_name');
             $table->string('match_status');

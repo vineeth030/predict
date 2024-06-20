@@ -204,6 +204,12 @@ class PointController extends Controller
 
         // Retrieve users with total points
         $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
+            ->leftJoin('games', 'points.game_id', '=', 'games.id')
+            ->leftJoin('predictions', function ($join) {
+                $join->on('users.id', '=', 'predictions.user_id')
+                    ->on('games.id', '=', 'predictions.game_id')
+                    ->where('games.game_type', 'final-prediction');
+            })
             ->leftJoin('cards_game', 'users.id', '=', 'cards_game.user_id')
             ->select(
                 'users.id',
@@ -211,6 +217,7 @@ class PointController extends Controller
                 'users.fav_team',
                 'users.name',
                 DB::raw('CAST(COALESCE(SUM(points.points), 0) AS UNSIGNED) as total_points'),
+                DB::raw('CAST(COALESCE(SUM(CASE WHEN games.game_type = "final-prediction" THEN points.points ELSE 0 END), 0) AS UNSIGNED) as final_prediction_points'),
                 DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
                 DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank'),
                 DB::raw('IFNULL(LENGTH(cards_game.cards_opened) - LENGTH(REPLACE(cards_game.cards_opened, ",", "")) + 1, 0) as stars_collected')
@@ -221,6 +228,35 @@ class PointController extends Controller
             ->orderBy('total_points', 'desc')
             ->orderBy('name', 'asc')
             ->get();
+
+        $predictions = DB::table('predictions')
+            ->leftJoin('games', 'predictions.game_id', '=', 'games.id')
+            ->select(
+                'predictions.user_id',
+                'predictions.final_team_one_id',
+                'predictions.final_team_two_id',
+                'predictions.winning_team_id'
+            )
+            ->where('games.game_type', 'final-prediction')
+            ->get();
+
+         foreach($users as $user)
+         {          
+            $prediction=$predictions->firstWhere('user_id',$user->id);
+
+            if($prediction){
+                $user->final_team_one_id=$prediction->final_team_one_id;
+                $user->final_team_two_id=$prediction->final_team_two_id;
+                $user->winning_team_id=$prediction->winning_team_id;
+            }
+            else{
+                $user->final_team_one_id=null;
+                $user->final_team_two_id=null;
+                $user->winning_team_id=null;
+            }
+         }   
+
+
 
         // Separate users with 0 points
         $usersWithPoints = $users->filter(function ($user) {
@@ -255,13 +291,13 @@ class PointController extends Controller
             // Calculate rank change
             $rankChange = $userModel->new_rank - $userModel->old_rank;
             $user->rank_change = $rankChange > 0 ? '-1' : ($rankChange < 0 ? '+1' : '0');
-       
+
 
             // Update image path
             $user->image = $user->image ? $baseImagePath . '/' . $user->image : null;
 
             // Save updated rank in the User model
-          //  $userModel->old_rank = $userModel->new_rank;
+            //  $userModel->old_rank = $userModel->new_rank;
             $userModel->new_rank = $user->new_rank;
             $userModel->save();
 

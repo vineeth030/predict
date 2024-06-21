@@ -3,8 +3,11 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Carbon\Carbon;
 use App\Models\Game;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckKickoffTime
@@ -17,18 +20,25 @@ class CheckKickoffTime
     public function handle($request, Closure $next)
     {
 
-       
-        $gameId = $request->get('game_id'); // Adjust this based on your route parameter name
-        // dd($gameId);
-        // Retrieve the game from the database
-        $game = Game::findOrFail($gameId);
+       Log::info('inside middleware check kick off time');
+        $gameId = $request->input('game_id');
 
-        // Check if kickoff time has passed or if it's null
-        if ($game->kick_off_time === null || now()->gt($game->kick_off_time)) {
-            return response()->json(['error' => 'Kickoff time has passed or not set yet','code' =>'403']);
+
+
+        $kickoffTime = DB::table('games')
+            ->where('id', $gameId)
+            ->value('kick_off_time');
+
+
+        $currentTime = (int) round(microtime(true) * 1000);
+
+
+
+        if ($currentTime > $kickoffTime) {
+            return response()->json(['status' => 403, 'message' => 'You cannot update predictions after the kickoff time has passed.'], 403);
         }
 
-        // Allow the request to proceed
+
         return $next($request);
     }
 }

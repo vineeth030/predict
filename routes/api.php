@@ -41,7 +41,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 
-Route::middleware(['auth:sanctum', 'check_kickoff_time'])->post('/predictions/update', [PredictionController::class, 'update']);
+//Route::middleware(['auth:sanctum', 'check_kickoff_time'])->post('/predictions/update', [PredictionController::class, 'update']);
 
 Route::post('/auth-lab', [LabController::class, 'sendRequest'])->name('auth-lab.sendRequest');
 Route::get('/version', [VersionController::class, 'index']);
@@ -57,9 +57,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/predictions', [PredictionController::class, 'index']);
     // Route::get('/predictions/user/show', [PredictionController::class, 'show']);
 
-    Route::post('/predictions/update', [PredictionController::class, 'update']);
+    Route::post('/predictions/update', [PredictionController::class, 'update'])->middleware('check_kickoff_time');
     Route::post('/predictions/final', [PredictionController::class, 'final']);
-    Route::post('/predictions/first-goal', [PredictionController::class, 'firstgoal']);
+    Route::post('/predictions/first-goal', [PredictionController::class, 'firstgoal'])->middleware('check_kickoff_time');
     //   Route::get('/versions', [VersionController::class, 'index']);
     Route::get('/teams', [TeamController::class, 'index']);
     Route::get('/final-teams', [TeamController::class, 'finalTeams']);

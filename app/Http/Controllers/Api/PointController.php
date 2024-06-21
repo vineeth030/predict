@@ -339,6 +339,7 @@ class PointController extends Controller
                 ->where('users.company_group_id', $companyGroupId)
                 ->where('users.verified', 1)
                 ->where('predictions.game_id', $game_id)
+                ->orderBy('points_earned','desc')
                 ->orderBy('users.name')
                 ->get();
             return response()->json(['status' => 200, 'message' => 'success', 'data' => $userPredictions]);

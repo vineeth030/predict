@@ -360,31 +360,31 @@ class PointController extends Controller
             if ($prediction) {
                 $prediction = [
                     'game_id' => $game->id,
-                    'games.team_one_id' => $game->team_one_id,
-                    'games.team_two_id' => $game->team_two_id,
+                    'games_team_one_id' => $game->team_one_id,
+                    'games_team_two_id' => $game->team_two_id,
                     'completed_match_team_one_score' => $game->team_one_goals,
                     'completed_match_team_two_score' => $game->team_two_goals,
                     'completed_match_winning_team_id' => $game->winning_team_id,
                     'completed_match_first_goal_team_id' => $game->first_goal_team_id,
-                    'predictions.team_one_goals' => $prediction->team_one_goals,
-                    'predictions.team_two_goals' => $prediction->team_two_goals,
-                    'predictions.winning_team_id' => $prediction->winning_team_id,
-                    'predictions.first_goal_team_id' => $prediction->first_goal_team_id,
+                    'predictions_team_one_goals' => $prediction->team_one_goals,
+                    'predictions_team_two_goals' => $prediction->team_two_goals,
+                    'predictions_winning_team_id' => $prediction->winning_team_id,
+                    'predictions_first_goal_team_id' => $prediction->first_goal_team_id,
                     'points' => $point->points,
                 ];
             } else {
                 $prediction = [
                     'game_id' => $game->id,
-                    'games.team_one_id' => $game->team_one_id,
-                    'games.team_two_id' => $game->team_two_id,
+                    'games_team_one_id' => $game->team_one_id,
+                    'games_team_two_id' => $game->team_two_id,
                     'completed_match_team_one_score' => $game->team_one_goals,
                     'completed_match_team_two_score' => $game->team_two_goals,
                     'completed_match_winning_team_id' => $game->winning_team_id,
                     'completed_match_first_goal_team_id' => $game->first_goal_team_id,
-                    'predictions.team_one_goals' => null,
-                    'predictions.team_two_goals' => null,
-                    'predictions.winning_team_id' => null,
-                    'predictions.first_goal_team_id' => null,
+                    'predictions_team_one_goals' => null,
+                    'predictions_team_two_goals' => null,
+                    'predictions_winning_team_id' => null,
+                    'predictions_first_goal_team_id' => null,
                     'points' => null,
 
 

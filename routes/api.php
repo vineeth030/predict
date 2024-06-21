@@ -55,6 +55,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/points', [PointController::class, 'index']);
     Route::get('/points/user/show', [PointController::class, 'show']);
     Route::get('/predictions', [PredictionController::class, 'index']);
+    Route::get('/user-predictions/{game_id}', [PointController::class, 'userPredictions']);
+    Route::get('/user-matches-all/{user_id}', [PointController::class, 'userMatchesAll']);
     // Route::get('/predictions/user/show', [PredictionController::class, 'show']);
 
     Route::post('/predictions/update', [PredictionController::class, 'update'])->middleware('check_kickoff_time');

@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Point;
-use App\Models\User;
 use App\Models\Game;
+use App\Models\User;
+use App\Models\Point;
+use App\Models\Prediction;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
 class PointController extends Controller
 {
@@ -240,21 +241,19 @@ class PointController extends Controller
             ->where('games.game_type', 'final-prediction')
             ->get();
 
-         foreach($users as $user)
-         {          
-            $prediction=$predictions->firstWhere('user_id',$user->id);
+        foreach ($users as $user) {
+            $prediction = $predictions->firstWhere('user_id', $user->id);
 
-            if($prediction){
-                $user->final_team_one_id=$prediction->final_team_one_id;
-                $user->final_team_two_id=$prediction->final_team_two_id;
-                $user->winning_team_id=$prediction->winning_team_id;
+            if ($prediction) {
+                $user->final_team_one_id = $prediction->final_team_one_id;
+                $user->final_team_two_id = $prediction->final_team_two_id;
+                $user->winning_team_id = $prediction->winning_team_id;
+            } else {
+                $user->final_team_one_id = null;
+                $user->final_team_two_id = null;
+                $user->winning_team_id = null;
             }
-            else{
-                $user->final_team_one_id=null;
-                $user->final_team_two_id=null;
-                $user->winning_team_id=null;
-            }
-         }   
+        }
 
 
 
@@ -307,5 +306,92 @@ class PointController extends Controller
         }
 
         return response()->json(['status' => 200, 'message' => 'success', 'data' => $sortedUsers]);
+    }
+
+    public function userPredictions($game_id)
+    {
+
+        $companyGroupId = auth()->user()->company_group_id;
+        $kickoffTime = DB::table('games')
+            ->where('id', $game_id)
+            ->value('kick_off_time');
+        $currentTime = (int) round(microtime(true) * 1000);
+        if ($currentTime > $kickoffTime) {
+            $userPredictions = DB::table('predictions')
+                ->join('users', 'predictions.user_id', '=', 'users.id')
+                ->join('games', 'predictions.game_id', '=', 'games.id')
+                ->leftJoin('points', function ($join) {
+                    $join->on('predictions.user_id', '=', 'points.user_id')
+                        ->on('predictions.game_id', '=', 'points.game_id');
+                })
+                ->select(
+                    'users.name as username',
+                    'predictions.user_id',
+                    'predictions.game_id',
+                    'games.game_type',
+                    'predictions.winning_team_id',
+                    'predictions.team_one_goals',
+                    'predictions.team_two_goals',
+                    'predictions.first_goal_team_id',
+                    DB::raw('COALESCE(points.points, 0) as points_earned')
+
+                )
+                ->where('users.company_group_id', $companyGroupId)
+                ->where('users.verified', 1)
+                ->where('predictions.game_id', $game_id)
+                ->orderBy('users.name')
+                ->get();
+            return response()->json(['status' => 200, 'message' => 'success', 'data' => $userPredictions]);
+        } else {
+            return response()->json(['status' => 200, 'message' => 'success', 'data' => null]);
+        }
+    }
+
+    public function userMatchesAll($user_id)
+    {
+
+
+        $games = Game::all()->where('match_status', 'completed')->where("game_type", "!=", "final-prediction");
+        $predictions = [];
+        foreach ($games as $game) {
+            $prediction = Prediction::where('game_id', $game->id)->where('user_id', $user_id)->first();
+            $point = Point::where('game_id', $game->id)->where('user_id', $user_id)->first();
+            if ($prediction) {
+                $prediction = [
+                    'game_id' => $game->id,
+                    'games.team_one_id' => $game->team_one_id,
+                    'games.team_two_id' => $game->team_two_id,
+                    'completed_match_team_one_score' => $game->team_one_goals,
+                    'completed_match_team_two_score' => $game->team_two_goals,
+                    'completed_match_winning_team_id' => $game->winning_team_id,
+                    'completed_match_first_goal_team_id' => $game->first_goal_team_id,
+                    'predictions.team_one_goals' => $prediction->team_one_goals,
+                    'predictions.team_two_goals' => $prediction->team_two_goals,
+                    'predictions.winning_team_id' => $prediction->winning_team_id,
+                    'predictions.first_goal_team_id' => $prediction->first_goal_team_id,
+                    'points' => $point->points,
+                ];
+            } else {
+                $prediction = [
+                    'game_id' => $game->id,
+                    'games.team_one_id' => $game->team_one_id,
+                    'games.team_two_id' => $game->team_two_id,
+                    'completed_match_team_one_score' => $game->team_one_goals,
+                    'completed_match_team_two_score' => $game->team_two_goals,
+                    'completed_match_winning_team_id' => $game->winning_team_id,
+                    'completed_match_first_goal_team_id' => $game->first_goal_team_id,
+                    'predictions.team_one_goals' => null,
+                    'predictions.team_two_goals' => null,
+                    'predictions.winning_team_id' => null,
+                    'predictions.first_goal_team_id' => null,
+                    'points' => null,
+
+
+                ];
+            }
+            $predictions[] = $prediction;
+        }
+
+        return response()->json(['status' => 200, 'message' => 'success', 'data' => $predictions]);
     }
 }

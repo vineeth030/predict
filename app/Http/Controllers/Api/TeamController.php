@@ -23,7 +23,8 @@ class TeamController extends Controller
                 'testKey' => 'arsnteio12345'
             ];
 
-            $teams = DB::table('teams')->get()->orderBy('points', 'desc')->groupBy('group_id');
+        //    $teams = DB::table('teams')->orderBy('points', 'desc')->get()->groupBy('group_id');
+        $teams = DB::table('teams')->orderBy('group_id', 'desc')->orderBy('points', 'desc')->get()->groupBy('group_id');
 
             foreach ($teams as $key => $team) {
                 $result["standings"][] = ['group_id' => $key, 'table' => $team];

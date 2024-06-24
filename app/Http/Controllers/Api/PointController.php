@@ -352,7 +352,7 @@ class PointController extends Controller
     {
 
 
-        $games = Game::all()->where('match_status', 'completed')->where("game_type", "!=", "final-prediction");
+        $games = Game::all()->where('match_status', 'completed')->where("game_type", "!=", "final-prediction")->orderBy('id', 'desc');
         $predictions = [];
         foreach ($games as $game) {
             $prediction = Prediction::where('game_id', $game->id)->where('user_id', $user_id)->first();

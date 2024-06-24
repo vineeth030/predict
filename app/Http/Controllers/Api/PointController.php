@@ -339,7 +339,7 @@ class PointController extends Controller
                 ->where('users.company_group_id', $companyGroupId)
                 ->where('users.verified', 1)
                 ->where('predictions.game_id', $game_id)
-                ->orderBy('points_earned','desc')
+                ->orderBy('points_earned', 'desc')
                 ->orderBy('users.name')
                 ->get();
             return response()->json(['status' => 200, 'message' => 'success', 'data' => $userPredictions]);
@@ -352,7 +352,8 @@ class PointController extends Controller
     {
 
 
-        $games = Game::all()->where('match_status', 'completed')->where("game_type", "!=", "final-prediction");
+        $games = Game::where('match_status', 'completed')->where("game_type", "!=", "final-prediction")->orderBy('id', 'desc')->get();
+
         $predictions = [];
         foreach ($games as $game) {
             $prediction = Prediction::where('game_id', $game->id)->where('user_id', $user_id)->first();

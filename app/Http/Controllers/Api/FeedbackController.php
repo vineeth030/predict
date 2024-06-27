@@ -49,7 +49,7 @@ class FeedbackController extends Controller
                 $answer = $data[0]['answer'];
 
                 $feedback = Feedback::where('user_id', $userId)->where('question_id', $questionId)->first();
-                $feedback->where('question_id', $questionId)->where('user_id',$userId)->update([
+                $feedback->where('user_id',$userId)->where('question_id', $questionId)->update([
 
                     'answer' => $answer . " | " . $feedback->answer,
                 ]);

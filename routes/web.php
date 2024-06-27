@@ -1,13 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LabController;
+use App\Http\Controllers\Api\FeedbackController;
 use App\Http\Controllers\Dashboard\AuthController;
 use App\Http\Controllers\Dashboard\GameController;
 use App\Http\Controllers\Dashboard\TeamController;
-use App\Http\Controllers\Dashboard\VersionController;
-use App\Http\Controllers\Dashboard\EmailController;
 use App\Http\Controllers\Dashboard\UserController;
-use App\Http\Controllers\LabController;
+use App\Http\Controllers\Dashboard\EmailController;
+use App\Http\Controllers\Dashboard\VersionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,3 +46,4 @@ Route::put('/teams/update', [TeamController::class, 'update'])->middleware('auth
 Route::get('/versions', [VersionController::class, 'index'])->middleware('auth')->name('versions');
 Route::post('/updateversion', [VersionController::class, 'updateversion'])->middleware('auth')->name('updateversion');
 Route::get('/users', [UserController::class, 'index'])->middleware('auth')->name('users');
+Route::get('/feedback', [FeedbackController::class, 'index'])->middleware('auth')->name('feedback');

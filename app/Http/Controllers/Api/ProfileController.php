@@ -10,7 +10,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\CardsGame;
-
+use App\Models\Feedback;
 
 class ProfileController extends Controller
 {
@@ -135,13 +135,22 @@ class ProfileController extends Controller
         if ($cardsGame && !is_null($cardsGame->cards_opened)) {
             $starsCollected = substr_count($cardsGame->cards_opened, ',') + 1;
         }
+
         $rankChange = (int) $user->new_rank - (int) $user->old_rank;
         $rankChangeMessage = $rankChange > 0 ? '-1' : ($rankChange < 0 ? '+1' : '0');
+
+        $feedBack = Feedback::where('user_id', $userId)->first();
+        if($feedBack){
+            $isFeedbackSubmitted=1;
+        }else{
+            $isFeedbackSubmitted=0;
+        }
 
         $userData = $user->toArray();
         $userData['image_url'] = $imageUrl;
         $userData['stars_collected'] = $starsCollected;
         $userData['rank_change'] = $rankChangeMessage;
+        $userData['feedback_submitted'] = $isFeedbackSubmitted;
 
 
 

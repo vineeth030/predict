@@ -1,17 +1,20 @@
 <?php
 
+use App\Models\Feedback;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LabController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CardController;
 use App\Http\Controllers\Api\GameController;
-use App\Http\Controllers\Api\ManageGameController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\PointController;
-use App\Http\Controllers\Api\VersionController;
-use App\Http\Controllers\Api\PredictionController;
 use App\Http\Controllers\Api\ProfileController;
-use App\Http\Controllers\Api\CardController;
+use App\Http\Controllers\Api\VersionController;
+use App\Http\Controllers\Api\FeedbackController;
+use App\Http\Controllers\Api\QuestionController;
+use App\Http\Controllers\Api\ManageGameController;
+use App\Http\Controllers\Api\PredictionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,4 +81,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::delete('/user/delete', [GameController::class, 'deleteUser'])->name('user.delete');
     Route::post('/cards-game', [CardController::class, 'cardsGame'])->name('cardsGame');
     Route::get('/fetch-cards', [CardController::class, 'fetchCards'])->name('fetchCards');
+    Route::get('/questions', [QuestionController::class, 'questions'])->name('questions');
+    Route::post('/feedback', [FeedbackController::class, 'feedback'])->name('feedback');
 });

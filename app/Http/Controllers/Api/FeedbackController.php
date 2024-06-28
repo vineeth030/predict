@@ -25,7 +25,7 @@ class FeedbackController extends Controller
     {
         $feedbacks = DB::table('feedback')
             ->join('questions', 'feedback.question_id', '=', 'questions.id')
-            ->select('feedback.user_id', 'feedback.user_name', 'questions.question', 'feedback.answer','feedback.created_at','feedback.updated_at')
+            ->select('feedback.user_id', 'feedback.user_name', 'questions.question', 'feedback.answer','feedback.created_at','feedback.updated_at')->orderBy('feedback.updated_at', 'desc')
             ->get();
 
         return view('feedback', compact('feedbacks'));

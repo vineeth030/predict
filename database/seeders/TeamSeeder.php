@@ -7,38 +7,69 @@ use Illuminate\Database\Seeder;
 
 class TeamSeeder extends Seeder
 {
-    private $teams = [
-        ["Germany", "DE","Group A","Germany.png"],
-        ["Scotland", "FR","Group A","Scotland.png"],
-        ["Hungary", "IT","Group A","Hungary.png"],
-        ["Switzerland", "EN","Group A","Switzerland.png"],
+private $teams = [
 
-        ["Spain", "ES","Group B","Spain.png"],
-        ["Croatia", "PT","Group B","Croatia.png"],
-        ["Italy", "BE","Group B","Italy.png"],
-        ["Albania", "NL","Group B","Albania.png"],
+    ["Mexico", "MX", "Group A", "Mexico.png"],
+    ["South Africa", "SA", "Group A", "SouthAfrica.png"],
+    ["South Korea", "KR", "Group A", "SouthKorea.png"],
+    ["Czechia", "CZ", "Group A", "Czechia.png"],
 
-        ["Slovenia", "DK","Group C","Slovenia.png"],
-        ["Denmark", "CH","Group C","Denmark.png"],
-        ["Serbia", "HR","Group C","Serbia.png"],
-        ["England", "SC","Group C","England.png"],
+    ["Canada", "CA", "Group B", "Canada.png"],
+    ["Bosnia and Herzegovina", "BA", "Group B", "BosniaHerzegovina.png"],
+    ["Qatar", "QA", "Group B", "Qatar.png"],
+    ["Switzerland", "CH", "Group B", "Switzerland.png"],
 
-        ["Poland", "HU","Group D","Poland.png"],
-        ["Netherlands", "AT","Group D","Netherlands.png"],
-        ["Austria", "AL","Group D","Austria.png"],
-        ["France", "SK","Group D","France.png"],
-      
-        ["Belgium", "HU","Group E","Belgium.png"],
-        ["Slovakia", "AT","Group E","Slovakia.png"],
-        ["Romania", "AL","Group E","Romania.png"],
-        ["Ukraine", "SK","Group E","Ukraine.png"],
+    ["Brazil", "BR", "Group C", "Brazil.png"],
+    ["Morocco", "MA", "Group C", "Morocco.png"],
+    ["Haiti", "HT", "Group C", "Haiti.png"],
+    ["Scotland", "SC", "Group C", "Scotland.png"],
 
-        ["Turkey", "HU","Group F","Turkey.png"],
-        ["Georgia", "AT","Group F","Georgia.png"],
-        ["Portugal", "AL","Group F","Portugal.png"],
-        ["Czechia", "SK","Group F","Czechia.png"],
-        
-    ];
+    ["USA", "US", "Group D", "USA.png"],
+    ["Paraguay", "PY", "Group D", "Paraguay.png"],
+    ["Australia", "AU", "Group D", "Australia.png"],
+    ["Turkey", "TR", "Group D", "Turkey.png"],
+
+    ["Germany", "DE", "Group E", "Germany.png"],
+    ["Curacao", "CW", "Group E", "Curacao.png"],
+    ["Ivory Coast", "CI", "Group E", "IvoryCoast.png"],
+    ["Ecuador", "EC", "Group E", "Ecuador.png"],
+
+    ["Netherlands", "NL", "Group F", "Netherlands.png"],
+    ["Japan", "JP", "Group F", "Japan.png"],
+    ["Sweden", "SE", "Group F", "Sweden.png"],
+    ["Tunisia", "TN", "Group F", "Tunisia.png"],
+
+    ["Belgium", "BE", "Group G", "Belgium.png"],
+    ["Egypt", "EG", "Group G", "Egypt.png"],
+    ["Iran", "IR", "Group G", "Iran.png"],
+    ["New Zealand", "NZ", "Group G", "NewZealand.png"],
+
+    ["Spain", "ES", "Group H", "Spain.png"],
+    ["Cape Verde", "CV", "Group H", "CapeVerde.png"],
+    ["Saudi Arabia", "SA", "Group H", "SaudiArabia.png"],
+    ["Uruguay", "UY", "Group H", "Uruguay.png"],
+
+    ["France", "FR", "Group I", "France.png"],
+    ["Senegal", "SN", "Group I", "Senegal.png"],
+    ["Iraq", "IQ", "Group I", "Iraq.png"],
+    ["Norway", "NO", "Group I", "Norway.png"],
+
+    ["Argentina", "AR", "Group J", "Argentina.png"],
+    ["Algeria", "DZ", "Group J", "Algeria.png"],
+    ["Austria", "AT", "Group J", "Austria.png"],
+    ["Jordan", "JO", "Group J", "Jordan.png"],
+
+    ["Portugal", "PT", "Group K", "Portugal.png"],
+    ["DR Congo", "CD", "Group K", "DRCongo.png"],
+    ["Uzbekistan", "UZ", "Group K", "Uzbekistan.png"],
+    ["Colombia", "CO", "Group K", "Colombia.png"],
+
+    ["England", "EN", "Group L", "England.png"],
+    ["Croatia", "HR", "Group L", "Croatia.png"],
+    ["Ghana", "GH", "Group L", "Ghana.png"],
+    ["Panama", "PA", "Group L", "Panama.png"],
+
+];
 
     /**
      * Run the database seeds.

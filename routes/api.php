@@ -79,8 +79,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/user/profile', [ProfileController::class, 'profile']);
     Route::post('/change-password', [ProfileController::class, 'changePassword']);
     Route::delete('/user/delete', [GameController::class, 'deleteUser'])->name('user.delete');
-    Route::post('/cards-game', [CardController::class, 'cardsGame'])->name('cardsGame');
-    Route::get('/fetch-cards', [CardController::class, 'fetchCards'])->name('fetchCards');
+    Route::get('/game-cards', [CardController::class, 'gameCards'])->name('gameCards');
     Route::get('/questions', [QuestionController::class, 'questions'])->name('questions');
     Route::post('/feedback', [FeedbackController::class, 'feedback'])->name('feedback');
 });

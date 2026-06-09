@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class GameNotification extends Model
+{
+    use HasFactory;
+
+    public $table = 'game_notification';
+
+    public const UPDATED_AT = null;
+
+    protected $fillable = [
+        'user_id',
+        'notification_type',
+        'reference_id',
+        'title',
+        'message',
+        'is_read',
+    ];
+
+    protected $casts = [
+        'user_id' => 'integer',
+        'reference_id' => 'integer',
+        'is_read' => 'boolean',
+        'created_at' => 'datetime',
+    ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+}

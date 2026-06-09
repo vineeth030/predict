@@ -162,43 +162,6 @@ class PointController extends Controller
         }
     }
 
-
-
-    /*  public function allUserPoints()
-    {
-        $companyGroupId = auth()->user()->company_group_id;
-
-        $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
-            ->leftJoin('cards_game', 'users.id', '=', 'cards_game.user_id')
-            ->select(
-                'users.id',
-                'users.image',
-                'users.fav_team',
-                'users.name',
-                DB::raw('CAST(COALESCE(SUM(points.points), 0) AS UNSIGNED) as total_points'),
-                DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
-                DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank'),
-                DB::raw('IFNULL(LENGTH(cards_game.cards_opened) - LENGTH(REPLACE(cards_game.cards_opened, ",", "")) + 1, 0) as stars_collected')
-
-            )
-            ->where('users.company_group_id', $companyGroupId)
-            ->where('users.verified', 1)
-            ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank', 'users.fav_team', 'stars_collected')
-            ->orderBy('total_points', 'desc')
-            ->get();
-
-        $baseImagePath = url('storage/profile_images/');
-
-        foreach ($users as $user) {
-            $rankChange =$user->old_rank  - $user->new_rank;
-            $user->rank_change = $rankChange > 0 ? '+1' : ($rankChange < 0 ? '-1' : '0');
-            $user->image = $user->image ? $baseImagePath . '/' . $user->image : null;
-        }
-
-        return response()->json(['status' => 200, 'message' => 'success', 'data' => $users]);
-    }  */
-
-
     public function allUserPoints()
     {
         $companyGroupId = auth()->user()->company_group_id;
@@ -211,7 +174,6 @@ class PointController extends Controller
                     ->on('games.id', '=', 'predictions.game_id')
                     ->where('games.game_type', 'final-prediction');
             })
-            ->leftJoin('cards_game', 'users.id', '=', 'cards_game.user_id')
             ->select(
                 'users.id',
                 'users.image',
@@ -221,11 +183,11 @@ class PointController extends Controller
                 DB::raw('CAST(COALESCE(SUM(CASE WHEN games.game_type = "final-prediction" THEN points.points ELSE 0 END), 0) AS UNSIGNED) as final_prediction_points'),
                 DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
                 DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank'),
-                DB::raw('IFNULL(LENGTH(cards_game.cards_opened) - LENGTH(REPLACE(cards_game.cards_opened, ",", "")) + 1, 0) as stars_collected')
+                DB::raw('0 as stars_collected')
             )
             ->where('users.company_group_id', $companyGroupId)
             ->where('users.verified', 1)
-            ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank', 'users.fav_team', 'stars_collected')
+            ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank', 'users.fav_team')
             ->orderBy('total_points', 'desc')
             ->orderBy('name', 'asc')
             ->get();

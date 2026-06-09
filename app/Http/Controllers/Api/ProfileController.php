@@ -9,7 +9,6 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\CardsGame;
 use App\Models\Feedback;
 
 class ProfileController extends Controller
@@ -130,11 +129,7 @@ class ProfileController extends Controller
 
 
 
-        $cardsGame = CardsGame::where('user_id', $userId)->first();
         $starsCollected = 0;
-        if ($cardsGame && !is_null($cardsGame->cards_opened)) {
-            $starsCollected = substr_count($cardsGame->cards_opened, ',') + 1;
-        }
 
         $rankChange = (int) $user->new_rank - (int) $user->old_rank;
         $rankChangeMessage = $rankChange > 0 ? '-1' : ($rankChange < 0 ? '+1' : '0');

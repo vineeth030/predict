@@ -2,127 +2,64 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\CardsGame;
-use Illuminate\Support\Facades\Validator;
+use App\Models\GameCard;
 use App\Http\Controllers\Controller;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Carbon\Carbon;
-
 
 class CardController extends Controller
 {
-
-
-    public function cardsGame(Request $request)
+    public function gameCards(Request $request)
     {
-
         try {
-            $userId = $request->input('user_id');
-            $questionsAsked = $request->input('questions_asked');
-            $cardsOpened = $request->input('cards_opened');
-            $isQuestionOpened = $request->input('is_question_opened');
+            $cards = GameCard::with('country:id,name,short_name,flag')
+                ->when($request->filled('country_id'), function ($query) use ($request) {
+                    $query->where('country_id', $request->input('country_id'));
+                })
+                ->where('is_active', true)
+                ->orderBy('country_id')
+                ->orderBy('card_order')
+                ->get()
+                ->map(function ($card) {
+                    return [
+                        'id' => $card->id,
+                        'country_id' => $card->country_id,
+                        'country_name' => $card->country?->name,
+                        'country_short_name' => $card->country?->short_name,
+                        'country_flag' => $card->country?->flag,
+                        'card_code' => $card->card_code,
+                        'card_name' => $card->card_name,
+                        'player_name' => $card->player_name,
+                        'card_type' => $card->card_type,
+                        'card_order' => $card->card_order,
+                        'star_value' => $card->star_value,
+                        'is_active' => $card->is_active,
+                    ];
+                });
 
-            $currentDate = Carbon::now();
-            $currentDateFormatted = $currentDate->toDateString();
+            if ($request->boolean('group_by_country')) {
+                $cards = $cards->groupBy('country_id')->values()->map(function ($countryCards) {
+                    $firstCard = $countryCards->first();
 
-
-            $cardsGame = CardsGame::where('user_id', $userId)
-                ->first();
-
-            $isSameDay = CardsGame::where('user_id', $userId)
-                ->whereDate('last_attended', $currentDateFormatted)
-                ->first();
-
-            if (!$cardsGame) {
-
-
-                CardsGame::create([
-                    'user_id' => $userId,
-                    'questions_asked' => $questionsAsked,
-                    'cards_opened' => $cardsOpened,
-                    'last_attended' => $currentDate,
-                    'is_question_opened' => 1
-                ]);
-
-                return response()->json([
-                    'status' => 200,
-                    'message' => 'Entry created successfully.',
-                ]);
-            } else {
-                if (!$isSameDay) {
-                    $cardsGame->update([
-                        'questions_asked' => $questionsAsked,
-                        'cards_opened' => $cardsOpened,
-                        'last_attended' => $currentDate,
-                        'is_question_opened' => $isQuestionOpened
-                    ]);
-
-                    return response()->json([
-                        'status' => 200,
-                        'message' => 'Entry updated successfully.',
-                    ]);
-                } else {
-                    if ($cardsGame->is_question_opened && !$isQuestionOpened) {
-                        $cardsGame->update([
-                            'questions_asked' => $questionsAsked,
-                            'cards_opened' => $cardsOpened,
-                            'last_attended' => $currentDate,
-                            'is_question_opened' => $isQuestionOpened
-                        ]);
-
-                        return response()->json([
-                            'status' => 200,
-                            'message' => 'Entry updated successfully.',
-                        ]);
-                    } else {
-                        return response()->json([
-                            'status' => 400,
-                            'message' => 'Entry rejected: Question Viewed today.',
-                        ]);
-                    }
-                }
+                    return [
+                        'country_id' => $firstCard['country_id'],
+                        'country_name' => $firstCard['country_name'],
+                        'country_short_name' => $firstCard['country_short_name'],
+                        'country_flag' => $firstCard['country_flag'],
+                        'cards' => $countryCards->values(),
+                    ];
+                });
             }
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'success',
+                'data' => $cards,
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 500,
-                'message' => 'An error occurred: ' . $e->getMessage(),
+                'message' => $e->getMessage(),
             ], 500);
         }
-    }
-
-    public function fetchCards(Request $request)
-    {
-
-        $userId = $request->input('user_id');
-        $currentDate = Carbon::now();
-
-        $cardsGame = CardsGame::where('user_id', $userId)->first();
-
-        if (!$cardsGame) {
-            return response()->json([
-                'status' => 200,
-                'user_id' =>  null,
-                'questions_asked' => null,
-                'cards_opened' => null,
-                'server_time' => $currentDate->timestamp * 1000,
-            ]);
-        }
-
-        $lastAttended = Carbon::parse($cardsGame->last_attended);
-        $isSameDay = $lastAttended->isSameDay($currentDate);
-
-        return response()->json([
-            'status' => 200,
-            'user_id' => $cardsGame->user_id,
-            'questions_asked' => $cardsGame->questions_asked,
-            'cards_opened' => $cardsGame->cards_opened,
-            'server_time' => $currentDate->timestamp * 1000,
-            'is_same_day' => $isSameDay,
-        ]);
     }
 }

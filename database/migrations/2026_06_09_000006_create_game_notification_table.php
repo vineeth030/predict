@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->enum('notification_type', [
                 'REWARD',
+                'DAILY_REWARD',
+                'PREDICTION_REWARD',
                 'SHARE_SENT',
                 'SHARE_RECEIVED',
                 'REDEEM',

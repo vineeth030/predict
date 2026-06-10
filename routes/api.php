@@ -80,6 +80,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/change-password', [ProfileController::class, 'changePassword']);
     Route::delete('/user/delete', [GameController::class, 'deleteUser'])->name('user.delete');
     Route::get('/game-cards', [CardController::class, 'gameCards'])->name('gameCards');
+    Route::get('/user-cards', [CardController::class, 'userCards'])->name('userCards');
+    Route::post('/daily-claim', [CardController::class, 'dailyClaim'])->name('dailyClaim');
+    Route::post('/game-opened', [CardController::class, 'gameOpened'])->name('gameOpened');
     Route::get('/questions', [QuestionController::class, 'questions'])->name('questions');
     Route::post('/feedback', [FeedbackController::class, 'feedback'])->name('feedback');
 });

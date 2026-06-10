@@ -18,6 +18,7 @@ class GameRewardHistory extends Model
         'user_id',
         'card_id',
         'quantity',
+        'star_points',
         'reward_source',
         'is_opened',
         'rewarded_at',
@@ -27,6 +28,7 @@ class GameRewardHistory extends Model
         'user_id' => 'integer',
         'card_id' => 'integer',
         'quantity' => 'integer',
+        'star_points' => 'integer',
         'is_opened' => 'boolean',
         'rewarded_at' => 'datetime',
     ];

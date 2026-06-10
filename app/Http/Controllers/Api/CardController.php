@@ -113,20 +113,14 @@ class CardController extends Controller
                     return null;
                 }
 
-                $reward = GameRewardHistory::create([
-                    'user_id' => $userId,
-                    'card_id' => $card->id,
-                    'quantity' => 1,
-                    'reward_source' => 'DAILY',
-                    'rewarded_at' => now(),
-                ]);
-
                 $userCard = GameUserCard::where('user_id', $userId)
                     ->where('card_id', $card->id)
+                    ->lockForUpdate()
                     ->first();
 
                 if ($userCard) {
-                    $userCard->increment('quantity');
+                    $userCard->quantity += 1;
+                    $userCard->save();
                     $userCard->refresh();
                 } else {
                     $userCard = GameUserCard::create([
@@ -137,13 +131,21 @@ class CardController extends Controller
                     ]);
                 }
 
-                $starsEarned = $this->starsForCardType($card->card_type);
-                $gameStars = GameStar::firstOrCreate(
-                    ['user_id' => $userId],
-                    ['stars_balance' => 0]
-                );
-                $gameStars->increment('stars_balance', $starsEarned);
-                $gameStars->refresh();
+                $starPoints = $userCard->quantity > 1
+                    ? $this->starsForCardType($card->card_type)
+                    : 0;
+
+                $reward = GameRewardHistory::create([
+                    'user_id' => $userId,
+                    'card_id' => $card->id,
+                    'quantity' => 1,
+                    'star_points' => $starPoints,
+                    'reward_source' => 'DAILY',
+                    'rewarded_at' => now(),
+                ]);
+
+                $gameStars = $this->syncUserStars($userId);
+                $starsEarned = $starPoints;
 
                 GameDailyClaim::create([
                     'user_id' => $userId,
@@ -157,6 +159,7 @@ class CardController extends Controller
                     'reference_id' => $card->id,
                     'title' => 'Daily Reward',
                     'message' => 'Daily Reward',
+                    'star_points' => $starPoints,
                     'is_read' => false,
                 ]);
 
@@ -164,6 +167,7 @@ class CardController extends Controller
                     'reward' => $reward,
                     'card' => $card,
                     'user_card' => $userCard,
+                    'star_points' => $starPoints,
                     'stars_earned' => $starsEarned,
                     'stars_balance' => $gameStars->stars_balance,
                     'notification' => $notification,
@@ -189,6 +193,7 @@ class CardController extends Controller
                     'card_type' => $result['card']->card_type,
                     'quantity' => 1,
                     'user_card_quantity' => $result['user_card']->quantity,
+                    'star_points' => $result['star_points'],
                     'stars_earned' => $result['stars_earned'],
                     'stars_balance' => $result['stars_balance'],
                     'reward_source' => 'DAILY',
@@ -265,7 +270,7 @@ class CardController extends Controller
                 });
             }
 
-            $starsBalance = GameStar::where('user_id', $userId)->value('stars_balance') ?? 0;
+            $starsBalance = $this->syncUserStars($userId)->stars_balance;
             $rewardHistory = GameRewardHistory::with('card.country:id,name,short_name,flag')
                 ->where('user_id', $userId)
                 ->orderByDesc('rewarded_at')
@@ -279,6 +284,7 @@ class CardController extends Controller
                         'user_id' => $reward->user_id,
                         'card_id' => $reward->card_id,
                         'quantity' => $reward->quantity,
+                        'star_points' => $reward->star_points,
                         'reward_source' => $reward->reward_source,
                         'is_opened' => $reward->is_opened,
                         'rewarded_at' => $reward->rewarded_at,
@@ -294,6 +300,23 @@ class CardController extends Controller
                         // 'star_value' => $card?->star_value,
                     ];
                 });
+            $notifications = GameNotification::where('user_id', $userId)
+                ->orderByDesc('created_at')
+                ->orderByDesc('id')
+                ->get()
+                ->map(function ($notification) {
+                    return [
+                        'id' => $notification->id,
+                        'user_id' => $notification->user_id,
+                        'notification_type' => $notification->notification_type,
+                        'reference_id' => $notification->reference_id,
+                        'title' => $notification->title,
+                        'message' => $notification->message,
+                        'star_points' => $notification->star_points,
+                        'is_read' => $notification->is_read,
+                        'created_at' => $notification->created_at,
+                    ];
+                });
 
             return response()->json([
                 'status' => 200,
@@ -305,6 +328,7 @@ class CardController extends Controller
                     'total_cards' => GameUserCard::where('user_id', $userId)->sum('quantity'),
                     'cards' => $userCards,
                     'reward_history' => $rewardHistory,
+                    'notifications' => $notifications,
                 ],
             ]);
         } catch (\Exception $e) {
@@ -318,7 +342,7 @@ class CardController extends Controller
     public function gameOpened(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id' => 'required|exists:game_reward_history,id',
+            'user_id' => 'required|exists:users,id',
         ]);
 
         if ($validator->fails()) {
@@ -329,25 +353,74 @@ class CardController extends Controller
         }
 
         try {
-            $reward = GameRewardHistory::findOrFail($request->input('id'));
-            $wasAlreadyOpened = $reward->is_opened;
+            $userId = $request->input('user_id');
+            $totalRewards = GameRewardHistory::where('user_id', $userId)->count();
 
-            if (!$wasAlreadyOpened) {
-                $reward->update([
+            if ($totalRewards === 0) {
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'No game rewards found for this user.',
+                ], 404);
+            }
+
+            $updatedRewards = GameRewardHistory::where('user_id', $userId)
+                ->where('is_opened', false)
+                ->update([
                     'is_opened' => true,
                 ]);
-            }
 
             return response()->json([
                 'status' => 200,
-                'message' => $wasAlreadyOpened
-                    ? 'Game reward already opened.'
-                    : 'Game reward opened successfully.',
+                'message' => $updatedRewards > 0
+                    ? 'Game rewards opened successfully.'
+                    : 'Game rewards already opened.',
                 'data' => [
-                    'id' => $reward->id,
-                    'user_id' => $reward->user_id,
-                    'card_id' => $reward->card_id,
-                    'is_opened' => $reward->is_opened,
+                    'user_id' => (int) $userId,
+                    'total_rewards' => $totalRewards,
+                    'updated_rewards' => $updatedRewards,
+                    'is_opened' => true,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 500,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function notificationsRead(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'message' => $validator->errors()->first(),
+            ], 400);
+        }
+
+        try {
+            $userId = $request->input('user_id');
+            $totalNotifications = GameNotification::where('user_id', $userId)->count();
+            $updatedNotifications = GameNotification::where('user_id', $userId)
+                ->where('is_read', false)
+                ->update([
+                    'is_read' => true,
+                ]);
+
+            return response()->json([
+                'status' => 200,
+                'message' => $updatedNotifications > 0
+                    ? 'Notifications marked as read successfully.'
+                    : 'Notifications already read.',
+                'data' => [
+                    'user_id' => (int) $userId,
+                    'total_notifications' => $totalNotifications,
+                    'updated_notifications' => $updatedNotifications,
+                    'is_read' => true,
                 ],
             ]);
         } catch (\Exception $e) {
@@ -365,5 +438,31 @@ class CardController extends Controller
             'SILVER' => 3,
             default => 2,
         };
+    }
+
+    private function syncUserStars(int $userId): GameStar
+    {
+        $starsBalance = $this->calculateStarsBalanceFromUserCards($userId);
+
+        return GameStar::updateOrCreate(
+            ['user_id' => $userId],
+            ['stars_balance' => $starsBalance]
+        );
+    }
+
+    private function calculateStarsBalanceFromUserCards(int $userId): int
+    {
+        return GameUserCard::with('card')
+            ->where('user_id', $userId)
+            ->get()
+            ->sum(function ($userCard) {
+                $duplicateQuantity = max($userCard->quantity - 1, 0);
+
+                if ($duplicateQuantity === 0 || !$userCard->card) {
+                    return 0;
+                }
+
+                return $duplicateQuantity * $this->starsForCardType($userCard->card->card_type);
+            });
     }
 }

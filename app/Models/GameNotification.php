@@ -28,12 +28,14 @@ class GameNotification extends Model
         'reference_id',
         'title',
         'message',
+        'star_points',
         'is_read',
     ];
 
     protected $casts = [
         'user_id' => 'integer',
         'reference_id' => 'integer',
+        'star_points' => 'integer',
         'is_read' => 'boolean',
         'created_at' => 'datetime',
     ];

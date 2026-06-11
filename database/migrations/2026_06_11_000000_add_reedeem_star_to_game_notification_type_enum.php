@@ -18,6 +18,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE game_notification MODIFY notification_type ENUM('REWARD', 'SHARE_SENT', 'SHARE_RECEIVED', 'REDEEM', 'COUNTRY_COMPLETE') NULL");
+        DB::statement("ALTER TABLE game_notification MODIFY notification_type ENUM('REWARD', 'DAILY_REWARD', 'PREDICTION_REWARD', 'SHARE_SENT', 'SHARE_RECEIVED', 'REDEEM', 'COUNTRY_COMPLETE') NULL");
     }
 };

@@ -21,6 +21,7 @@ return new class extends Migration
                 'SHARE_SENT',
                 'SHARE_RECEIVED',
                 'REDEEM',
+                'REEDEEM_STAR',
                 'COUNTRY_COMPLETE',
             ])->nullable();
             $table->unsignedBigInteger('reference_id')->nullable();

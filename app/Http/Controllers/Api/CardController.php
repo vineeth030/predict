@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\GameCard;
 use App\Models\GameDailyClaim;
 use App\Models\GameNotification;
+use App\Models\GameRedeemHistory;
 use App\Models\GameRewardHistory;
 use App\Models\GameStar;
 use App\Models\GameUserCard;
@@ -135,6 +136,9 @@ class CardController extends Controller
                     ? $this->starsForCardType($card->card_type)
                     : 0;
 
+                $gameStars = $this->addUserStars($userId, $starPoints);
+                $starsEarned = $starPoints;
+
                 $reward = GameRewardHistory::create([
                     'user_id' => $userId,
                     'card_id' => $card->id,
@@ -143,9 +147,6 @@ class CardController extends Controller
                     'reward_source' => 'DAILY',
                     'rewarded_at' => now(),
                 ]);
-
-                $gameStars = $this->syncUserStars($userId);
-                $starsEarned = $starPoints;
 
                 GameDailyClaim::create([
                     'user_id' => $userId,
@@ -198,6 +199,162 @@ class CardController extends Controller
                     'stars_balance' => $result['stars_balance'],
                     'reward_source' => 'DAILY',
                     'claim_date' => $today,
+                    'notification_id' => $result['notification']->id,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 500,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function redeemStar(Request $request)
+    {
+        $userId = $request->input('user_id', $request->input('user_ID'));
+
+        $validator = Validator::make(['user_id' => $userId], [
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'message' => $validator->errors()->first(),
+            ], 400);
+        }
+
+        try {
+            $starsRequired = 10;
+
+            $result = DB::transaction(function () use ($userId, $starsRequired) {
+                $gameStars = $this->getOrCreateUserStars($userId, true);
+
+                if (!$gameStars || $gameStars->stars_balance < $starsRequired) {
+                    return [
+                        'error' => 'insufficient_stars',
+                        'stars_balance' => $gameStars?->stars_balance ?? 0,
+                    ];
+                }
+
+                $card = GameCard::whereIn('card_type', ['GOLD', 'SILVER'])
+                    ->where('is_active', true)
+                    ->inRandomOrder()
+                    ->first();
+
+                if (!$card) {
+                    return [
+                        'error' => 'no_card',
+                        'stars_balance' => $gameStars->stars_balance,
+                    ];
+                }
+
+                $userCard = GameUserCard::where('user_id', $userId)
+                    ->where('card_id', $card->id)
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($userCard) {
+                    $userCard->quantity += 1;
+                    $userCard->save();
+                    $userCard->refresh();
+                } else {
+                    $userCard = GameUserCard::create([
+                        'user_id' => $userId,
+                        'card_id' => $card->id,
+                        'quantity' => 1,
+                        'first_obtained_at' => now(),
+                    ]);
+                }
+
+                $starPoints = 0;
+
+                $reward = GameRewardHistory::create([
+                    'user_id' => $userId,
+                    'card_id' => $card->id,
+                    'quantity' => 1,
+                    'star_points' => $starPoints,
+                    'reward_source' => 'REDEEM',
+                    'rewarded_at' => now(),
+                ]);
+
+                $redeem = GameRedeemHistory::create([
+                    'user_id' => $userId,
+                    'stars_used' => $starsRequired,
+                    'card_id' => $card->id,
+                    'redeemed_at' => now(),
+                ]);
+
+                $gameStars->stars_balance -= $starsRequired;
+                $gameStars->save();
+                $gameStars->refresh();
+
+                $notification = GameNotification::create([
+                    'user_id' => $userId,
+                    'notification_type' => GameNotification::TYPE_REEDEEM_STAR,
+                    'reference_id' => $card->id,
+                    'title' => 'Reedem Star',
+                    'message' => 'Reedem Star',
+                    'star_points' => $starPoints,
+                    'is_read' => false,
+                ]);
+
+                return [
+                    'reward' => $reward,
+                    'redeem' => $redeem,
+                    'card' => $card,
+                    'user_card' => $userCard,
+                    'star_points' => $starPoints,
+                    'stars_earned' => $starPoints,
+                    'stars_used' => $starsRequired,
+                    'stars_balance' => $gameStars->stars_balance,
+                    'notification' => $notification,
+                ];
+            });
+
+            if (($result['error'] ?? null) === 'insufficient_stars') {
+                return response()->json([
+                    'status' => 400,
+                    'message' => 'Dont have enough stars balance.',
+                    'data' => [
+                        'user_id' => (int) $userId,
+                        'stars_required' => $starsRequired,
+                        'stars_balance' => (int) $result['stars_balance'],
+                    ],
+                ], 400);
+            }
+
+            if (($result['error'] ?? null) === 'no_card') {
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'No gold or silver cards available.',
+                    'data' => [
+                        'user_id' => (int) $userId,
+                        'stars_balance' => (int) $result['stars_balance'],
+                    ],
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Star redeemed successfully.',
+                'data' => [
+                    'reward_id' => $result['reward']->id,
+                    'redeem_id' => $result['redeem']->id,
+                    'user_id' => (int) $userId,
+                    'card_id' => $result['card']->id,
+                    'card_name' => $result['card']->card_name,
+                    'player_name' => $result['card']->player_name,
+                    'card_type' => $result['card']->card_type,
+                    'quantity' => 1,
+                    'user_card_quantity' => $result['user_card']->quantity,
+                    'star_points' => $result['star_points'],
+                    'stars_earned' => $result['stars_earned'],
+                    'stars_used' => $result['stars_used'],
+                    'stars_balance' => $result['stars_balance'],
+                    'reward_source' => 'REDEEM',
+                    'redeemed_at' => $result['redeem']->redeemed_at,
                     'notification_id' => $result['notification']->id,
                 ],
             ]);
@@ -270,7 +427,7 @@ class CardController extends Controller
                 });
             }
 
-            $starsBalance = $this->syncUserStars($userId)->stars_balance;
+            $starsBalance = $this->getOrCreateUserStars($userId)->stars_balance;
             $rewardHistory = GameRewardHistory::with('card.country:id,name,short_name,flag')
                 ->where('user_id', $userId)
                 ->orderByDesc('rewarded_at')
@@ -440,29 +597,52 @@ class CardController extends Controller
         };
     }
 
-    private function syncUserStars(int $userId): GameStar
+    private function addUserStars(int $userId, int $starPoints): GameStar
     {
-        $starsBalance = $this->calculateStarsBalanceFromUserCards($userId);
+        $gameStars = $this->getOrCreateUserStars($userId, true);
 
-        return GameStar::updateOrCreate(
-            ['user_id' => $userId],
-            ['stars_balance' => $starsBalance]
-        );
+        if ($starPoints > 0) {
+            $gameStars->stars_balance += $starPoints;
+            $gameStars->save();
+            $gameStars->refresh();
+        }
+
+        return $gameStars;
     }
 
-    private function calculateStarsBalanceFromUserCards(int $userId): int
+    private function getOrCreateUserStars(int $userId, bool $lockForUpdate = false): GameStar
     {
-        return GameUserCard::with('card')
-            ->where('user_id', $userId)
-            ->get()
-            ->sum(function ($userCard) {
-                $duplicateQuantity = max($userCard->quantity - 1, 0);
+        $query = GameStar::where('user_id', $userId);
 
-                if ($duplicateQuantity === 0 || !$userCard->card) {
-                    return 0;
-                }
+        if ($lockForUpdate) {
+            $query->lockForUpdate();
+        }
 
-                return $duplicateQuantity * $this->starsForCardType($userCard->card->card_type);
-            });
+        $gameStars = $query->first();
+
+        if ($gameStars) {
+            return $gameStars;
+        }
+
+        $gameStars = GameStar::create([
+            'user_id' => $userId,
+            'stars_balance' => $this->calculateInitialStarsBalance($userId),
+        ]);
+
+        if (!$lockForUpdate) {
+            return $gameStars;
+        }
+
+        return GameStar::where('user_id', $userId)
+            ->lockForUpdate()
+            ->first();
+    }
+
+    private function calculateInitialStarsBalance(int $userId): int
+    {
+        $earnedStars = (int) GameRewardHistory::where('user_id', $userId)->sum('star_points');
+        $redeemedStars = (int) GameRedeemHistory::where('user_id', $userId)->sum('stars_used');
+
+        return max($earnedStars - $redeemedStars, 0);
     }
 }

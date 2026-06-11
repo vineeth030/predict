@@ -16,6 +16,7 @@ class GameNotification extends Model
     public const TYPE_SHARE_SENT = 'SHARE_SENT';
     public const TYPE_SHARE_RECEIVED = 'SHARE_RECEIVED';
     public const TYPE_REDEEM = 'REDEEM';
+    public const TYPE_REEDEEM_STAR = 'REEDEEM_STAR';
     public const TYPE_COUNTRY_COMPLETE = 'COUNTRY_COMPLETE';
 
     public $table = 'game_notification';

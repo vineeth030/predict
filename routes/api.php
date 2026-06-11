@@ -82,6 +82,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/game-cards', [CardController::class, 'gameCards'])->name('gameCards');
     Route::get('/user-cards', [CardController::class, 'userCards'])->name('userCards');
     Route::post('/daily-claim', [CardController::class, 'dailyClaim'])->name('dailyClaim');
+    Route::post('/redeem-star', [CardController::class, 'redeemStar'])->name('redeemStar');
     Route::post('/game-opened', [CardController::class, 'gameOpened'])->name('gameOpened');
     Route::post('/notifications-read', [CardController::class, 'notificationsRead'])->name('notificationsRead');
     Route::get('/questions', [QuestionController::class, 'questions'])->name('questions');

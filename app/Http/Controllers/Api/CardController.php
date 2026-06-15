@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\GameCard;
+use App\Models\GameCardShare;
 use App\Models\GameDailyClaim;
 use App\Models\GameNotification;
 use App\Models\GameRedeemHistory;
@@ -356,6 +357,140 @@ class CardController extends Controller
                     'reward_source' => 'REDEEM',
                     'redeemed_at' => $result['redeem']->redeemed_at,
                     'notification_id' => $result['notification']->id,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 500,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function shareCards(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'sender_user_id' => 'required|exists:users,id|different:receiver_user_id',
+            'receiver_user_id' => 'required|exists:users,id',
+            'card_id' => 'required|exists:game_card,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'message' => $validator->errors()->first(),
+            ], 400);
+        }
+
+        try {
+            $senderUserId = (int) $request->input('sender_user_id');
+            $receiverUserId = (int) $request->input('receiver_user_id');
+            $cardId = (int) $request->input('card_id');
+            $quantity = (int) $request->input('quantity');
+            $sharedAt = now();
+
+            $result = DB::transaction(function () use ($senderUserId, $receiverUserId, $cardId, $quantity, $sharedAt) {
+                $senderCard = GameUserCard::where('user_id', $senderUserId)
+                    ->where('card_id', $cardId)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$senderCard || $senderCard->quantity < $quantity) {
+                    return [
+                        'error' => 'insufficient_cards',
+                        'sender_card_quantity' => $senderCard?->quantity ?? 0,
+                    ];
+                }
+
+                $receiverCard = GameUserCard::where('user_id', $receiverUserId)
+                    ->where('card_id', $cardId)
+                    ->lockForUpdate()
+                    ->first();
+
+                $cardShare = GameCardShare::create([
+                    'sender_user_id' => $senderUserId,
+                    'receiver_user_id' => $receiverUserId,
+                    'card_id' => $cardId,
+                    'quantity' => $quantity,
+                    'shared_at' => $sharedAt,
+                ]);
+
+                $senderCard->quantity -= $quantity;
+                $senderCard->save();
+                $senderCard->refresh();
+                $senderRemainingQuantity = $senderCard->quantity;
+
+                if ($receiverCard) {
+                    $receiverCard->quantity += $quantity;
+                    $receiverCard->save();
+                    $receiverCard->refresh();
+                } else {
+                    $receiverCard = GameUserCard::create([
+                        'user_id' => $receiverUserId,
+                        'card_id' => $cardId,
+                        'quantity' => $quantity,
+                        'first_obtained_at' => now(),
+                    ]);
+                }
+
+                $reward = GameRewardHistory::create([
+                    'user_id' => $receiverUserId,
+                    'card_id' => $cardId,
+                    'quantity' => 1,
+                    'star_points' => 0,
+                    'reward_source' => 'SHARED',
+                    'rewarded_at' => $sharedAt,
+                ]);
+
+                $notification = GameNotification::create([
+                    'user_id' => $receiverUserId,
+                    'notification_type' => GameNotification::TYPE_SHARE_RECEIVED,
+                    'reference_id' => $cardId,
+                    'title' => 'Shared Reward',
+                    'message' => 'Shared Reward',
+                    'star_points' => 0,
+                    'is_read' => false,
+                ]);
+
+                return [
+                    'card_share' => $cardShare,
+                    'reward' => $reward,
+                    'notification' => $notification,
+                    'sender_remaining_quantity' => $senderRemainingQuantity,
+                    'receiver_card_quantity' => $receiverCard->quantity,
+                ];
+            });
+
+            if (($result['error'] ?? null) === 'insufficient_cards') {
+                return response()->json([
+                    'status' => 400,
+                    'message' => 'Sender does not have enough card quantity.',
+                    'data' => [
+                        'sender_user_id' => $senderUserId,
+                        'card_id' => $cardId,
+                        'quantity' => $quantity,
+                        'sender_card_quantity' => (int) $result['sender_card_quantity'],
+                    ],
+                ], 400);
+            }
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Cards shared successfully.',
+                'data' => [
+                    'share_id' => $result['card_share']->id,
+                    'reward_id' => $result['reward']->id,
+                    'notification_id' => $result['notification']->id,
+                    'sender_user_id' => $senderUserId,
+                    'receiver_user_id' => $receiverUserId,
+                    'card_id' => $cardId,
+                    'quantity' => $quantity,
+                    'sender_remaining_quantity' => $result['sender_remaining_quantity'],
+                    'receiver_card_quantity' => $result['receiver_card_quantity'],
+                    'star_points' => 0,
+                    'reward_source' => 'SHARED',
+                    'shared_at' => $result['card_share']->shared_at,
                 ],
             ]);
         } catch (\Exception $e) {

@@ -20,6 +20,7 @@ return new class extends Migration
                 'DAILY',
                 'PREDICTION',
                 'REDEEM',
+                'SHARED',
                 'ADMIN',
             ])->nullable();
             $table->timestamp('rewarded_at')->nullable();

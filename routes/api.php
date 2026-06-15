@@ -87,4 +87,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/notifications-read', [CardController::class, 'notificationsRead'])->name('notificationsRead');
     Route::get('/questions', [QuestionController::class, 'questions'])->name('questions');
     Route::post('/feedback', [FeedbackController::class, 'feedback'])->name('feedback');
+    Route::post('/share-cards', [CardController::class, 'shareCards'])->name('shareCards');
 });

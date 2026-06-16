@@ -10,6 +10,7 @@ use App\Models\GameRedeemHistory;
 use App\Models\GameRewardHistory;
 use App\Models\GameStar;
 use App\Models\GameUserCard;
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -159,8 +160,8 @@ class CardController extends Controller
                     'user_id' => $userId,
                     'notification_type' => GameNotification::TYPE_DAILY_REWARD,
                     'reference_id' => $card->id,
-                    'title' => 'Daily Reward',
-                    'message' => 'Daily Reward',
+                    'title' => 'Daily Bonus Claimed!',
+                    'message' => "You've successfully unlocked your daily reward",
                     'star_points' => $starPoints,
                     'is_read' => false,
                 ]);
@@ -295,8 +296,8 @@ class CardController extends Controller
                     'user_id' => $userId,
                     'notification_type' => GameNotification::TYPE_REEDEEM_STAR,
                     'reference_id' => $card->id,
-                    'title' => 'Reedem Star',
-                    'message' => 'Reedem Star',
+                    'title' => 'Points Exchanged!',
+                    'message' => 'Your Star Points redemption is complete. Enjoy your new reward.',
                     'star_points' => $starPoints,
                     'is_read' => false,
                 ]);
@@ -391,6 +392,11 @@ class CardController extends Controller
             $sharedAt = now();
 
             $result = DB::transaction(function () use ($senderUserId, $receiverUserId, $cardId, $quantity, $sharedAt) {
+                $userNames = User::whereIn('id', [$senderUserId, $receiverUserId])
+                    ->pluck('name', 'id');
+                $senderName = trim((string) ($userNames[$senderUserId] ?? '')) ?: 'User';
+                $receiverName = trim((string) ($userNames[$receiverUserId] ?? '')) ?: 'User';
+
                 $senderCard = GameUserCard::where('user_id', $senderUserId)
                     ->where('card_id', $cardId)
                     ->lockForUpdate()
@@ -443,12 +449,22 @@ class CardController extends Controller
                     'rewarded_at' => $sharedAt,
                 ]);
 
-                $notification = GameNotification::create([
+                $senderNotification = GameNotification::create([
+                    'user_id' => $senderUserId,
+                    'notification_type' => GameNotification::TYPE_SHARE_SENT,
+                    'reference_id' => $cardId,
+                    'title' => 'Card Sent!',
+                    'message' => "You have successfully sent a card to {$receiverName}.",
+                    'star_points' => 0,
+                    'is_read' => false,
+                ]);
+
+                $receiverNotification = GameNotification::create([
                     'user_id' => $receiverUserId,
                     'notification_type' => GameNotification::TYPE_SHARE_RECEIVED,
                     'reference_id' => $cardId,
-                    'title' => 'Shared Reward',
-                    'message' => 'Shared Reward',
+                    'title' => 'New Gift!',
+                    'message' => "{$senderName} sent you a card. Tap to open it.",
                     'star_points' => 0,
                     'is_read' => false,
                 ]);
@@ -456,7 +472,8 @@ class CardController extends Controller
                 return [
                     'card_share' => $cardShare,
                     'reward' => $reward,
-                    'notification' => $notification,
+                    'sender_notification' => $senderNotification,
+                    'receiver_notification' => $receiverNotification,
                     'sender_remaining_quantity' => $senderRemainingQuantity,
                     'receiver_card_quantity' => $receiverCard->quantity,
                 ];
@@ -481,7 +498,9 @@ class CardController extends Controller
                 'data' => [
                     'share_id' => $result['card_share']->id,
                     'reward_id' => $result['reward']->id,
-                    'notification_id' => $result['notification']->id,
+                    'notification_id' => $result['receiver_notification']->id,
+                    'sender_notification_id' => $result['sender_notification']->id,
+                    'receiver_notification_id' => $result['receiver_notification']->id,
                     'sender_user_id' => $senderUserId,
                     'receiver_user_id' => $receiverUserId,
                     'card_id' => $cardId,

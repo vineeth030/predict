@@ -10,6 +10,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Feedback;
+use App\Models\GameUserCard;
 
 class ProfileController extends Controller
 {
@@ -127,9 +128,7 @@ class ProfileController extends Controller
 
         $imageUrl = $user->image ? asset('storage/profile_images/' . $user->image) : null;
 
-
-
-        $starsCollected = 0;
+        $starsCollected = GameUserCard::starsCollectedForUser((int) $userId);
 
         $rankChange = (int) $user->new_rank - (int) $user->old_rank;
         $rankChangeMessage = $rankChange > 0 ? '-1' : ($rankChange < 0 ? '+1' : '0');

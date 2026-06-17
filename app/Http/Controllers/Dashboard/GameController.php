@@ -4,6 +4,12 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Game;
+use App\Models\GameCard;
+use App\Models\GameNotification;
+use App\Models\GameRedeemHistory;
+use App\Models\GameRewardHistory;
+use App\Models\GameStar;
+use App\Models\GameUserCard;
 use App\Models\Point;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -123,9 +129,146 @@ class GameController extends Controller
                     'first_goal_prediction' => $firstGoalprediction
                 ]);
             }
+
+            $this->awardPredictionCards($game, $prediction->user_id, $pointsEarned);
         }
 
         $this->assignRank();
+    }
+
+    private function awardPredictionCards(Game $game, int $userId, int $pointsEarned): void
+    {
+        if ($game->game_type === 'final-prediction' || $pointsEarned <= 0) {
+            return;
+        }
+
+        $alreadyRewarded = GameNotification::where('user_id', $userId)
+            ->where('notification_type', GameNotification::TYPE_CORRECT_PREDICTION)
+            ->where('reference_id', $game->id)
+            ->exists();
+
+        if ($alreadyRewarded) {
+            return;
+        }
+
+        $cardTypeGroups = $pointsEarned >= 5
+            ? [['GOLD'], ['BRONZE', 'SILVER']]
+            : [['BRONZE', 'SILVER']];
+
+        DB::transaction(function () use ($game, $userId, $cardTypeGroups) {
+            $alreadyRewarded = GameNotification::where('user_id', $userId)
+                ->where('notification_type', GameNotification::TYPE_CORRECT_PREDICTION)
+                ->where('reference_id', $game->id)
+                ->lockForUpdate()
+                ->exists();
+
+            if ($alreadyRewarded) {
+                return;
+            }
+
+            foreach ($cardTypeGroups as $cardTypes) {
+                $card = GameCard::whereIn('card_type', $cardTypes)
+                    ->where('is_active', true)
+                    ->inRandomOrder()
+                    ->first();
+
+                if (!$card) {
+                    continue;
+                }
+
+                $reward = $this->awardPredictionCard($userId, $card);
+
+                GameNotification::create([
+                    'user_id' => $userId,
+                    'notification_type' => GameNotification::TYPE_CORRECT_PREDICTION,
+                    'reference_id' => $game->id,
+                    'title' => 'Prediction Win!',
+                    'message' => 'You guessed right! Your victory reward has been successfully added.',
+                    'star_points' => $reward['star_points'],
+                    'is_read' => false,
+                ]);
+            }
+        });
+    }
+
+    private function awardPredictionCard(int $userId, GameCard $card): array
+    {
+        $userCard = GameUserCard::where('user_id', $userId)
+            ->where('card_id', $card->id)
+            ->lockForUpdate()
+            ->first();
+
+        if ($userCard) {
+            $userCard->quantity += 1;
+            $userCard->save();
+            $userCard->refresh();
+        } else {
+            $userCard = GameUserCard::create([
+                'user_id' => $userId,
+                'card_id' => $card->id,
+                'quantity' => 1,
+                'first_obtained_at' => now(),
+            ]);
+        }
+
+        $starPoints = $userCard->quantity > 1
+            ? $this->starsForCardType($card->card_type)
+            : 0;
+
+        $gameStars = $this->getOrCreateUserStars($userId);
+
+        if ($starPoints > 0) {
+            $gameStars->stars_balance += $starPoints;
+            $gameStars->save();
+        }
+
+        $reward = GameRewardHistory::create([
+            'user_id' => $userId,
+            'card_id' => $card->id,
+            'quantity' => 1,
+            'star_points' => $starPoints,
+            'reward_source' => 'PREDICTION',
+            'rewarded_at' => now(),
+        ]);
+
+        return [
+            'reward' => $reward,
+            'user_card' => $userCard,
+            'star_points' => $starPoints,
+        ];
+    }
+
+    private function starsForCardType(string $cardType): int
+    {
+        return match (strtoupper($cardType)) {
+            'GOLD' => 5,
+            'SILVER' => 3,
+            default => 2,
+        };
+    }
+
+    private function getOrCreateUserStars(int $userId): GameStar
+    {
+        $gameStars = GameStar::where('user_id', $userId)
+            ->lockForUpdate()
+            ->first();
+
+        if ($gameStars) {
+            return $gameStars;
+        }
+
+        return GameStar::create([
+            'user_id' => $userId,
+            'stars_balance' => $this->calculateInitialStarsBalance($userId),
+        ]);
+    }
+
+    private function calculateInitialStarsBalance(int $userId): int
+    {
+        $earnedStars = (int) GameRewardHistory::where('user_id', $userId)->sum('star_points');
+        $redeemedStars = (int) GameRedeemHistory::where('user_id', $userId)->sum('stars_used');
+
+        return max($earnedStars - $redeemedStars, 0);
     }
 
     /*    private function assignRank()

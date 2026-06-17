@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Game;
+use App\Models\GameUserCard;
 use App\Models\User;
 use App\Models\Point;
 use App\Models\Prediction;
@@ -165,6 +166,7 @@ class PointController extends Controller
     public function allUserPoints()
     {
         $companyGroupId = auth()->user()->company_group_id;
+        $starsCollected = GameUserCard::starsCollectedQuery();
 
         // Retrieve users with total points
         $users = User::leftJoin('points', 'users.id', '=', 'points.user_id')
@@ -173,6 +175,9 @@ class PointController extends Controller
                 $join->on('users.id', '=', 'predictions.user_id')
                     ->on('games.id', '=', 'predictions.game_id')
                     ->where('games.game_type', 'final-prediction');
+            })
+            ->leftJoinSub($starsCollected, 'card_collection_stars', function ($join) {
+                $join->on('users.id', '=', 'card_collection_stars.user_id');
             })
             ->select(
                 'users.id',
@@ -183,11 +188,11 @@ class PointController extends Controller
                 DB::raw('CAST(COALESCE(SUM(CASE WHEN games.game_type = "final-prediction" THEN points.points ELSE 0 END), 0) AS UNSIGNED) as final_prediction_points'),
                 DB::raw('CAST(COALESCE(users.old_rank, 0) AS UNSIGNED) as old_rank'),
                 DB::raw('CAST(COALESCE(users.new_rank, 0) AS UNSIGNED) as new_rank'),
-                DB::raw('0 as stars_collected')
+                DB::raw('CAST(COALESCE(card_collection_stars.stars_collected, 0) AS UNSIGNED) as stars_collected')
             )
             ->where('users.company_group_id', $companyGroupId)
             ->where('users.verified', 1)
-            ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank', 'users.fav_team')
+            ->groupBy('users.id', 'users.name', 'users.image', 'users.old_rank', 'users.new_rank', 'users.fav_team', 'card_collection_stars.stars_collected')
             ->orderBy('total_points', 'desc')
             ->orderBy('name', 'asc')
             ->get();

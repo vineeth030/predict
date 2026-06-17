@@ -18,6 +18,7 @@ return new class extends Migration
                 'REWARD',
                 'DAILY_REWARD',
                 'PREDICTION_REWARD',
+                'CORRECT_PREDICTION',
                 'SHARE_SENT',
                 'SHARE_RECEIVED',
                 'REDEEM',

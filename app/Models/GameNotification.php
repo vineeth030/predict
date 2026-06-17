@@ -13,6 +13,7 @@ class GameNotification extends Model
     public const TYPE_REWARD = 'REWARD';
     public const TYPE_DAILY_REWARD = 'DAILY_REWARD';
     public const TYPE_PREDICTION_REWARD = 'PREDICTION_REWARD';
+    public const TYPE_CORRECT_PREDICTION = 'CORRECT_PREDICTION';
     public const TYPE_SHARE_SENT = 'SHARE_SENT';
     public const TYPE_SHARE_RECEIVED = 'SHARE_RECEIVED';
     public const TYPE_REDEEM = 'REDEEM';

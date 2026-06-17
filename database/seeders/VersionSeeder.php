@@ -19,9 +19,9 @@ class VersionSeeder extends Seeder
             'name' => 'a',
             'is_mandatory' => '0',
             'is_quarter_started' => '0',
-            'countdown_timer' => '1718391600000',
+            'countdown_timer' => '1781204400000',
             'is_round16_completed' => '0',
-            'wc_end_date' => '1723662000000',
+            'wc_end_date' => '1786474800000',
             'winner' => 'England'
         ]);
 
@@ -32,9 +32,9 @@ class VersionSeeder extends Seeder
             'name' => 'a',
             'is_mandatory' => '0',
             'is_quarter_started' => '0',
-            'countdown_timer' => '1718391600000',
+            'countdown_timer' => '1781204400000',
             'is_round16_completed' => '0',
-            'wc_end_date' => '1723662000000',
+            'wc_end_date' => '1786474800000',
             'winner' => 'England'
         ]);
 

@@ -270,7 +270,9 @@ class CardController extends Controller
                     ]);
                 }
 
-                $starPoints = 0;
+                $starPoints = $userCard->quantity > 1
+                    ? $this->starsForCardType($card->card_type)
+                    : 0;
 
                 $reward = GameRewardHistory::create([
                     'user_id' => $userId,
@@ -288,7 +290,7 @@ class CardController extends Controller
                     'redeemed_at' => now(),
                 ]);
 
-                $gameStars->stars_balance -= $starsRequired;
+                $gameStars->stars_balance = $gameStars->stars_balance - $starsRequired + $starPoints;
                 $gameStars->save();
                 $gameStars->refresh();
 
@@ -464,7 +466,7 @@ class CardController extends Controller
                     'notification_type' => GameNotification::TYPE_SHARE_RECEIVED,
                     'reference_id' => $cardId,
                     'title' => 'New Gift!',
-                    'message' => "{$senderName} sent you a card. Tap to open it.",
+                    'message' => "{$senderName} sent you a card.",
                     'star_points' => 0,
                     'is_read' => false,
                 ]);

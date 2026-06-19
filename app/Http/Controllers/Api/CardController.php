@@ -588,6 +588,7 @@ class CardController extends Controller
                 ->where('user_id', $userId)
                 ->orderByDesc('rewarded_at')
                 ->orderByDesc('id')
+                ->limit(15)
                 ->get()
                 ->map(function ($reward) {
                     $card = $reward->card;
@@ -616,6 +617,7 @@ class CardController extends Controller
             $notifications = GameNotification::where('user_id', $userId)
                 ->orderByDesc('created_at')
                 ->orderByDesc('id')
+                ->limit(20)
                 ->get()
                 ->map(function ($notification) {
                     return [

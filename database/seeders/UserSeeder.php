@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
             'employee_id' => 28,
             'image' => '28_photo.jpg',
             'company_group_id' => 0,
-            'password' => 'password',
+            'password' => '5NJAB£N2nz2$y@$',
             'is_admin' => true,
             'verified' => 1
         ]);

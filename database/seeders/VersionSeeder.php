@@ -15,8 +15,8 @@ class VersionSeeder extends Seeder
 
         \App\Models\Version::factory()->create([
             'platform' => 'ios',
-            'code' => 'a',
-            'name' => 'a',
+            'code' => '1',
+            'name' => '1.0.0',
             'is_mandatory' => '0',
             'is_quarter_started' => '0',
             'countdown_timer' => '1781204400000',
@@ -28,8 +28,8 @@ class VersionSeeder extends Seeder
 
         \App\Models\Version::factory()->create([
             'platform' => 'android',
-            'code' => 'a',
-            'name' => 'a',
+            'code' => '1',
+            'name' => '1.0.0',
             'is_mandatory' => '0',
             'is_quarter_started' => '0',
             'countdown_timer' => '1781204400000',

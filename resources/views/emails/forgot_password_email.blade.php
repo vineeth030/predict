@@ -1,86 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Password Reset OTP Verification</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
             margin: 0;
             padding: 0;
         }
-
         .email-container {
-            max-width: 700px;
-            margin: 20px auto;
+            max-width: 500px;
+            margin: 40px auto;
             background-color: #ffffff;
-            padding: 20px;
+            padding: 0;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e0e0e0;
+            overflow: hidden;
         }
-
         .email-header {
-            background-color: #6264a7;
+            background-color: #E2211C;
             color: white;
-            padding: 20px;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
+            padding: 30px 20px;
+            text-align: center;
         }
-
+        .brand-title {
+            font-size: 28px;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 0;
+        }
         .email-body {
-            padding: 20px;
-            color: #252424;
-            background-color: #f4f4f4;
+            padding: 40px 30px;
+            text-align: center;
+            color: #333333;
+            line-height: 1.6;
         }
-
-        .otp-code {
-            font-size: 24px;
+        .greeting {
+            font-size: 18px;
             font-weight: bold;
-            margin: 20px 0;
-            padding: 10px;
-            background-color: #e1dfdd;
-            display: inline-block;
-            border-radius: 4px;
+            margin-bottom: 20px;
         }
-
+        .otp-box {
+            background-color: #fdf2f2;
+            border: 2px dashed #E2211C;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 30px auto;
+            max-width: 200px;
+        }
+        .otp-code {
+            font-size: 32px;
+            font-weight: bold;
+            color: #E2211C;
+            letter-spacing: 4px;
+        }
+        .expiry-text {
+            font-size: 13px;
+            color: #666666;
+            margin-top: 25px;
+        }
+        .support-link {
+            color: #E2211C;
+            text-decoration: none;
+            font-weight: bold;
+        }
         .email-footer {
             text-align: center;
-            padding: 20px;
-            font-size: 14px;
+            padding: 25px 20px;
+            font-size: 12px;
             color: #888888;
-            background-color: #f4f4f4;
-        }
-
-        .email-footer a {
-            color: #6264a7;
-            text-decoration: none;
+            border-top: 1px solid #eeeeee;
+            background-color: #fafafa;
         }
     </style>
 </head>
-
 <body>
     <div class="email-container">
         <div class="email-header">
-             Predict Password Assistance
+            <h1 class="brand-title">Predict</h1>
         </div>
         <div class="email-body">
-            <p>Hello</p>
-            <p>We received a request to reset the password for your Predict account. To confirm this request and set a new password, please enter the following One-Time Password (OTP):</p>
-            <div class="otp-code">{{$otp}}</div>
-            <p>This OTP is valid for <strong>30 minutes</strong> and can only be used once. If you did not request a password reset, please disregard this email or contact us for support.</p>
-            <p>If you have any questions or need further assistance, please contact our support team at <a href="mailto:[arteam@beo.in]">[arteam@beo.in]</a>.</p>
-            <p>Thank you for using Predict.</p>
+            <p class="greeting">Hello,</p>
+            <p>We received a request to reset the password for your Predict account. To confirm this request and set a new password, please use the following One-Time Password (OTP):</p>
+
+            <div class="otp-box">
+                <div class="otp-code">{{ $otp }}</div>
+            </div>
+
+            <p class="expiry-text">Please note that this OTP is valid for <strong>30 minutes</strong> and is for one-time use only. If you did not request a password reset, please ignore this email or contact our support team immediately.</p>
+            <p>For any assistance, feel free to reach out to us at <a href="mailto:arteam@beo.in" class="support-link">arteam@beo.in</a>.</p>
         </div>
         <div class="email-footer">
             Warm regards,<br>
-            <a href="
-https://www.beopredict.com">
-                BEO AR Team</a>
+            <strong>BEO AR Team</strong>
         </div>
     </div>
 </body>
-
 </html>

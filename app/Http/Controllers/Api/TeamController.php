@@ -67,14 +67,14 @@ class TeamController extends Controller
 
 
             $teams = [
-                ['id' => 5, 'name' => 'Spain'],
-                ['id' => 1, 'name' => 'Germany'],
-                ['id' => 23, 'name' => 'Portugal'],
-                ['id' => 16, 'name' => 'France'],
-                ['id' => 12, 'name' => 'England'],
-                ['id' => 4, 'name' => 'Switzerland'],
-                ['id' => 14, 'name' => 'Netherlands'],
-                ['id' => 21, 'name' => 'Turkey']
+                ['id' => 9, 'name' => 'Brazil'],
+                ['id' => 17, 'name' => 'Germany'],
+                ['id' => 29, 'name' => 'Spain'],
+                ['id' => 33, 'name' => 'France'],
+                ['id' => 37, 'name' => 'Argentina'],
+                ['id' => 41, 'name' => 'Portugal'],
+                ['id' => 45, 'name' => 'England'],
+                ['id' => 46, 'name' => 'Croatia']
             ];
 
             return response()->json([

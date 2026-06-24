@@ -152,7 +152,7 @@ class GameController extends Controller
         }
 
         $cardTypeGroups = $pointsEarned >= 5
-            ? [['GOLD'], ['BRONZE', 'SILVER']]
+            ? [['GOLD'], ['BRONZE', 'SILVER'],['BRONZE']]
             : [['BRONZE', 'SILVER']];
 
         DB::transaction(function () use ($game, $userId, $cardTypeGroups) {

@@ -153,7 +153,7 @@ class GameController extends Controller
 
         $cardTypeGroups = $pointsEarned >= 5
             ? [['GOLD'], ['BRONZE', 'SILVER']]
-            : [['BRONZE', 'SILVER']];
+            : [['BRONZE', 'SILVER'],['BRONZE', 'SILVER']];
 
         DB::transaction(function () use ($game, $userId, $cardTypeGroups) {
             $alreadyRewarded = GameNotification::where('user_id', $userId)

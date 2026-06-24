@@ -51,7 +51,7 @@
                         </td>
                         <td>
                             @forelse($user->cards_collected_by_country as $countryCards)
-                                <div>{{ $countryCards['country_id'] }} - {{ $countryCards['card_ids'] }}</div>
+                                <div>{{ $countryCards['country_name'] }} - {{ $countryCards['card_ids'] }}</div>
                             @empty
                                 <span class="text-muted">-</span>
                             @endforelse

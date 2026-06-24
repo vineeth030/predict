@@ -21,10 +21,11 @@ class UserController extends Controller
             ? collect()
             : DB::table('game_user_card')
                 ->join('game_card', 'game_user_card.card_id', '=', 'game_card.id')
+                ->join('teams', 'game_card.country_id', '=', 'teams.id')
                 ->whereIn('game_user_card.user_id', $userIds)
                 ->where('game_user_card.quantity', '>', 0)
                 ->where('game_card.is_active', true)
-                ->select('game_user_card.user_id', 'game_card.country_id', 'game_user_card.card_id')
+                ->select('game_user_card.user_id', 'game_card.country_id', 'teams.name as country_name', 'game_user_card.card_id')
                 ->orderBy('game_card.country_id')
                 ->orderBy('game_user_card.card_id')
                 ->get()
@@ -35,6 +36,7 @@ class UserController extends Controller
                         ->map(function ($countryCards, $countryId) {
                             return [
                                 'country_id' => (int) $countryId,
+                                'country_name' => $countryCards->first()->country_name,
                                 'card_ids' => $countryCards
                                     ->pluck('card_id')
                                     ->unique()

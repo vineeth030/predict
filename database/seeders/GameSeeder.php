@@ -8,9 +8,10 @@ use App\Models\Game;
 class GameSeeder extends Seeder
 {
    private $games = [
-        // --- 12 Jun ---
-        [2, 5, "1782673200000", "Round of 32", "upcoming", "Los Angeles Stadium"],       // Mexico vs South Africa | 12:30 am
-        [21, 10, "1782781200000", "Round of 32", "upcoming", "Monterrey Stadium"],      // South Korea vs Czechia | 7:30 am
+       
+        [2, 5, "1782673200000", "Round of 32", "upcoming", "Los Angeles Stadium"],      
+        [9, 22, "1782752400000", "Round of 32", "upcoming", "Houston Stadium"],      
+       
 
 
     ];

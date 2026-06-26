@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 
 use App\Models\User;
+use App\Models\GameStar;
 use App\Mail\VerifyEmail;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
@@ -70,13 +71,22 @@ class AuthController extends Controller
             $otp = mt_rand(100000, 999999); // Generate a 6-digit OTP
 
             // Create a new user
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'company_group_id' => $emailExtension->company_group_id,
-                'password' => bcrypt($request->password),
-                'otp' => $otp,
-            ]);
+            $user = DB::transaction(function () use ($request, $emailExtension, $otp) {
+                $user = User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'company_group_id' => $emailExtension->company_group_id,
+                    'password' => bcrypt($request->password),
+                    'otp' => $otp,
+                ]);
+
+                GameStar::create([
+                    'user_id' => $user->id,
+                    'stars_balance' => 100,
+                ]);
+
+                return $user;
+            });
 
             // Send OTP to the user's email
             Mail::to($request->email)->send(new VerifyEmail($otp));
